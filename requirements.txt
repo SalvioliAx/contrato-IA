@@ -8,3 +8,4 @@ pydantic
 numpy
 Pillow
 PyMuPDF
+faiss-cpu
