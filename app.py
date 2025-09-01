@@ -53,7 +53,7 @@ class ListaDeEventos(BaseModel):
     arquivo_fonte: str = Field(description="O nome do arquivo de origem do contrato de onde estes eventos foram extraídos.")
 
 # --- CONFIGURAÇÃO DA PÁGINA E DA CHAVE DE API ---
-st.set_page_config(layout="wide", page_title="Analisador-IA ProMax", page_icon="💡")
+st.set_page_config(layout="wide", page_title="ContratIA", page_icon="💡")
 try:
     google_api_key = st.secrets["GOOGLE_API_KEY"]
     os.environ["GOOGLE_API_KEY"] = google_api_key
