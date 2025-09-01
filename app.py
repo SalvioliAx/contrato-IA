@@ -750,18 +750,23 @@ else:
         for message in st.session_state.messages:
             with st.chat_message(message["role"]):
                 st.markdown(message["content"])
-                # CORREÇÃO INICIO: Checa se a chave 'sources' existe e não está vazia
                 if message.get("sources"):
-                    with st.expander("Ver Fontes Utilizadas"):
+                    with st.expander("Ver Fontes e Detalhes da Resposta"):
+                        # Exibe a cláusula citada, se houver
+                        if message.get("clausula_citada"):
+                            st.markdown(f"**Referência Principal:** {message['clausula_citada']}")
+                            st.markdown("---")
+                        
                         for doc_fonte in message["sources"]:
                             texto_fonte = doc_fonte.page_content
                             sentenca_chave = message.get("sentenca_chave")
 
-                            # CORREÇÃO: Lógica de destaque simplificada e funcional
+                            # Usa HTML para destacar o trecho com a tag <mark>
                             if sentenca_chave and sentenca_chave in texto_fonte:
-                                texto_fonte = texto_fonte.replace(sentenca_chave, f"**{sentenca_chave}**", 1)
-                            
-                            st.markdown(texto_fonte)
+                                texto_fonte_html = texto_fonte.replace(sentenca_chave, f"<mark>{sentenca_chave}</mark>", 1)
+                                st.markdown(texto_fonte_html, unsafe_allow_html=True)
+                            else:
+                                st.markdown(texto_fonte)
                             
                             source_name = doc_fonte.metadata.get('source', 'N/A')
                             page_num = doc_fonte.metadata.get('page', 'N/A')
@@ -769,7 +774,6 @@ else:
                             method_str = f" (Método: {method})" if method else ""
                             st.caption(f"Fonte: {source_name} (Pág: {page_num}{method_str})")
                             st.markdown("---")
-                # CORREÇÃO FIM
 
         if len(st.session_state.messages) > 1 : # Não mostrar botão de exportar para a mensagem inicial da IA
             chat_exportado_md = formatar_chat_para_markdown(st.session_state.messages)
@@ -783,40 +787,49 @@ else:
             with st.spinner("Pesquisando e pensando..."):
                 llm_chat = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.2)
                 
-                # Prompts traduzidos para cada idioma
+                # Prompts aprimorados para respostas mais completas e citação de cláusulas
                 prompt_templates = {
                     "Português": (
-                        "Use os seguintes trechos de contexto para responder à pergunta no final. "
-                        "Seja direto e use apenas as informações do contexto fornecido. "
-                        "Se o contexto não contiver a resposta, diga que não encontrou a informação nos documentos.\n"
+                        "Você é um assistente analítico. Use os trechos de contexto para responder à pergunta de forma completa e explicativa. Não responda apenas com 'Sim' ou 'Não'. Explique o porquê da sua resposta com base no contexto.\n"
+                        "Se o contexto não contiver a resposta, informe que não encontrou a informação nos documentos.\n\n"
                         "CONTEXTO:\n{context}\n\n"
                         "PERGUNTA: {question}\n\n"
+                        "--- INSTRUÇÕES DE FORMATAÇÃO DA RESPOSTA ---\n"
+                        "Siga o formato abaixo EXATAMENTE:\n"
                         "RESPOSTA (em Português):\n"
-                        "[Sua resposta aqui]\n\n"
-                        "|||TRECHO MAIS RELEVANTE DO CONTEXTO (cite a sentença ou pequeno parágrafo exato):\n"
-                        "[Citação aqui]"
+                        "[Sua resposta explicativa aqui]\n\n"
+                        "|||CLÁUSULA/ARTIGO PRINCIPAL:\n"
+                        "[Cite o número da cláusula ou artigo mais relevante, se houver. Ex: Cláusula 5.1, Artigo 12. Se não houver, escreva 'Não aplicável']\n\n"
+                        "|||TRECHO MAIS RELEVANTE DO CONTEXTO:\n"
+                        "[Cite a sentença ou pequeno parágrafo exato do contexto que fundamenta sua resposta]"
                     ),
                     "Inglês": (
-                        "Use the following pieces of context to answer the question at the end. "
-                        "Be direct and use only the information from the provided context. "
-                        "If the context does not contain the answer, state that you could not find the information in the documents.\n"
+                        "You are an analytical assistant. Use the context excerpts to answer the question completely and explanatorily. Do not just answer with 'Yes' or 'No'. Explain the reasoning for your answer based on the context.\n"
+                        "If the context does not contain the answer, state that you could not find the information in the documents.\n\n"
                         "CONTEXT:\n{context}\n\n"
                         "QUESTION: {question}\n\n"
+                        "--- RESPONSE FORMATTING INSTRUCTIONS ---\n"
+                        "Follow the format below EXACTLY:\n"
                         "ANSWER (in English):\n"
-                        "[Your answer here]\n\n"
-                        "|||MOST RELEVANT EXCERPT FROM THE CONTEXT (quote the exact sentence or short paragraph):\n"
-                        "[Quote here]"
+                        "[Your explanatory answer here]\n\n"
+                        "|||MAIN CLAUSE/ARTICLE:\n"
+                        "[Cite the most relevant clause or article number, if any. E.g., Clause 5.1, Article 12. If none, write 'Not applicable']\n\n"
+                        "|||MOST RELEVANT EXCERPT FROM THE CONTEXT:\n"
+                        "[Quote the exact sentence or short paragraph from the context that supports your answer]"
                     ),
                     "Espanhol": (
-                        "Usa los siguientes fragmentos de contexto para responder la pregunta al final. "
-                        "Sé directo y usa solo la información del contexto proporcionado. "
-                        "Si el contexto no contiene la respuesta, indica que no encontraste la información en los documentos.\n"
+                        "Eres un asistente analítico. Utiliza los fragmentos de contexto para responder la pregunta de forma completa y explicativa. No respondas solo con 'Sí' o 'No'. Explica el porqué de tu respuesta basándote en el contexto.\n"
+                        "Si el contexto no contiene la respuesta, indica que no has encontrado la información en los documentos.\n\n"
                         "CONTEXTO:\n{context}\n\n"
                         "PREGUNTA: {question}\n\n"
+                        "--- INSTRUCCIONES DE FORMATO DE RESPUESTA ---\n"
+                        "Sigue el formato a continuación EXACTAMENTE:\n"
                         "RESPUESTA (en Español):\n"
-                        "[Tu respuesta aquí]\n\n"
-                        "|||FRAGMENTO MÁS RELEVANTE DEL CONTEXTO (cita la oración exacta o el párrafo corto):\n"
-                        "[Cita aquí]"
+                        "[Tu respuesta explicativa aquí]\n\n"
+                        "|||CLÁUSULA/ARTÍCULO PRINCIPAL:\n"
+                        "[Cita el número de la cláusula o artículo más relevante, si existe. Ej: Cláusula 5.1, Artículo 12. Si no hay, escribe 'No aplicable']\n\n"
+                        "|||FRAGMENTO MÁS RELEVANTE DEL CONTEXTO:\n"
+                        "[Cita la oración exacta o el párrafo corto del contexto que fundamenta tu respuesta]"
                     )
                 }
 
@@ -827,25 +840,50 @@ else:
                     chain_type="stuff", 
                     retriever=vector_store_global.as_retriever(
                         search_type="similarity",
-                        search_kwargs={"k": 7} # Limite de score removido para melhorar a busca cross-language
+                        search_kwargs={"k": 7}
                     ), 
                     return_source_documents=True, 
                     chain_type_kwargs={"prompt": template_prompt_chat}
                 )
                 try:
-                    resultado = qa_chain.invoke({"query": prompt}) # Usar invoke para Langchain Expression Language
+                    resultado = qa_chain.invoke({"query": prompt})
                     resposta_bruta = resultado["result"]
                     fontes = resultado["source_documents"]
                     
+                    # Lógica de parsing aprimorada para extrair os 3 componentes
                     resposta_principal = resposta_bruta
+                    clausula_citada = None
                     sentenca_chave = None
-                    if '|||TRECHO MAIS RELEVANTE DO CONTEXTO' in resposta_bruta:
-                        partes = resposta_bruta.split('|||TRECHO MAIS RELEVANTE DO CONTEXTO', 1)
-                        resposta_principal = partes[0].replace("RESPOSTA (no idioma " + idioma_selecionado + "):", "").strip()
-                        if len(partes) > 1:
-                            sentenca_chave = partes[1].replace("(cite a sentença ou pequeno parágrafo exato):", "").strip()
+
+                    if '|||CLÁUSULA/ARTIGO PRINCIPAL:' in resposta_bruta:
+                        partes_resposta = resposta_bruta.split('|||CLÁUSULA/ARTIGO PRINCIPAL:', 1)
+                        resposta_principal = partes_resposta[0].strip()
+                        
+                        if len(partes_resposta) > 1:
+                            partes_resto = partes_resposta[1].split('|||TRECHO MAIS RELEVANTE DO CONTEXTO:', 1)
+                            clausula_citada = partes_resto[0].strip()
+                            if not clausula_citada or 'não aplicável' in clausula_citada.lower() or 'not applicable' in clausula_citada.lower() or 'no aplicable' in clausula_citada.lower():
+                                clausula_citada = None
+                            
+                            if len(partes_resto) > 1:
+                                sentenca_chave = partes_resto[1].strip()
                     
-                    st.session_state.messages.append({"role": "assistant", "content": resposta_principal, "sources": fontes, "sentenca_chave": sentenca_chave})
+                    elif '|||TRECHO MAIS RELEVANTE DO CONTEXTO:' in resposta_bruta:
+                        partes = resposta_bruta.split('|||TRECHO MAIS RELEVANTE DO CONTEXTO:', 1)
+                        resposta_principal = partes[0].strip()
+                        if len(partes) > 1:
+                            sentenca_chave = partes[1].strip()
+
+                    # Limpeza final da resposta principal
+                    resposta_principal = re.sub(r"RESPOSTA \((em|in|en) .*\):", "", resposta_principal).strip()
+
+                    st.session_state.messages.append({
+                        "role": "assistant", 
+                        "content": resposta_principal, 
+                        "sources": fontes, 
+                        "sentenca_chave": sentenca_chave,
+                        "clausula_citada": clausula_citada
+                    })
 
                 except Exception as e_chat:
                     st.error(f"Erro durante a execução da cadeia de QA: {e_chat}")
