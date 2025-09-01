@@ -746,20 +746,22 @@ else:
         if not st.session_state.messages : 
             st.session_state.messages.append({"role": "assistant", "content": f"Olá! Documentos da coleção '{st.session_state.get('colecao_ativa', 'atual')}' prontos ({len(nomes_arquivos_global)} arquivo(s)). Qual sua pergunta?"})
         
+        # Renderiza o histórico do chat
         for message in st.session_state.messages:
             with st.chat_message(message["role"]):
                 st.markdown(message["content"])
-                if "sources" in message and message["sources"]:
+                # CORREÇÃO INICIO: Checa se a chave 'sources' existe e não está vazia
+                if message.get("sources"):
                     with st.expander("Ver Fontes Utilizadas"):
                         for doc_fonte in message["sources"]:
-                            texto_fonte = doc_fonte.page_content; sentenca_chave = message.get("sentenca_chave")
-                            # Destaque simples, pode ser melhorado
-                            if sentenca_chave and sentenca_chave in texto_fonte: 
-                                partes = texto_fonte.split(sentenca_chave, 1)
-                                texto_formatado_html = f"{st.markdown(partes[0], unsafe_allow_html=True)}<span style='background-color: #FFFACD; padding: 2px; border-radius: 3px; color: black;'>{st.markdown(sentenca_chave, unsafe_allow_html=True)}</span>{st.markdown(partes[1] if len(partes) > 1 else '', unsafe_allow_html=True)}"
-                                st.markdown(texto_formatado_html, unsafe_allow_html=True)
-                            else: 
-                                st.markdown(texto_fonte)
+                            texto_fonte = doc_fonte.page_content
+                            sentenca_chave = message.get("sentenca_chave")
+
+                            # CORREÇÃO: Lógica de destaque simplificada e funcional
+                            if sentenca_chave and sentenca_chave in texto_fonte:
+                                texto_fonte = texto_fonte.replace(sentenca_chave, f"**{sentenca_chave}**", 1)
+                            
+                            st.markdown(texto_fonte)
                             
                             source_name = doc_fonte.metadata.get('source', 'N/A')
                             page_num = doc_fonte.metadata.get('page', 'N/A')
@@ -767,7 +769,7 @@ else:
                             method_str = f" (Método: {method})" if method else ""
                             st.caption(f"Fonte: {source_name} (Pág: {page_num}{method_str})")
                             st.markdown("---")
-
+                # CORREÇÃO FIM
 
         if len(st.session_state.messages) > 1 : # Não mostrar botão de exportar para a mensagem inicial da IA
             chat_exportado_md = formatar_chat_para_markdown(st.session_state.messages)
@@ -780,10 +782,8 @@ else:
             with st.chat_message("user"): st.markdown(prompt)
             
             with st.chat_message("assistant"):
-                message_placeholder = st.empty()
                 with st.spinner("Pesquisando e pensando..."):
                     llm_chat = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.2)
-                    # Adaptação do prompt para ser mais flexível com a citação
                     template_prompt_chat_str = (
                         "Use os seguintes trechos de contexto para responder à pergunta no final. "
                         "Seja direto e use apenas as informações do contexto fornecido. "
@@ -820,12 +820,39 @@ else:
                             if len(partes) > 1:
                                 sentenca_chave = partes[1].replace("(cite a sentença ou pequeno parágrafo exato):", "").strip()
                         
-                        message_placeholder.markdown(resposta_principal)
+                        # --- INÍCIO DA CORREÇÃO ---
+                        # Renderiza a resposta principal diretamente
+                        st.markdown(resposta_principal)
+
+                        # Renderiza as fontes da nova resposta imediatamente
+                        if fontes:
+                            with st.expander("Ver Fontes Utilizadas", expanded=True):
+                                for doc_fonte in fontes:
+                                    texto_fonte = doc_fonte.page_content
+                                    
+                                    # Lógica de destaque simplificada e funcional
+                                    if sentenca_chave and sentenca_chave in texto_fonte:
+                                        texto_fonte = texto_fonte.replace(sentenca_chave, f"**{sentenca_chave}**", 1)
+                                    
+                                    st.markdown(texto_fonte)
+
+                                    source_name = doc_fonte.metadata.get('source', 'N/A')
+                                    page_num = doc_fonte.metadata.get('page', 'N/A')
+                                    method = doc_fonte.metadata.get('method', '')
+                                    method_str = f" (Método: {method})" if method else ""
+                                    st.caption(f"Fonte: {source_name} (Pág: {page_num}{method_str})")
+                                    st.markdown("---")
+                        
+                        # Adiciona a mensagem completa ao histórico para a próxima recarga
                         st.session_state.messages.append({"role": "assistant", "content": resposta_principal, "sources": fontes, "sentenca_chave": sentenca_chave})
+                        # --- FIM DA CORREÇÃO ---
+
                     except Exception as e_chat:
                         st.error(f"Erro durante a execução da cadeia de QA: {e_chat}")
-                        st.session_state.messages.append({"role": "assistant", "content": "Desculpe, ocorreu um erro ao processar sua pergunta."})
-            # st.rerun() # Rerun pode ser problemático aqui, melhor deixar o fluxo seguir
+                        resposta_erro = "Desculpe, ocorreu um erro ao processar sua pergunta."
+                        st.markdown(resposta_erro)
+                        st.session_state.messages.append({"role": "assistant", "content": resposta_erro})
+            # st.rerun() # Evitar rerun para não limpar o estado de forma inesperada
 
     with tab_dashboard:
         st.header("Análise Comparativa de Dados Contratuais")
@@ -1113,4 +1140,3 @@ else:
                         st.markdown(f"- {anomalia_item}")
                 else:
                     st.info("Nenhuma anomalia significativa detectada com os critérios atuais, ou os dados não foram suficientes para a análise.")
-
