@@ -782,28 +782,55 @@ else:
             
             with st.spinner("Pesquisando e pensando..."):
                 llm_chat = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.2)
-                template_prompt_chat_str = (
-                    "Use os seguintes trechos de contexto para responder à pergunta no final. "
-                    "Seja direto e use apenas as informações do contexto fornecido. "
-                    "Se o contexto não contiver a resposta, diga que não encontrou a informação nos documentos.\n"
-                    "CONTEXTO:\n{context}\n\n"
-                    "PERGUNTA: {question}\n\n"
-                    "RESPOSTA (no idioma {language}):\n"
-                    "[Sua resposta aqui]\n\n"
-                    "|||TRECHO MAIS RELEVANTE DO CONTEXTO (cite a sentença ou pequeno parágrafo exato):\n"
-                    "[Citação aqui]"
-                )
-                template_prompt_chat = PromptTemplate.from_template(template_prompt_chat_str)
+                
+                # Prompts traduzidos para cada idioma
+                prompt_templates = {
+                    "Português": (
+                        "Use os seguintes trechos de contexto para responder à pergunta no final. "
+                        "Seja direto e use apenas as informações do contexto fornecido. "
+                        "Se o contexto não contiver a resposta, diga que não encontrou a informação nos documentos.\n"
+                        "CONTEXTO:\n{context}\n\n"
+                        "PERGUNTA: {question}\n\n"
+                        "RESPOSTA (em Português):\n"
+                        "[Sua resposta aqui]\n\n"
+                        "|||TRECHO MAIS RELEVANTE DO CONTEXTO (cite a sentença ou pequeno parágrafo exato):\n"
+                        "[Citação aqui]"
+                    ),
+                    "Inglês": (
+                        "Use the following pieces of context to answer the question at the end. "
+                        "Be direct and use only the information from the provided context. "
+                        "If the context does not contain the answer, state that you could not find the information in the documents.\n"
+                        "CONTEXT:\n{context}\n\n"
+                        "QUESTION: {question}\n\n"
+                        "ANSWER (in English):\n"
+                        "[Your answer here]\n\n"
+                        "|||MOST RELEVANT EXCERPT FROM THE CONTEXT (quote the exact sentence or short paragraph):\n"
+                        "[Quote here]"
+                    ),
+                    "Espanhol": (
+                        "Usa los siguientes fragmentos de contexto para responder la pregunta al final. "
+                        "Sé directo y usa solo la información del contexto proporcionado. "
+                        "Si el contexto no contiene la respuesta, indica que no encontraste la información en los documentos.\n"
+                        "CONTEXTO:\n{context}\n\n"
+                        "PREGUNTA: {question}\n\n"
+                        "RESPUESTA (en Español):\n"
+                        "[Tu respuesta aquí]\n\n"
+                        "|||FRAGMENTO MÁS RELEVANTE DEL CONTEXTO (cita la oración exacta o el párrafo corto):\n"
+                        "[Cita aquí]"
+                    )
+                }
+
+                template_prompt_chat = PromptTemplate.from_template(prompt_templates[idioma_selecionado])
 
                 qa_chain = RetrievalQA.from_chain_type(
                     llm=llm_chat, 
                     chain_type="stuff", 
                     retriever=vector_store_global.as_retriever(
                         search_type="similarity",
-                        search_kwargs={"k": 7, "score_threshold": 0.7} # Ajustar k e threshold
+                        search_kwargs={"k": 7} # Limite de score removido para melhorar a busca cross-language
                     ), 
                     return_source_documents=True, 
-                    chain_type_kwargs={"prompt": template_prompt_chat.partial(language=idioma_selecionado)}
+                    chain_type_kwargs={"prompt": template_prompt_chat}
                 )
                 try:
                     resultado = qa_chain.invoke({"query": prompt}) # Usar invoke para Langchain Expression Language
