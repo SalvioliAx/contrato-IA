@@ -674,6 +674,12 @@ if modo_documento == "Fazer novo upload de PDFs":
                     vs, nomes_arqs = obter_vector_store_de_uploads(arquivos_pdf_upload_sidebar, embeddings_global)
                 
                 if vs and nomes_arqs: # Checar se o processamento foi bem sucedido
+                    # Limpa o cache de todas as funções de análise de dados
+                    extrair_dados_dos_contratos.clear()
+                    gerar_resumo_executivo.clear()
+                    analisar_documento_para_riscos.clear()
+                    extrair_eventos_dos_contratos.clear()
+                    
                     st.session_state.vector_store = vs
                     st.session_state.nomes_arquivos = nomes_arqs
                     st.session_state.arquivos_pdf_originais = arquivos_pdf_upload_sidebar # Salva os objetos de arquivo originais
@@ -698,6 +704,12 @@ elif modo_documento == "Carregar coleção existente":
             if google_api_key and embeddings_global:
                 vs, nomes_arqs = carregar_colecao(colecao_selecionada, embeddings_global)
                 if vs and nomes_arqs:
+                    # Limpa o cache de todas as funções de análise de dados
+                    extrair_dados_dos_contratos.clear()
+                    gerar_resumo_executivo.clear()
+                    analisar_documento_para_riscos.clear()
+                    extrair_eventos_dos_contratos.clear()
+
                     st.session_state.vector_store, st.session_state.nomes_arquivos, st.session_state.colecao_ativa = vs, nomes_arqs, colecao_selecionada
                     st.session_state.arquivos_pdf_originais = None # Não há arquivos originais quando carrega coleção
                     st.session_state.messages = []
@@ -1177,4 +1189,15 @@ else:
                         st.markdown(f"- {anomalia_item}")
                 else:
                     st.info("Nenhuma anomalia significativa detectada com os critérios atuais, ou os dados não foram suficientes para a análise.")
+
+" code between  and  in the most up-to-date Canvas "ContratIA.py" document above and am asking a query about/based on this code below.
+Instructions to follow:
+  * Don't output/edit the document if the query is Direct/Simple. For example, if the query asks for a simple explanation, output a direct answer.
+  * Make sure to **edit** the document if the query shows the intent of editing the document, in which case output the entire edited document, **not just that section or the edits**.
+    * Don't output the same document/empty document and say that you have edited it.
+    * Don't change unrelated code in the document.
+  * Don't output  and  in your final response.
+  * Any references like "this" or "selected code" refers to the code between  and  tags.
+  * Just acknowledge my request in the introduction.
+  * Make sure to refer to the document as "Canvas" in your response.
 
