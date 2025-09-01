@@ -658,8 +658,8 @@ else:
     embeddings_global = None
 
 # --- LAYOUT PRINCIPAL E SIDEBAR ---
-st.title("💡 Analisador-IA ProMax")
-st.sidebar.image("https://i.imgur.com/aozL2jD.png", width=100) # Exemplo de logo
+st.title("💡 ContratIA")
+
 st.sidebar.header("Gerenciar Documentos")
 
 modo_documento = st.sidebar.radio("Como carregar os documentos?", ("Fazer novo upload de PDFs", "Carregar coleção existente"), key="modo_doc_radio_v3", index=0)
