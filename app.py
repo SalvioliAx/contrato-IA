@@ -779,80 +779,52 @@ else:
         st.markdown("---")
         if prompt := st.chat_input("Faça sua pergunta sobre os contratos...", key="chat_input_v3", disabled=not documentos_prontos):
             st.session_state.messages.append({"role": "user", "content": prompt})
-            with st.chat_message("user"): st.markdown(prompt)
             
-            with st.chat_message("assistant"):
-                with st.spinner("Pesquisando e pensando..."):
-                    llm_chat = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.2)
-                    template_prompt_chat_str = (
-                        "Use os seguintes trechos de contexto para responder à pergunta no final. "
-                        "Seja direto e use apenas as informações do contexto fornecido. "
-                        "Se o contexto não contiver a resposta, diga que não encontrou a informação nos documentos.\n"
-                        "CONTEXTO:\n{context}\n\n"
-                        "PERGUNTA: {question}\n\n"
-                        "RESPOSTA (no idioma {language}):\n"
-                        "[Sua resposta aqui]\n\n"
-                        "|||TRECHO MAIS RELEVANTE DO CONTEXTO (cite a sentença ou pequeno parágrafo exato):\n"
-                        "[Citação aqui]"
-                    )
-                    template_prompt_chat = PromptTemplate.from_template(template_prompt_chat_str)
+            with st.spinner("Pesquisando e pensando..."):
+                llm_chat = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.2)
+                template_prompt_chat_str = (
+                    "Use os seguintes trechos de contexto para responder à pergunta no final. "
+                    "Seja direto e use apenas as informações do contexto fornecido. "
+                    "Se o contexto não contiver a resposta, diga que não encontrou a informação nos documentos.\n"
+                    "CONTEXTO:\n{context}\n\n"
+                    "PERGUNTA: {question}\n\n"
+                    "RESPOSTA (no idioma {language}):\n"
+                    "[Sua resposta aqui]\n\n"
+                    "|||TRECHO MAIS RELEVANTE DO CONTEXTO (cite a sentença ou pequeno parágrafo exato):\n"
+                    "[Citação aqui]"
+                )
+                template_prompt_chat = PromptTemplate.from_template(template_prompt_chat_str)
 
-                    qa_chain = RetrievalQA.from_chain_type(
-                        llm=llm_chat, 
-                        chain_type="stuff", 
-                        retriever=vector_store_global.as_retriever(
-                            search_type="similarity",
-                            search_kwargs={"k": 7, "score_threshold": 0.7} # Ajustar k e threshold
-                        ), 
-                        return_source_documents=True, 
-                        chain_type_kwargs={"prompt": template_prompt_chat.partial(language=idioma_selecionado)}
-                    )
-                    try:
-                        resultado = qa_chain.invoke({"query": prompt}) # Usar invoke para Langchain Expression Language
-                        resposta_bruta = resultado["result"]
-                        fontes = resultado["source_documents"]
-                        
-                        resposta_principal = resposta_bruta
-                        sentenca_chave = None
-                        if '|||TRECHO MAIS RELEVANTE DO CONTEXTO' in resposta_bruta:
-                            partes = resposta_bruta.split('|||TRECHO MAIS RELEVANTE DO CONTEXTO', 1)
-                            resposta_principal = partes[0].replace("RESPOSTA (no idioma " + idioma_selecionado + "):", "").strip()
-                            if len(partes) > 1:
-                                sentenca_chave = partes[1].replace("(cite a sentença ou pequeno parágrafo exato):", "").strip()
-                        
-                        # --- INÍCIO DA CORREÇÃO ---
-                        # Renderiza a resposta principal diretamente
-                        st.markdown(resposta_principal)
+                qa_chain = RetrievalQA.from_chain_type(
+                    llm=llm_chat, 
+                    chain_type="stuff", 
+                    retriever=vector_store_global.as_retriever(
+                        search_type="similarity",
+                        search_kwargs={"k": 7, "score_threshold": 0.7} # Ajustar k e threshold
+                    ), 
+                    return_source_documents=True, 
+                    chain_type_kwargs={"prompt": template_prompt_chat.partial(language=idioma_selecionado)}
+                )
+                try:
+                    resultado = qa_chain.invoke({"query": prompt}) # Usar invoke para Langchain Expression Language
+                    resposta_bruta = resultado["result"]
+                    fontes = resultado["source_documents"]
+                    
+                    resposta_principal = resposta_bruta
+                    sentenca_chave = None
+                    if '|||TRECHO MAIS RELEVANTE DO CONTEXTO' in resposta_bruta:
+                        partes = resposta_bruta.split('|||TRECHO MAIS RELEVANTE DO CONTEXTO', 1)
+                        resposta_principal = partes[0].replace("RESPOSTA (no idioma " + idioma_selecionado + "):", "").strip()
+                        if len(partes) > 1:
+                            sentenca_chave = partes[1].replace("(cite a sentença ou pequeno parágrafo exato):", "").strip()
+                    
+                    st.session_state.messages.append({"role": "assistant", "content": resposta_principal, "sources": fontes, "sentenca_chave": sentenca_chave})
 
-                        # Renderiza as fontes da nova resposta imediatamente
-                        if fontes:
-                            with st.expander("Ver Fontes Utilizadas", expanded=True):
-                                for doc_fonte in fontes:
-                                    texto_fonte = doc_fonte.page_content
-                                    
-                                    # Lógica de destaque simplificada e funcional
-                                    if sentenca_chave and sentenca_chave in texto_fonte:
-                                        texto_fonte = texto_fonte.replace(sentenca_chave, f"**{sentenca_chave}**", 1)
-                                    
-                                    st.markdown(texto_fonte)
-
-                                    source_name = doc_fonte.metadata.get('source', 'N/A')
-                                    page_num = doc_fonte.metadata.get('page', 'N/A')
-                                    method = doc_fonte.metadata.get('method', '')
-                                    method_str = f" (Método: {method})" if method else ""
-                                    st.caption(f"Fonte: {source_name} (Pág: {page_num}{method_str})")
-                                    st.markdown("---")
-                        
-                        # Adiciona a mensagem completa ao histórico para a próxima recarga
-                        st.session_state.messages.append({"role": "assistant", "content": resposta_principal, "sources": fontes, "sentenca_chave": sentenca_chave})
-                        # --- FIM DA CORREÇÃO ---
-
-                    except Exception as e_chat:
-                        st.error(f"Erro durante a execução da cadeia de QA: {e_chat}")
-                        resposta_erro = "Desculpe, ocorreu um erro ao processar sua pergunta."
-                        st.markdown(resposta_erro)
-                        st.session_state.messages.append({"role": "assistant", "content": resposta_erro})
-            # st.rerun() # Evitar rerun para não limpar o estado de forma inesperada
+                except Exception as e_chat:
+                    st.error(f"Erro durante a execução da cadeia de QA: {e_chat}")
+                    st.session_state.messages.append({"role": "assistant", "content": "Desculpe, ocorreu um erro ao processar sua pergunta."})
+            
+            st.rerun()
 
     with tab_dashboard:
         st.header("Análise Comparativa de Dados Contratuais")
@@ -1140,3 +1112,4 @@ else:
                         st.markdown(f"- {anomalia_item}")
                 else:
                     st.info("Nenhuma anomalia significativa detectada com os critérios atuais, ou os dados não foram suficientes para a análise.")
+
