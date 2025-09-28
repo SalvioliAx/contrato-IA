@@ -20,7 +20,6 @@ def get_embeddings_model(api_key: str):
     if not api_key:
         raise ValueError("A chave de API não foi fornecida.")
     
-    # A exceção real será gerada aqui se a chave for inválida ou a API não estiver ativa
     return GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=api_key)
 
 
@@ -37,12 +36,11 @@ def obter_vector_store_de_uploads(lista_arquivos_pdf_upload, _embeddings_obj, ap
         try:
             llm_vision = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.1, request_timeout=300)
         except Exception as e:
-            st.warning(f"Não foi possível inicializar o modelo de visão do Gemini: {e}")
+            st.sidebar.warning(f"Não foi possível inicializar o modelo de visão do Gemini: {e}")
             llm_vision = None
 
     for arquivo_pdf_upload in lista_arquivos_pdf_upload:
         nome_arquivo = arquivo_pdf_upload.name
-        # CORREÇÃO: Usa st.sidebar para que esta mensagem apareça na barra lateral
         st.sidebar.info(f"Processando arquivo: {nome_arquivo}...")
         documentos_arquivo_atual = []
         texto_extraido_com_sucesso = False
@@ -108,8 +106,8 @@ def obter_vector_store_de_uploads(lista_arquivos_pdf_upload, _embeddings_obj, ap
                             ]
                         )
                         
-                        with st.sidebar.spinner(_t("info.gemini_processing_page", page=page_num_gemini + 1, filename=nome_arquivo)):
-                            ai_msg = llm_vision.invoke([human_message])
+                        # CORREÇÃO: O spinner foi removido daqui
+                        ai_msg = llm_vision.invoke([human_message])
                         
                         if isinstance(ai_msg, AIMessage) and ai_msg.content and isinstance(ai_msg.content, str):
                             texto_pagina_gemini = ai_msg.content
