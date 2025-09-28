@@ -20,7 +20,7 @@ def gerar_resumo_executivo(arquivo_pdf_bytes, nome_arquivo_original, google_api_
     except Exception:
         return "Erro ao extrair texto do PDF."
 
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.3)
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0.3)
     prompt = PromptTemplate.from_template(
         "Resuma o contrato abaixo em 5 a 7 tópicos:\n{texto_contrato}\n\nResumo:"
     )
@@ -30,3 +30,4 @@ def gerar_resumo_executivo(arquivo_pdf_bytes, nome_arquivo_original, google_api_
         return res['text']
     except Exception as e:
         return f"Erro no resumo: {e}"
+
