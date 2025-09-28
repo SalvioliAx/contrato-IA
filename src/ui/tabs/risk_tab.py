@@ -39,4 +39,3 @@ def display_risk_tab(t):
         for nome_arquivo, analise in st.session_state.analise_riscos_resultados.items():
             with st.expander(t("risks.expander_title", name=nome_arquivo), expanded=True):
                 st.markdown(analise)
-
