@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from services.anomalies import detectar_anomalias_no_dataframe
 
-def render_anomalias_tab():
+def render_anomalias_tab(google_api_key=None):  # <- agora aceita argumento opcional
     st.header("🔎 Detecção de Anomalias")
 
     if "dados_extraidos" not in st.session_state:

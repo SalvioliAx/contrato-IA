@@ -10,15 +10,19 @@ from ui.tabs.prazos_tab import render_prazos_tab
 from ui.tabs.conformidade_tab import render_conformidade_tab
 from ui.tabs.anomalias_tab import render_anomalias_tab
 
+# Configuração inicial
 st.set_page_config(layout="wide", page_title="ContratIA", page_icon="💡")
 hide_streamlit_style()
 st.title("💡 ContratIA")
 
+# API key + embeddings
 google_api_key = get_google_api_key()
 embeddings_global = init_embeddings(google_api_key)
 
+# Sidebar
 render_sidebar(embeddings_global, google_api_key)
 
+# Abas
 abas = {
     "Chat": render_chat_tab,
     "Dashboard": render_dashboard_tab,
@@ -26,11 +30,11 @@ abas = {
     "Riscos": render_riscos_tab,
     "Prazos": render_prazos_tab,
     "Conformidade": render_conformidade_tab,
-    "Anomalias": lambda g: render_anomalias_tab()
+    "Anomalias": render_anomalias_tab,  # <- agora tem assinatura compatível
 }
 
-aba = st.tabs(list(abas.keys()))
+tab_objs = st.tabs(list(abas.keys()))
 
 for i, (nome, func) in enumerate(abas.items()):
-    with aba[i]:
-        func(google_api_key)
+    with tab_objs[i]:
+        func(google_api_key)  # todas recebem google_api_key (usam ou ignoram)
