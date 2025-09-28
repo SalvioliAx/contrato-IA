@@ -2,8 +2,9 @@ import streamlit as st
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
+from core.locale import TRANSLATIONS
 
-@st.cache_data(show_spinner="Verificando conformidade...")
+@st.cache_data # Removido show_spinner
 def verificar_conformidade_documento(ref_texto, ref_nome, doc_texto, doc_nome, google_api_key, lang_code):
     """
     Verifica a conformidade entre dois documentos, com prompt sensível ao idioma.
@@ -13,7 +14,7 @@ def verificar_conformidade_documento(ref_texto, ref_nome, doc_texto, doc_nome, g
 
     llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0.1)
     
-    # O prompt de conformidade é complexo, então adicionamos a instrução de idioma aqui.
+    language_name = TRANSLATIONS[lang_code]["lang_selector_label"]
     prompt_template = (
         "Você é um especialista em conformidade. Compare o DOCUMENTO A ANALISAR ({doc_nome}) "
         "com o DOCUMENTO DE REFERÊNCIA ({ref_nome}). "
@@ -28,7 +29,7 @@ def verificar_conformidade_documento(ref_texto, ref_nome, doc_texto, doc_nome, g
         res = chain.invoke({
             "doc_nome": doc_nome,
             "ref_nome": ref_nome,
-            "language": lang_code,
+            "language": language_name,
             "ref": ref_texto[:25000],
             "doc": doc_texto[:25000]
         })
