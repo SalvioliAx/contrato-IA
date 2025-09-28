@@ -1,11 +1,8 @@
 import streamlit as st
-import os
 import time
 import base64
-from pathlib import Path
 import fitz  # PyMuPDF
 
-from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
@@ -13,41 +10,33 @@ from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.documents import Document
 
 def get_embeddings_model(api_key: str):
-    """
-    Inicializa e retorna o modelo de embeddings da Google.
-    Levanta um ValueError se a chave de API for inválida.
-    """
+    """Inicializa e retorna o modelo de embeddings da Google."""
     if not api_key:
         raise ValueError("A chave de API não foi fornecida.")
     try:
-        # O modelo de embeddings é específico e diferente dos modelos de chat.
         return GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=api_key)
     except Exception as e:
-        # Captura erros de inicialização (ex: chave inválida) e levanta uma exceção mais clara.
         raise ValueError(f"Falha ao inicializar o modelo de embeddings: {e}")
 
 @st.cache_resource(show_spinner=False)
 def obter_vector_store_de_uploads(_lista_arquivos_pdf_upload, _embeddings_obj, api_key, _t):
-    """
-    Processa ficheiros PDF carregados para criar um vector store FAISS.
-    """
+    """Processa ficheiros PDF carregados para criar um vector store FAISS."""
     if not _lista_arquivos_pdf_upload or not api_key or not _embeddings_obj:
         return None, None
 
     documentos_totais = []
     nomes_arquivos_processados = []
     
-    llm_vision = None
+    llm_vision = None # Inicializado apenas se for necessário
     if api_key:
         try:
-            # CORREÇÃO FINAL: Usando o nome do modelo especificado pelo utilizador.
-            llm_vision = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0.1, request_timeout=300)
+            # CORREÇÃO: Padronizado para um nome de modelo válido e estável.
+            llm_vision = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.1, request_timeout=300)
         except Exception as e:
             st.warning(_t("warnings.vision_model_init_failed", error=e))
 
     for arquivo_pdf in _lista_arquivos_pdf_upload:
         nome_arquivo = arquivo_pdf.name
-        st.sidebar.info(_t("info.processing_file", filename=nome_arquivo))
         texto_extraido = False
         documentos_do_arquivo = []
 
@@ -63,7 +52,7 @@ def obter_vector_store_de_uploads(_lista_arquivos_pdf_upload, _embeddings_obj, a
                         documentos_do_arquivo.append(Document(page_content=texto_pagina, metadata={"source": nome_arquivo, "page": num_pagina}))
                         texto_extraido = True
             
-            # Tentativa 2: Gemini Vision (se PyMuPDF falhar e o modelo de visão estiver disponível)
+            # Tentativa 2: Gemini Vision (se PyMuPDF falhar)
             if not texto_extraido and llm_vision:
                 st.sidebar.warning(_t("warnings.pymupdf_failed_trying_gemini", filename=nome_arquivo))
                 with fitz.open(stream=pdf_bytes, filetype="pdf") as doc_fitz_vision:
@@ -84,7 +73,7 @@ def obter_vector_store_de_uploads(_lista_arquivos_pdf_upload, _embeddings_obj, a
                         if texto_pagina_gemini and texto_pagina_gemini.strip():
                             documentos_do_arquivo.append(Document(page_content=texto_pagina_gemini, metadata={"source": nome_arquivo, "page": page_num}))
                             texto_extraido = True
-                        time.sleep(2) # Evitar sobrecarregar a API
+                        time.sleep(2)
 
             if texto_extraido:
                 documentos_totais.extend(documentos_do_arquivo)
@@ -103,5 +92,3 @@ def obter_vector_store_de_uploads(_lista_arquivos_pdf_upload, _embeddings_obj, a
     
     vector_store = FAISS.from_documents(docs_fragmentados, _embeddings_obj)
     return vector_store, nomes_arquivos_processados
-
-
