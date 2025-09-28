@@ -1,7 +1,8 @@
-import os
 import streamlit as st
+import os
 from pathlib import Path
 from dotenv import load_dotenv
+import pandas as pd # Importar pandas aqui
 
 # Carrega variáveis de ambiente de um ficheiro .env (opcional, bom para desenvolvimento local)
 load_dotenv()
@@ -33,11 +34,13 @@ def initialize_session_state():
         "nomes_arquivos": None,
         "arquivos_pdf_originais": None,
         "colecao_ativa": None,
-        "df_dashboard": None,
+        # CORREÇÃO: Inicia como DataFrame vazio em vez de None
+        "df_dashboard": pd.DataFrame(),
         "resumo_gerado": None,
         "arquivo_resumido": None,
         "analise_riscos_resultados": None,
-        "eventos_contratuais_df": None,
+        # CORREÇÃO: Inicia como DataFrame vazio em vez de None
+        "eventos_contratuais_df": pd.DataFrame(),
         "conformidade_resultados": None,
         "anomalias_resultados": None,
         "language": "pt", # Idioma padrão
@@ -50,33 +53,28 @@ def initialize_session_state():
 
 
 # --- GESTÃO DA CHAVE DE API ---
-def get_api_key():
+def get_api_key(t): # Adicionado t para tradução
     """
     Obtém a chave de API do Google, priorizando os secrets do Streamlit,
     depois variáveis de ambiente e, por último, o input do utilizador.
-    Valida se a chave encontrada não está vazia.
     """
     # Tenta obter dos secrets do Streamlit (ideal para deploy)
-    try:
-        google_api_key = st.secrets.get("GOOGLE_API_KEY")
-        if google_api_key and google_api_key.strip():
-            os.environ["GOOGLE_API_KEY"] = google_api_key
-            return google_api_key
-    except Exception: # Captura qualquer erro potencial ao aceder aos secrets
-        pass
+    api_key = st.secrets.get("GOOGLE_API_KEY")
+    if api_key:
+        os.environ["GOOGLE_API_KEY"] = api_key
+        return api_key
 
     # Tenta obter das variáveis de ambiente (bom para desenvolvimento)
-    google_api_key = os.getenv("GOOGLE_API_KEY")
-    if google_api_key and google_api_key.strip():
-        os.environ["GOOGLE_API_KEY"] = google_api_key
-        return google_api_key
+    api_key = os.getenv("GOOGLE_API_KEY")
+    if api_key:
+        os.environ["GOOGLE_API_KEY"] = api_key
+        return api_key
 
     # Como último recurso, pede ao utilizador na barra lateral
     if st.session_state.get("api_key_input"):
-        google_api_key = st.session_state.api_key_input
-        if google_api_key and google_api_key.strip():
-            os.environ["GOOGLE_API_KEY"] = google_api_key
-            return google_api_key
+        api_key = st.session_state.api_key_input
+        os.environ["GOOGLE_API_KEY"] = api_key
+        return api_key
 
     return None
 
