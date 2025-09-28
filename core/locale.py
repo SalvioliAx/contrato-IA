@@ -6,6 +6,13 @@ TRANSLATIONS = {
         "app_title": "ContratIA",
         "error_api_key": "Chave de API do Google ou o modelo de Embeddings não estão configurados. Verifique a barra lateral.",
         "info_load_docs": "👈 Por favor, carregue e processe documentos PDF ou uma coleção existente na barra lateral para começar.",
+        # Spinners de Carregamento
+        "spinner_generating_summary": "Gerando resumo...",
+        "spinner_analyzing_risks": "Analisando riscos...",
+        "spinner_extracting_deadlines": "Extraindo prazos e eventos...",
+        "spinner_checking_compliance": "Verificando conformidade...",
+        "sidebar_spinner_processing": "Analisando documentos...",
+        "dashboard_spinner_generating": "IA está analisando e gerando o dashboard...",
         # Abas
         "tab_chat": "Chat",
         "tab_dashboard": "Dashboard",
@@ -97,6 +104,13 @@ TRANSLATIONS = {
         "app_title": "ContratIA",
         "error_api_key": "Google API Key or Embeddings model not configured. Please check the sidebar.",
         "info_load_docs": "👈 Please upload and process PDF documents or load an existing collection from the sidebar to begin.",
+        # Spinners
+        "spinner_generating_summary": "Generating summary...",
+        "spinner_analyzing_risks": "Analyzing risks...",
+        "spinner_extracting_deadlines": "Extracting deadlines and events...",
+        "spinner_checking_compliance": "Checking compliance...",
+        "sidebar_spinner_processing": "Analyzing documents...",
+        "dashboard_spinner_generating": "AI is analyzing and generating the dashboard...",
         # Tabs
         "tab_chat": "Chat",
         "tab_dashboard": "Dashboard",
@@ -188,6 +202,13 @@ TRANSLATIONS = {
         "app_title": "ContratIA",
         "error_api_key": "La clave de API de Google o el modelo de Embeddings no están configurados. Verifique la barra lateral.",
         "info_load_docs": "👈 Por favor, cargue y procese documentos PDF o una colección existente desde la barra lateral para comenzar.",
+        # Spinners
+        "spinner_generating_summary": "Generando resumen...",
+        "spinner_analyzing_risks": "Analizando riesgos...",
+        "spinner_extracting_deadlines": "Extrayendo plazos y eventos...",
+        "spinner_checking_compliance": "Verificando conformidad...",
+        "sidebar_spinner_processing": "Analizando documentos...",
+        "dashboard_spinner_generating": "La IA está analizando y generando el dashboard...",
         # Tabs
         "tab_chat": "Chat",
         "tab_dashboard": "Dashboard",
