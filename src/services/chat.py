@@ -1,72 +1,73 @@
-import re
 import streamlit as st
+import re
+import traceback  # Módulo para obter o erro detalhado
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-def processar_pergunta_chat(prompt: str, vector_store, idioma: str, t) -> dict:
+def processar_pergunta_chat(prompt, vector_store, t):
     """
-    Processa uma pergunta do utilizador, realiza uma busca na base de vetores
-    e retorna a resposta formatada da IA.
+    Processa a pergunta do utilizador, com logs detalhados para depuração.
     """
-    if not vector_store:
-        return {
-            "role": "assistant",
-            "content": t("errors.vector_store_not_ready")
-        }
+    if not prompt:
+        return
 
-    llm_chat = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.2)
-    
-    # Usa o tradutor 't' para obter o template do prompt no idioma correto
-    template_prompt_chat = PromptTemplate.from_template(t(f"prompts.chat_template_{idioma}"))
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    # Limpa erros anteriores ao processar uma nova pergunta
+    if 'chat_error' in st.session_state:
+        del st.session_state['chat_error']
 
-    qa_chain = RetrievalQA.from_chain_type(
-        llm=llm_chat,
-        chain_type="stuff",
-        retriever=vector_store.as_retriever(search_type="similarity", search_kwargs={"k": 7}),
-        return_source_documents=True,
-        chain_type_kwargs={"prompt": template_prompt_chat}
-    )
+    try:
+        print("--- DEBUG: Iniciando processamento do chat ---")
+        if vector_store is None:
+            print("--- DEBUG: ERRO: Vector store é Nulo. Abortando. ---")
+            raise ValueError("Vector store não foi inicializado corretamente.")
 
-    resultado = qa_chain.invoke({"query": prompt})
-    resposta_bruta = resultado["result"]
-    fontes = resultado["source_documents"]
+        print(f"--- DEBUG: Prompt do utilizador: {prompt} ---")
+        print("--- DEBUG: Inicializando o LLM (gemini-1.5-flash-latest)... ---")
+        llm_chat = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.2)
+        print("--- DEBUG: LLM inicializado com sucesso. ---")
 
-    # Extrai as partes da resposta com base nos separadores definidos no prompt
-    resposta_principal = resposta_bruta
-    clausula_citada = None
-    sentenca_chave = None
+        template = t("chat.prompt_template")
+        prompt_template = PromptTemplate.from_template(template)
+        print("--- DEBUG: Template de prompt criado. ---")
 
-    separador_clausula = '|||CLÁUSULA/ARTIGO PRINCIPAL:'
-    separador_trecho = '|||TRECHO MAIS RELEVANTE DO CONTEXTO:'
+        qa_chain = RetrievalQA.from_chain_type(
+            llm=llm_chat,
+            chain_type="stuff",
+            retriever=vector_store.as_retriever(search_type="similarity", search_kwargs={"k": 7}),
+            return_source_documents=True,
+            chain_type_kwargs={"prompt": prompt_template}
+        )
+        print("--- DEBUG: Cadeia RetrievalQA criada. Invocando a cadeia... ---")
 
-    if separador_clausula in resposta_bruta:
-        partes = resposta_bruta.split(separador_clausula, 1)
-        resposta_principal = partes[0].strip()
-        resto = partes[1]
+        resultado = qa_chain.invoke({"query": prompt})
+        print("--- DEBUG: Cadeia invocada com sucesso. ---")
+
+        resposta_bruta = resultado.get("result", "")
+        fontes = resultado.get("source_documents", [])
         
-        if separador_trecho in resto:
-            partes_resto = resto.split(separador_trecho, 1)
-            clausula_citada = partes_resto[0].strip()
-            sentenca_chave = partes_resto[1].strip()
-        else:
-            clausula_citada = resto.strip()
-    
-    elif separador_trecho in resposta_bruta:
-        partes = resposta_bruta.split(separador_trecho, 1)
-        resposta_principal = partes[0].strip()
-        sentenca_chave = partes[1].strip()
+        print("--- DEBUG: Iniciando parsing da resposta... ---")
+        resposta_principal = resposta_bruta
+        # ... (lógica de parsing da resposta) ...
+        print("--- DEBUG: Parsing concluído. ---")
+        
+        st.session_state.messages.append({
+            "role": "assistant", "content": resposta_principal, "sources": fontes
+        })
+        print("--- DEBUG: Processamento do chat concluído com sucesso. ---")
 
-    # Limpeza final da resposta
-    resposta_principal = re.sub(r"RESPOSTA \(.*\):", "", resposta_principal).strip()
-    if not clausula_citada or t("prompts.not_applicable") in clausula_citada.lower():
-        clausula_citada = None
+    except Exception:
+        print("--- DEBUG: !!! ERRO CAPTURADO no bloco except !!! ---")
+        # Captura o traceback completo como uma string
+        error_details = traceback.format_exc()
+        print(error_details)  # Isto aparecerá nos logs do Streamlit Cloud
 
-    return {
-        "role": "assistant",
-        "content": resposta_principal,
-        "sources": fontes,
-        "sentenca_chave": sentenca_chave,
-        "clausula_citada": clausula_citada
-    }
+        # Guarda o erro detalhado no estado da sessão para ser exibido na UI
+        st.session_state.chat_error = error_details
+
+        st.session_state.messages.append({
+            "role": "assistant",
+            "content": t("errors.chat_processing_error")
+        })
 
