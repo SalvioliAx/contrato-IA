@@ -21,7 +21,7 @@ def extrair_dados_dos_contratos(_vector_store, _nomes_arquivos: list, _t) -> lis
     if not _vector_store or not _nomes_arquivos:
         return []
 
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0)
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0)
     resultados_finais = []
     
     # Mapeamento dos campos para extração com as perguntas traduzíveis
@@ -169,7 +169,7 @@ def verificar_conformidade_documento(_texto_referencia, _nome_referencia, _texto
     """Compara um documento com um documento de referência para verificar conformidade."""
     if not _texto_referencia or not _texto_analisar: return _t("errors.missing_compliance_docs")
 
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.1)
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0.1)
     template = _t("analysis.compliance_prompt_template")
     prompt = PromptTemplate.from_template(template)
     chain = LLMChain(llm=llm, prompt=prompt)
@@ -188,7 +188,7 @@ def gerar_resumo_executivo(_texto_completo, _t):
     """Gera um resumo executivo a partir do texto completo de um documento."""
     if not _texto_completo.strip(): return _t("errors.no_text_for_summary")
     
-    llm_resumo = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.3)
+    llm_resumo = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0.3)
     template = _t("analysis.summary_prompt_template")
     prompt = PromptTemplate.from_template(template)
     chain = LLMChain(llm=llm_resumo, prompt=prompt)
@@ -204,7 +204,7 @@ def analisar_documento_para_riscos(_texto_completo, _nome_arquivo, _t):
     """Analisa o texto de um documento para identificar cláusulas de risco."""
     if not _texto_completo.strip(): return _t("errors.no_text_for_risk_analysis")
 
-    llm_riscos = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.2)
+    llm_riscos = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0.2)
     template = _t("analysis.risk_prompt_template")
     prompt = PromptTemplate.from_template(template)
     chain = LLMChain(llm=llm_riscos, prompt=prompt)
@@ -214,4 +214,5 @@ def analisar_documento_para_riscos(_texto_completo, _nome_arquivo, _t):
         return resultado.get('text', _t("errors.risk_analysis_failed"))
     except Exception as e:
         return f"{_t('errors.risk_analysis_failed')}: {e}"
+
 
