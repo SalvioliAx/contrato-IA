@@ -1,97 +1,106 @@
-import streamlit as st
+import sys
+import os
 from pathlib import Path
 
-# Importação dos componentes da nova estrutura
-from src.config import initialize_session_state, configure_page, get_api_key
+# Adiciona o diretório raiz do projeto ao caminho do Python
+# para garantir que as importações de 'src' funcionem corretamente.
+project_root = Path(__file__).parent
+sys.path.insert(0, str(project_root))
+
+import streamlit as st
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+
+# Importações locais do projeto
+from src.config import configure_page, initialize_session_state, get_api_key
 from src.localization import Localization
-from src.ui.sidebar import render_sidebar
+from src.ui.sidebar import display_sidebar
 from src.ui.tabs import chat_tab, dashboard_tab, summary_tab, risk_tab, deadline_tab, compliance_tab, anomaly_tab
-from src.services.document_processor import get_embeddings_model
 
-# --- 1. CONFIGURAÇÃO INICIAL DA PÁGINA E ESTADO ---
+def main():
+    """Função principal que executa a aplicação Streamlit."""
+    # --- 1. CONFIGURAÇÃO INICIAL ---
+    configure_page()
+    initialize_session_state()
 
-# Define o layout da página e o ícone
-# Esta função deve ser a primeira chamada do Streamlit
-configure_page()
+    # Inicializa o gestor de idiomas
+    if "localization" not in st.session_state:
+        st.session_state.localization = Localization()
+    
+    # Define o idioma com base na seleção do utilizador (o padrão é 'pt')
+    st.session_state.localization.set_language(st.session_state.get("language", "pt"))
+    t = st.session_state.localization.get_translator()
+    
+    # --- Layout do Cabeçalho (Título e Seleção de Idioma) ---
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        st.title("💡 ContratIA")
+    with col2:
+        # Usar st.columns para alinhar os botões horizontalmente
+        btn_cols = st.columns(3)
+        if btn_cols[0].button(t("language.pt"), key="lang_pt", use_container_width=True):
+            st.session_state.language = "pt"
+            st.rerun()
+        if btn_cols[1].button(t("language.en"), key="lang_en", use_container_width=True):
+            st.session_state.language = "en"
+            st.rerun()
+        if btn_cols[2].button(t("language.es"), key="lang_es", use_container_width=True):
+            st.session_state.language = "es"
+            st.rerun()
 
-# Inicializa as variáveis no st.session_state se ainda não existirem
-initialize_session_state()
+    # --- 2. GESTÃO DA API KEY E MODELO DE EMBEDDINGS ---
+    google_api_key = get_api_key()
+    embeddings_initialized = False
+    initialization_error = None
 
-# Carrega a classe de localização e a armazena no estado da sessão
-if "localization" not in st.session_state:
-    st.session_state.localization = Localization()
+    if google_api_key:
+        try:
+            if not st.session_state.get("embeddings_model"):
+                st.session_state.embeddings_model = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+            embeddings_initialized = True
+        except Exception as e:
+            initialization_error = e # Armazena o erro real
+            st.session_state.embeddings_model = None
+    else:
+        st.session_state.embeddings_model = None
 
-# Define o idioma com base na seleção do utilizador (o padrão é 'pt')
-st.session_state.localization.set_language(st.session_state.get("language", "pt"))
-t = st.session_state.localization.get_translator()
+    # --- 3. RENDERIZAÇÃO DA UI (SIDEBAR E ABAS) ---
+    display_sidebar(t)
+    
+    # Define as abas
+    tab_titles = [
+        t("tabs.chat"), t("tabs.dashboard"), t("tabs.summary"), 
+        t("tabs.risks"), t("tabs.deadlines"), t("tabs.compliance"), t("tabs.anomalies")
+    ]
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(tab_titles)
 
-# --- 2. GESTÃO DA API KEY E MODELO DE EMBEDDINGS ---
+    # Verifica se os documentos estão prontos para as funcionalidades
+    documentos_prontos = google_api_key and embeddings_initialized and st.session_state.get("vector_store") is not None
 
-# Pede a chave de API (seja dos secrets ou por input) e a configura
-google_api_key = get_api_key()
+    if not (google_api_key and embeddings_initialized):
+        st.error(t("main.error_api_key_or_embeddings_not_configured"))
+        if initialization_error:
+            st.warning(f"{t('main.error_initializing_embeddings')}:")
+            # st.exception mostra o erro de forma detalhada e formatada
+            st.exception(initialization_error)
+    elif not documentos_prontos:
+        st.info(t("main.info_upload_docs"))
+    else:
+        # Renderiza o conteúdo de cada aba
+        with tab1:
+            chat_tab.display_chat_tab(t)
+        with tab2:
+            dashboard_tab.display_dashboard_tab(t)
+        with tab3:
+            summary_tab.display_summary_tab(t)
+        with tab4:
+            risk_tab.display_risk_tab(t)
+        with tab5:
+            deadline_tab.display_deadline_tab(t)
+        with tab6:
+            compliance_tab.display_compliance_tab(t)
+        with tab7:
+            anomaly_tab.display_anomaly_tab(t)
 
-# Carrega o modelo de embeddings uma vez e o armazena no estado da sessão
-if "embeddings_model" not in st.session_state:
-    st.session_state.embeddings_model = get_embeddings_model(google_api_key)
-
-# --- 3. RENDERIZAÇÃO DA INTERFACE ---
-
-# Layout do cabeçalho com título e seletor de idioma
-header_cols = st.columns([3, 1])
-with header_cols[0]:
-    st.title("💡 ContratIA")
-
-with header_cols[1]:
-    # Obter as opções de idioma do ficheiro de tradução
-    lang_options = t("language_selector_options")
-    # Criar botões para cada idioma
-    lang_btn_cols = st.columns(len(lang_options))
-    for i, (lang_code, lang_text) in enumerate(lang_options.items()):
-        if lang_btn_cols[i].button(lang_text, key=f"lang_{lang_code}", use_container_width=True):
-            if st.session_state.language != lang_code:
-                st.session_state.language = lang_code
-                st.rerun()
-
-# Renderiza a barra lateral e obtém o estado dela (se os documentos foram processados)
-render_sidebar(google_api_key, st.session_state.embeddings_model, t)
-
-# Define as abas da aplicação usando os textos traduzidos
-tab_keys = ["chat", "dashboard", "summary", "risks", "deadlines", "compliance", "anomalies"]
-tab_titles = [t(f"tabs.{key}") for key in tab_keys]
-
-tabs = st.tabs(tab_titles)
-tab_map = dict(zip(tab_keys, tabs))
-
-# Verifica se a API e os documentos estão prontos para uso
-api_ready = google_api_key and st.session_state.embeddings_model
-docs_ready = st.session_state.get("vector_store") is not None
-
-if not api_ready:
-    st.error(t("errors.api_key_or_embeddings_not_configured"))
-elif not docs_ready:
-    st.info(t("info.upload_documents_to_start"))
-else:
-    # --- 4. LÓGICA E RENDERIZAÇÃO DAS ABAS ---
-    # Cada aba agora é uma chamada de função para o seu respectivo módulo
-
-    with tab_map["chat"]:
-        chat_tab.render(t)
-
-    with tab_map["dashboard"]:
-        dashboard_tab.render(t)
-
-    with tab_map["summary"]:
-        summary_tab.render(google_api_key, t)
-
-    with tab_map["risks"]:
-        risk_tab.render(google_api_key, t)
-
-    with tab_map["deadlines"]:
-        deadline_tab.render(google_api_key, t)
-
-    with tab_map["compliance"]:
-        compliance_tab.render(google_api_key, t)
-
-    with tab_map["anomalies"]:
-        anomaly_tab.render(t)
+if __name__ == "__main__":
+    main()
 
