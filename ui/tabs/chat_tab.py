@@ -22,7 +22,7 @@ def render_chat_tab(embeddings_global, google_api_key):
         with st.chat_message("user"):
             st.markdown(user_input)
 
-        llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.1)
+        llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0.1)
         retriever = st.session_state.vector_store_atual.as_retriever()
         chain = ConversationalRetrievalChain.from_llm(llm, retriever)
 
