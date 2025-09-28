@@ -5,19 +5,20 @@ from pathlib import Path
 # Adiciona o diretório 'src' ao caminho do Python para permitir importações absolutas
 sys.path.append(str(Path(__file__).resolve().parent / "src"))
 
-from config import configure_page, initialize_session_state, get_api_key
-from localization import Localization
-from ui.sidebar import display_sidebar
-from services.document_processor import get_embeddings_model
+# Importação dos módulos completos para evitar erros de importação circular
+from src.config import configure_page, initialize_session_state, get_api_key
+from src.localization import Localization
+from src.ui import sidebar
+from src.services import document_processor
 
 # Importação específica das funções de renderização das abas
-from ui.tabs.chat_tab import display_chat_tab
-from ui.tabs.dashboard_tab import display_dashboard_tab
-from ui.tabs.summary_tab import display_summary_tab
-from ui.tabs.risk_tab import display_risk_tab
-from ui.tabs.deadline_tab import display_deadline_tab
-from ui.tabs.compliance_tab import display_compliance_tab
-from ui.tabs.anomaly_tab import display_anomaly_tab
+from src.ui.tabs.chat_tab import display_chat_tab
+from src.ui.tabs.dashboard_tab import display_dashboard_tab
+from src.ui.tabs.summary_tab import display_summary_tab
+from src.ui.tabs.risk_tab import display_risk_tab
+from src.ui.tabs.deadline_tab import display_deadline_tab
+from src.ui.tabs.compliance_tab import display_compliance_tab
+from src.ui.tabs.anomaly_tab import display_anomaly_tab
 
 def main():
     """Função principal que executa a aplicação Streamlit."""
@@ -56,14 +57,14 @@ def main():
     t = st.session_state.localization.get_translator()
 
     # --- 2. GESTÃO DA API KEY E MODELO DE EMBEDDINGS ---
-    # CORREÇÃO: Passa o tradutor 't' para a função
     google_api_key = get_api_key(t)
     embeddings_initialized = False
     initialization_error = None
 
     if google_api_key and not st.session_state.embeddings_model:
         try:
-            st.session_state.embeddings_model = get_embeddings_model()
+            # CORREÇÃO: Chama a função a partir do módulo importado
+            st.session_state.embeddings_model = document_processor.get_embeddings_model()
             embeddings_initialized = True
         except Exception as e:
             initialization_error = e
@@ -71,7 +72,8 @@ def main():
         embeddings_initialized = True
 
     # Renderiza a barra lateral
-    display_sidebar(google_api_key, st.session_state.embeddings_model, t)
+    # CORREÇÃO: Chama a função a partir do módulo importado
+    sidebar.display_sidebar(google_api_key, st.session_state.embeddings_model, t)
 
     # --- 3. LÓGICA DE EXIBIÇÃO DO CONTEÚDO PRINCIPAL ---
     if initialization_error:
