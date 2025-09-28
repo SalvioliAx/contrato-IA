@@ -14,13 +14,22 @@ def reset_analysis_data():
     ]
     for key in keys_to_clear:
         if key in st.session_state:
-            del st.session_state[key]
+            st.session_state[key] = None # Zera em vez de deletar para evitar KeyErrors
+    # Zera os dataframes para o estado inicial
+    st.session_state.df_dashboard = pd.DataFrame()
+    st.session_state.eventos_contratuais_df = pd.DataFrame()
+
 
 def get_full_text_from_uploads(uploaded_files, t):
-    """Extrai o texto completo de uma lista de ficheiros carregados, com fallback para IA."""
+    """
+    Extrai o texto completo de uma lista de ficheiros carregados.
+    Usa PyMuPDF com fallback para Gemini Vision para PDFs baseados em imagem.
+    """
     textos_completos = []
     if not uploaded_files:
         return textos_completos
+
+    llm_vision = None # Inicializa fora do loop
 
     for file in uploaded_files:
         texto_doc = ""
@@ -36,13 +45,13 @@ def get_full_text_from_uploads(uploaded_files, t):
             # Se PyMuPDF não extrair texto, tenta com Gemini Vision
             if not texto_doc.strip():
                 st.info(t("info.extracting_text_with_gemini", filename=file.name))
-                # CORREÇÃO FINAL: Usando o nome do modelo especificado pelo utilizador.
-                llm_vision = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.1)
+                if not llm_vision: # Inicializa o modelo apenas quando necessário
+                     llm_vision = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.1)
                 
                 with fitz.open(stream=pdf_bytes, filetype="pdf") as doc_fitz_vision:
                     for page_num in range(len(doc_fitz_vision)):
                         page_obj = doc_fitz_vision.load_page(page_num)
-                        pix = page_obj.get_pixmap(dpi=200)
+                        pix = page_obj.get_pixmap(dpi=200) # DPI razoável para OCR
                         img_bytes_ocr = pix.tobytes("png")
                         base64_image_ocr = base64.b64encode(img_bytes_ocr).decode('utf-8')
                         
@@ -54,7 +63,7 @@ def get_full_text_from_uploads(uploaded_files, t):
                         ai_msg_ocr = llm_vision.invoke([human_message_ocr])
                         if isinstance(ai_msg_ocr, AIMessage) and ai_msg_ocr.content:
                             texto_doc += ai_msg_ocr.content + "\n\n"
-                        time.sleep(1)
+                        time.sleep(1.5) # Pausa para não sobrecarregar a API
 
             if texto_doc.strip():
                 textos_completos.append({"nome": file.name, "texto": texto_doc})
@@ -82,4 +91,3 @@ def formatar_chat_para_markdown(mensagens, t):
                     texto_formatado += f"- **{t('chat.export_source_item', index=i+1, source=source_name, page=page_num)}**:\n  > {doc.page_content[:500]}...\n\n"
             texto_formatado += "---\n\n"
     return texto_formatado
-
