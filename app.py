@@ -1,13 +1,12 @@
 import sys
 from pathlib import Path
+import streamlit as st
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
-# Adiciona o diretório raiz do projeto ao caminho do Python
+# Adiciona o diretório raiz do projeto ao caminho do Python para garantir que as importações funcionem
 project_root = Path(__file__).parent.resolve()
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
-
-import streamlit as st
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
 # Importações locais do projeto
 from src.config import configure_page, initialize_session_state, get_api_key
