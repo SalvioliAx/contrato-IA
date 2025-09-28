@@ -142,3 +142,4 @@ def handle_collection_section(embeddings_model, t):
             st.session_state.colecao_ativa = colecao_selecionada
             st.session_state.arquivos_pdf_originais = None
             st.rerun()
+
