@@ -42,7 +42,7 @@ def render_chat_tab(embeddings_global, google_api_key):
         with st.chat_message("user"):
             st.markdown(user_input)
 
-        llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0.1)
+        llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro", temperature=0.1)
         retriever = st.session_state.vector_store_atual.as_retriever(search_kwargs={"k": 5})
         
         # Template de prompt para guiar a IA a dar respostas baseadas no contexto
@@ -82,4 +82,3 @@ def render_chat_tab(embeddings_global, google_api_key):
 
                 except Exception as e:
                     st.error(f"Ocorreu um erro ao processar sua pergunta: {e}")
-

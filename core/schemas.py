@@ -1,24 +1,12 @@
 from typing import Optional, List
 from pydantic import BaseModel, Field
 
-class InfoContrato(BaseModel):
-    """
-    Schema para extração de informações estruturadas de um contrato.
-    """
-    arquivo_fonte: str = Field(description="O nome do arquivo de origem do contrato.")
-    nome_banco_emissor: Optional[str] = Field(default="Não encontrado")
-    valor_principal_numerico: Optional[float] = None
-    prazo_total_meses: Optional[int] = None
-    taxa_juros_anual_numerica: Optional[float] = None
-    possui_clausula_rescisao_multa: Optional[str] = Field(default="Não claro")
-    condicao_limite_credito: Optional[str] = Field(default="Não encontrado")
-    condicao_juros_rotativo: Optional[str] = Field(default="Não encontrado")
-    condicao_anuidade: Optional[str] = Field(default="Não encontrado")
-    condicao_cancelamento: Optional[str] = Field(default="Não encontrado")
+# A classe InfoContrato foi removida pois não é mais utilizada pela extração dinâmica.
 
 class EventoContratual(BaseModel):
     """
     Schema para um único evento ou prazo extraído de um contrato.
+    Utilizado pela aba 'Prazos'.
     """
     descricao_evento: str
     data_evento_str: Optional[str] = "Não Especificado"
@@ -27,6 +15,8 @@ class EventoContratual(BaseModel):
 class ListaDeEventos(BaseModel):
     """
     Schema para uma lista de eventos contratuais de um arquivo fonte.
+    Utilizado pela aba 'Prazos'.
     """
     eventos: List[EventoContratual]
     arquivo_fonte: str
+
