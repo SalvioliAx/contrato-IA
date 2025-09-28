@@ -1,142 +1,72 @@
+import re
 import streamlit as st
-# A importação de 'processar_pergunta_chat' foi movida para dentro da função para quebrar o ciclo de importação
-from src.utils import formatar_chat_para_markdown
+from langchain.chains import RetrievalQA
+from langchain.prompts import PromptTemplate
+from langchain_google_genai import ChatGoogleGenerativeAI
 
-def display_chat_tab(t):
-    """Renderiza a aba de Chat Interativo."""
-    st.header(t("chat.header"))
-
-    # Garante que a lista de mensagens existe no estado da sessão
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
-
-    # Mensagem inicial se o chat estiver vazio
-    if not st.session_state.messages:
-        st.session_state.messages.append({
+def processar_pergunta_chat(prompt: str, vector_store, idioma: str, t) -> dict:
+    """
+    Processa uma pergunta do utilizador, realiza uma busca na base de vetores
+    e retorna a resposta formatada da IA.
+    """
+    if not vector_store:
+        return {
             "role": "assistant",
-            "content": t("chat.initial_message",
-                         collection=st.session_state.get('colecao_ativa', 'upload atual'),
-                         count=len(st.session_state.get("nomes_arquivos", [])))
-        })
+            "content": t("errors.vector_store_not_ready")
+        }
 
-    # Renderiza o histórico do chat
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
-            if message.get("sources"):
-                with st.expander(t("chat.view_sources_expander")):
-                    if message.get("clausula_citada"):
-                        st.markdown(f"**{t('chat.main_reference')}:** {message['clausula_citada']}")
-                        st.markdown("---")
-                    
-                    for doc_fonte in message["sources"]:
-                        st.caption(f"Fonte: {doc_fonte.metadata.get('source', 'N/A')} (Pág: {doc_fonte.metadata.get('page', 'N/A')})")
-                        st.markdown(f"> {doc_fonte.page_content[:300]}...")
-                        st.markdown("---")
-
-    # Botão de exportar
-    if len(st.session_state.messages) > 1:
-        chat_exportado_md = formatar_chat_para_markdown(st.session_state.messages, t)
-        st.download_button(
-            label=t("chat.export_button"),
-            data=chat_exportado_md,
-            file_name="conversa_contratos.md",
-            mime="text/markdown"
-        )
+    llm_chat = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.2)
     
-    st.markdown("---")
+    # Usa o tradutor 't' para obter o template do prompt no idioma correto
+    template_prompt_chat = PromptTemplate.from_template(t(f"prompts.chat_template_{idioma}"))
 
-    # Input do utilizador
-    if prompt := st.chat_input(t("chat.input_placeholder")):
-        # --- ALTERAÇÃO PRINCIPAL ---
-        # A importação é feita aqui, apenas quando o utilizador envia uma mensagem.
-        from src.services.chat import processar_pergunta_chat
+    qa_chain = RetrievalQA.from_chain_type(
+        llm=llm_chat,
+        chain_type="stuff",
+        retriever=vector_store.as_retriever(search_type="similarity", search_kwargs={"k": 7}),
+        return_source_documents=True,
+        chain_type_kwargs={"prompt": template_prompt_chat}
+    )
 
-        st.session_state.messages.append({"role": "user", "content": prompt})
+    resultado = qa_chain.invoke({"query": prompt})
+    resposta_bruta = resultado["result"]
+    fontes = resultado["source_documents"]
+
+    # Extrai as partes da resposta com base nos separadores definidos no prompt
+    resposta_principal = resposta_bruta
+    clausula_citada = None
+    sentenca_chave = None
+
+    separador_clausula = '|||CLÁUSULA/ARTIGO PRINCIPAL:'
+    separador_trecho = '|||TRECHO MAIS RELEVANTE DO CONTEXTO:'
+
+    if separador_clausula in resposta_bruta:
+        partes = resposta_bruta.split(separador_clausula, 1)
+        resposta_principal = partes[0].strip()
+        resto = partes[1]
         
-        with st.spinner(t("chat.thinking_spinner")):
-            try:
-                resposta_ia = processar_pergunta_chat(
-                    prompt,
-                    st.session_state.vector_store,
-                    st.session_state.language,
-                    t
-                )
-                st.session_state.messages.append(resposta_ia)
-            except Exception as e:
-                st.error(t("errors.chat_qa_failed", error=e))
-                st.session_state.messages.append({"role": "assistant", "content": t("errors.chat_processing_error")})
-        
-        st.rerun()
-
-import streamlit as st
-# A importação de 'processar_pergunta_chat' foi movida para dentro da função para quebrar o ciclo de importação
-from src.utils import formatar_chat_para_markdown
-
-def display_chat_tab(t):
-    """Renderiza a aba de Chat Interativo."""
-    st.header(t("chat.header"))
-
-    # Garante que a lista de mensagens existe no estado da sessão
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
-
-    # Mensagem inicial se o chat estiver vazio
-    if not st.session_state.messages:
-        st.session_state.messages.append({
-            "role": "assistant",
-            "content": t("chat.initial_message",
-                         collection=st.session_state.get('colecao_ativa', 'upload atual'),
-                         count=len(st.session_state.get("nomes_arquivos", [])))
-        })
-
-    # Renderiza o histórico do chat
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
-            if message.get("sources"):
-                with st.expander(t("chat.view_sources_expander")):
-                    if message.get("clausula_citada"):
-                        st.markdown(f"**{t('chat.main_reference')}:** {message['clausula_citada']}")
-                        st.markdown("---")
-                    
-                    for doc_fonte in message["sources"]:
-                        st.caption(f"Fonte: {doc_fonte.metadata.get('source', 'N/A')} (Pág: {doc_fonte.metadata.get('page', 'N/A')})")
-                        st.markdown(f"> {doc_fonte.page_content[:300]}...")
-                        st.markdown("---")
-
-    # Botão de exportar
-    if len(st.session_state.messages) > 1:
-        chat_exportado_md = formatar_chat_para_markdown(st.session_state.messages, t)
-        st.download_button(
-            label=t("chat.export_button"),
-            data=chat_exportado_md,
-            file_name="conversa_contratos.md",
-            mime="text/markdown"
-        )
+        if separador_trecho in resto:
+            partes_resto = resto.split(separador_trecho, 1)
+            clausula_citada = partes_resto[0].strip()
+            sentenca_chave = partes_resto[1].strip()
+        else:
+            clausula_citada = resto.strip()
     
-    st.markdown("---")
+    elif separador_trecho in resposta_bruta:
+        partes = resposta_bruta.split(separador_trecho, 1)
+        resposta_principal = partes[0].strip()
+        sentenca_chave = partes[1].strip()
 
-    # Input do utilizador
-    if prompt := st.chat_input(t("chat.input_placeholder")):
-        # --- ALTERAÇÃO PRINCIPAL ---
-        # A importação é feita aqui, apenas quando o utilizador envia uma mensagem.
-        from src.services.chat import processar_pergunta_chat
+    # Limpeza final da resposta
+    resposta_principal = re.sub(r"RESPOSTA \(.*\):", "", resposta_principal).strip()
+    if not clausula_citada or t("prompts.not_applicable") in clausula_citada.lower():
+        clausula_citada = None
 
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        
-        with st.spinner(t("chat.thinking_spinner")):
-            try:
-                resposta_ia = processar_pergunta_chat(
-                    prompt,
-                    st.session_state.vector_store,
-                    st.session_state.language,
-                    t
-                )
-                st.session_state.messages.append(resposta_ia)
-            except Exception as e:
-                st.error(t("errors.chat_qa_failed", error=e))
-                st.session_state.messages.append({"role": "assistant", "content": t("errors.chat_processing_error")})
-        
-        st.rerun()
+    return {
+        "role": "assistant",
+        "content": resposta_principal,
+        "sources": fontes,
+        "sentenca_chave": sentenca_chave,
+        "clausula_citada": clausula_citada
+    }
 
