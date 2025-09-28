@@ -2,15 +2,24 @@ import streamlit as st
 import sys
 import os
 
-# Adiciona o diretório raiz do projeto ao início do sys.path
-# para garantir que os módulos locais como 'config' sejam encontrados primeiro.
+# Adiciona o diretório raiz ao path do Python para garantir que as importações
+# como 'from core.utils...' funcionem em todos os módulos.
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 from core.utils import manage_api_key, initialize_embeddings
 from ui.sidebar import render_sidebar
-from ui.tabs import chat, dashboard, summary, risks, deadlines, compliance, anomalies
+
+# Importação direta e explícita de cada módulo de aba
+from ui.tabs import anomalies
+from ui.tabs import chat
+from ui.tabs import compliance
+from ui.tabs import dashboard
+from ui.tabs import deadlines
+from ui.tabs import risks
+from ui.tabs import summary
+
 
 # --- CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(layout="wide", page_title="ContratIA", page_icon="💡")
@@ -21,19 +30,10 @@ st.title("💡 ContratIA")
 
 def main():
     """Função principal para executar a aplicação Streamlit."""
-    # --- CHAVE DE API & EMBEDDINGS ---
-    # Gerencia a chave de API e inicializa o modelo de embeddings uma vez.
-    google_api_key = manage_api_key()
-    if google_api_key:
-        initialize_embeddings()
-
-    # --- BARRA LATERAL (SIDEBAR) ---
-    # A barra lateral gerencia o upload de documentos e o carregamento de coleções.
-    # Ela atualiza o estado da sessão com base nas ações do usuário.
+    manage_api_key()
+    initialize_embeddings()
     render_sidebar()
 
-    # --- ABAS DE CONTEÚDO PRINCIPAL ---
-    # Verifica se os componentes necessários estão prontos para renderizar as abas.
     documentos_prontos = (
         st.session_state.get("google_api_key")
         and st.session_state.get("embeddings_model")
@@ -47,32 +47,25 @@ def main():
             st.info("👈 Por favor, carregue e processe documentos PDF ou uma coleção existente na barra lateral para habilitar as funcionalidades.")
         return
 
-    # --- DEFINE AS ABAS ---
-    tab_chat, tab_dashboard, tab_resumo, tab_riscos, tab_prazos, tab_conformidade, tab_anomalias_tab = st.tabs([
-        "💬 Chat", "📈 Dashboard", "📜 Resumo", "🚩 Riscos", "🗓️ Prazos", "⚖️ Conformidade", "📊 Anomalias"
-    ])
+    tab_definitions = {
+        "💬 Chat": chat,
+        "📈 Dashboard": dashboard,
+        "📜 Resumo": summary,
+        "🚩 Riscos": risks,
+        "🗓️ Prazos": deadlines,
+        "⚖️ Conformidade": compliance,
+        "📊 Anomalias": anomalies,
+    }
+    
+    tabs = st.tabs(tab_definitions.keys())
 
-    # --- RENDERIZA AS ABAS ---
-    with tab_chat:
-        chat.render()
-    with tab_dashboard:
-        dashboard.render()
-    with tab_resumo:
-        summary.render()
-    with tab_riscos:
-        risks.render()
-    with tab_prazos:
-        deadlines.render()
-    with tab_conformidade:
-        compliance.render()
-    with tab_anomalias_tab:
-        anomalies.render()
+    for tab, (tab_name, tab_module) in zip(tabs, tab_definitions.items()):
+        with tab:
+            tab_module.render()
+
 
 if __name__ == "__main__":
-    # Inicializa chaves do estado da sessão se não existirem
     if "messages" not in st.session_state:
         st.session_state.messages = []
-    
     main()
-
 
