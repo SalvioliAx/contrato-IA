@@ -1,6 +1,7 @@
 import streamlit as st
 from core.config import get_google_api_key, hide_streamlit_style
 from core.embeddings import init_embeddings
+from core.locale import TRANSLATIONS  # Importa o novo arquivo de traduções
 from ui.sidebar import render_sidebar
 from ui.tabs.chat_tab import render_chat_tab
 from ui.tabs.dashboard_tab import render_dashboard_tab
@@ -12,47 +13,64 @@ from ui.tabs.anomalias_tab import render_anomalias_tab
 
 # Configuração inicial da página
 st.set_page_config(layout="wide", page_title="ContratIA", page_icon="💡")
-hide_streamlit_style()
-st.title("💡 ContratIA")
 
-# Inicialização da API key e do modelo de embeddings
+# --- GERENCIAMENTO DE IDIOMA ---
+if 'lang' not in st.session_state:
+    st.session_state['lang'] = 'pt' # Idioma padrão
+
+# Mapeamento para o seletor
+lang_map = {"Português": "pt", "English": "en", "Español": "es"}
+lang_map_inv = {v: k for k, v in lang_map.items()}
+
+# Seletor de idioma na barra lateral
+selected_lang_label = st.sidebar.selectbox(
+    label="Idioma / Language / Idioma",
+    options=lang_map.keys(),
+    index=list(lang_map.values()).index(st.session_state['lang']) # Define a seleção atual
+)
+st.session_state['lang'] = lang_map[selected_lang_label]
+texts = TRANSLATIONS[st.session_state['lang']] # Carrega os textos do idioma selecionado
+
+# --- INICIALIZAÇÃO E RENDERIZAÇÃO ---
+hide_streamlit_style()
+st.title(texts["app_title"])
+
 google_api_key = get_google_api_key()
 embeddings_global = init_embeddings(google_api_key)
 
-# Renderiza a barra lateral
-render_sidebar(embeddings_global, google_api_key)
+# Passa os textos para a barra lateral
+render_sidebar(embeddings_global, google_api_key, texts)
 
-# Verifica se os pré-requisitos para as abas estão prontos
 documentos_prontos = google_api_key and embeddings_global and st.session_state.get("vector_store_atual")
 
-# Estrutura das abas
 if not (google_api_key and embeddings_global):
-    st.error("Chave de API do Google ou o modelo de Embeddings não estão configurados. Verifique a barra lateral.")
+    st.error(texts["error_api_key"])
 elif not documentos_prontos:
-    st.info("👈 Por favor, carregue e processe documentos PDF ou uma coleção existente na barra lateral para começar.")
+    st.info(texts["info_load_docs"])
 else:
-    # Definição das abas e suas respectivas funções de renderização
-    tab_chat, tab_dashboard, tab_resumo, tab_riscos, tab_prazos, tab_conformidade, tab_anomalias = st.tabs([
-        "💬 Chat", "📊 Dashboard", "📝 Resumo", "⚠️ Riscos", "⏳ Prazos", "✅ Conformidade", "🔎 Anomalias"
-    ])
+    # Usa os textos para os nomes das abas
+    tab_titles = [
+        texts["tab_chat"], texts["tab_dashboard"], texts["tab_summary"],
+        texts["tab_risks"], texts["tab_deadlines"], texts["tab_compliance"],
+        texts["tab_anomalies"]
+    ]
+    tab_chat, tab_dashboard, tab_resumo, tab_riscos, tab_prazos, tab_conformidade, tab_anomalias = st.tabs(tab_titles)
 
+    # Passa os textos e o código do idioma para cada aba
+    lang_code = st.session_state['lang']
+    
     with tab_chat:
-        render_chat_tab(embeddings_global, google_api_key)
-
+        render_chat_tab(embeddings_global, google_api_key, texts, lang_code)
     with tab_dashboard:
-        render_dashboard_tab(embeddings_global, google_api_key)
-
+        render_dashboard_tab(embeddings_global, google_api_key, texts, lang_code)
     with tab_resumo:
-        render_resumo_tab(embeddings_global, google_api_key)
-
+        render_resumo_tab(embeddings_global, google_api_key, texts, lang_code)
     with tab_riscos:
-        render_riscos_tab(embeddings_global, google_api_key)
-
+        render_riscos_tab(embeddings_global, google_api_key, texts, lang_code)
     with tab_prazos:
-        render_prazos_tab(embeddings_global, google_api_key)
-
+        render_prazos_tab(embeddings_global, google_api_key, texts, lang_code)
     with tab_conformidade:
-        render_conformidade_tab(embeddings_global, google_api_key)
-
+        render_conformidade_tab(embeddings_global, google_api_key, texts, lang_code)
     with tab_anomalias:
-        render_anomalias_tab(embeddings_global, google_api_key)
+        render_anomalias_tab(embeddings_global, google_api_key, texts)
+
