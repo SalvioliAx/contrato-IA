@@ -35,7 +35,7 @@ def obter_vector_store_de_uploads(_lista_arquivos_pdf_upload, _embeddings_obj, a
     if api_key:
         try:
             # ATUALIZAÇÃO: Alterado o nome do modelo para uma versão estável
-            llm_vision = ChatGoogleGenerativeAI(model="gemini-pro-vision", temperature=0.1, request_timeout=300)
+            llm_vision = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0.1, request_timeout=300)
         except Exception as e:
             st.warning(f"Não foi possível inicializar o modelo de visão do Gemini: {e}")
 
@@ -66,4 +66,5 @@ def obter_vector_store_de_uploads(_lista_arquivos_pdf_upload, _embeddings_obj, a
 
     vector_store = FAISS.from_documents(docs_fragmentados, _embeddings_obj)
     return vector_store, nomes_arquivos_processados
+
 
