@@ -1,7 +1,7 @@
 import streamlit as st
 from services.compliance import verificar_conformidade_documento
 
-def render_conformidade_tab(google_api_key):
+def render_conformidade_tab(embeddings_global, google_api_key):
     st.header("✅ Verificação de Conformidade")
 
     ref = st.file_uploader("Carregar documento de referência (PDF)", type="pdf", key="ref")

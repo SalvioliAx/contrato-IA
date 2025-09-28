@@ -1,7 +1,7 @@
 import streamlit as st
 from services.summarizer import gerar_resumo_executivo
 
-def render_resumo_tab(google_api_key):
+def render_resumo_tab(embeddings_global, google_api_key):
     st.header("📝 Resumo Executivo")
 
     uploaded = st.file_uploader("Carregar contrato (PDF)", type="pdf", key="upload_resumo")

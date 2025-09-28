@@ -1,7 +1,7 @@
 import streamlit as st
 from services.events import extrair_eventos_dos_contratos
 
-def render_prazos_tab(google_api_key):
+def render_prazos_tab(embeddings_global, google_api_key):
     st.header("⏳ Prazos e Eventos")
 
     if "dados_extraidos" not in st.session_state:

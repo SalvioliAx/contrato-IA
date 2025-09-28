@@ -1,7 +1,7 @@
 import streamlit as st
 from services.risks import analisar_documento_para_riscos
 
-def render_riscos_tab(google_api_key):
+def render_riscos_tab(embeddings_global, google_api_key):
     st.header("⚠️ Análise de Riscos")
 
     uploaded = st.file_uploader("Carregar contrato (PDF)", type="pdf", key="upload_risco")

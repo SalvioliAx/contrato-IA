@@ -30,11 +30,11 @@ abas = {
     "Riscos": render_riscos_tab,
     "Prazos": render_prazos_tab,
     "Conformidade": render_conformidade_tab,
-    "Anomalias": render_anomalias_tab,  # <- agora tem assinatura compatível
+    "Anomalias": render_anomalias_tab,
 }
 
 tab_objs = st.tabs(list(abas.keys()))
 
 for i, (nome, func) in enumerate(abas.items()):
     with tab_objs[i]:
-        func(google_api_key)  # todas recebem google_api_key (usam ou ignoram)
+        func(embeddings_global, google_api_key)  # <- sempre dois argumentos

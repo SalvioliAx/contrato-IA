@@ -3,7 +3,7 @@ import pandas as pd
 import altair as alt
 from services.extraction import extrair_dados_dos_contratos
 
-def render_dashboard_tab(google_api_key):
+def render_dashboard_tab(embeddings_global, google_api_key):
     st.header("📊 Dashboard")
 
     if "vector_store_atual" not in st.session_state:
