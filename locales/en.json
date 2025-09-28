@@ -11,8 +11,6 @@
     "sidebar": {
         "manage_documents_header": "Manage Documents",
         "api_key_input_label": "(OR) Paste your Google API Key here:",
-        "language_settings_header": "Language Settings",
-        "chat_language_label": "CHAT Language:",
         "doc_load_mode_label": "How to load documents?",
         "doc_load_mode_upload": "Upload new PDFs",
         "doc_load_mode_collection": "Load existing collection",
@@ -136,7 +134,6 @@
         "text_extracted_gemini": "Text extracted with Gemini Vision for {file}.",
         "vector_store_created": "Vector store created successfully!",
         "data_extracted_for_contracts": "Data extracted for {count} contracts.",
-
         "risk_analysis_complete": "Risk analysis complete.",
         "deadline_extraction_complete": "Deadline and date extraction complete!",
         "compliance_analysis_complete": "Compliance analysis complete."
@@ -228,5 +225,11 @@
         "compliance_check": {
             "template": "You are a specialist in compliance and contractual auditing. Your task is to compare the 'DOCUMENT TO ANALYZE' with the 'REFERENCE DOCUMENT' (e.g., a Code of Ethics or Internal Policy).\n\nREFERENCE DOCUMENT ({nome_doc_referencia}):\n--------------------------------------------\n{texto_doc_referencia}\n--------------------------------------------\n\nDOCUMENT TO ANALYZE ({nome_doc_analisar}):\n--------------------------------------------\n{texto_doc_analisar}\n--------------------------------------------\n\nPlease identify and list any significant clauses, terms, or omissions in the 'DOCUMENT TO ANALYZE' that might:\n1. Directly contradict the principles or rules established in the 'REFERENCE DOCUMENT'.\n2. Be ethically or conduct-wise misaligned with the 'REFERENCE DOCUMENT'.\n3. Represent a risk of non-compliance with the guidelines of the 'REFERENCE DOCUMENT'.\n\nFor each point of non-compliance or potential conflict identified:\na. Describe the problem/conflict clearly and objectively.\nb. Cite the exact excerpt (or clause number, if applicable) from the 'DOCUMENT TO ANALYZE' that raises the issue.\nc. Cite the exact excerpt or principle (or clause/item number, if applicable) from the 'REFERENCE DOCUMENT' that is potentially being violated or that serves as the basis for comparison.\nd. Offer a brief explanation of the reason for the conflict or misalignment.\n\nIf no significant conflict or non-compliance point is found, state this explicitly as 'No significant compliance conflicts identified'.\nUse Markdown formatting for your response, organizing the points clearly. Use titles (###) for each conflict found.\n\nCOMPLIANCE ANALYSIS REPORT:"
         }
+    },
+    "language_selector_options": {
+        "pt": "🇧🇷 PT",
+        "en": "🇺🇸 EN",
+        "es": "🇪🇸 ES"
     }
 }
+

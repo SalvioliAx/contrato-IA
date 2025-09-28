@@ -11,8 +11,6 @@
     "sidebar": {
         "manage_documents_header": "Gestionar Documentos",
         "api_key_input_label": "(O) Pegue su clave de API de Google aquí:",
-        "language_settings_header": "Configuración de Idioma",
-        "chat_language_label": "Idioma del CHAT:",
         "doc_load_mode_label": "¿Cómo cargar los documentos?",
         "doc_load_mode_upload": "Subir nuevos PDFs",
         "doc_load_mode_collection": "Cargar colección existente",
@@ -227,5 +225,11 @@
         "compliance_check": {
             "template": "Eres un especialista en conformidad y auditoría contractual. Tu tarea es comparar el 'DOCUMENTO A ANALIZAR' con el 'DOCUMENTO DE REFERENCIA' (ej: un Código de Ética o Política Interna).\n\nDOCUMENTO DE REFERENCIA ({nome_doc_referencia}):\n--------------------------------------------\n{texto_doc_referencia}\n--------------------------------------------\n\nDOCUMENTO A ANALIZAR ({nome_doc_analisar}):\n--------------------------------------------\n{texto_doc_analisar}\n--------------------------------------------\n\nPor favor, identifica y enumera cualquier cláusula, término u omisión significativa en el 'DOCUMENTO A ANALIZAR' que pueda:\n1. Contradecir directamente los principios o reglas establecidas en el 'DOCUMENTO DE REFERENCIA'.\n2. Estar en desalineación ética o de conducta con el 'DOCUMENTO DE REFERENCIA'.\n3. Representar un riesgo de incumplimiento con las directrices del 'DOCUMENTO DE REFERENCIA'.\n\nPara cada punto de incumplimiento o posible conflicto identificado:\na. Describe el problema/conflicto de forma clara y objetiva.\nb. Cita el fragmento exacto (o el número de la cláusula, si aplica) del 'DOCUMENTO A ANALIZAR' que plantea la cuestión.\nc. Cita el fragmento exacto o principio (o el número de la cláusula/ítem, si aplica) del 'DOCUMENTO DE REFERENCIA' que se está violando potencialmente o que sirve de base para la comparación.\nd. Ofrece una breve explicación sobre el motivo del conflicto o desalineación.\n\nSi no se encuentra ningún conflicto o punto de incumplimiento significativo, decláralo explícitamente como 'No se identificaron conflictos de conformidad significativos'.\nUsa formato Markdown для tu respuesta, organizando los puntos claramente. Usa títulos (###) para cada conflicto encontrado.\n\nINFORME DE ANÁLISIS DE CONFORMIDAD:"
         }
+    },
+    "language_selector_options": {
+        "pt": "🇧🇷 PT",
+        "en": "🇺🇸 EN",
+        "es": "🇪🇸 ES"
     }
 }
+
