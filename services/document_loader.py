@@ -20,7 +20,7 @@ def obter_vector_store_de_uploads(lista_arquivos_pdf_upload, _embeddings_obj, go
     # Modelo Gemini para OCR fallback
     try:
         llm_vision = ChatGoogleGenerativeAI(
-            model="gemini-1.5-flash-latest", temperature=0.1, request_timeout=300
+            model="gemini-2.5-pro", temperature=0.1, request_timeout=300
         )
     except Exception as e:
         st.warning(f"Não foi possível inicializar o modelo de visão do Gemini: {e}")
@@ -140,3 +140,4 @@ def obter_vector_store_de_uploads(lista_arquivos_pdf_upload, _embeddings_obj, go
     except Exception as e_faiss:
         st.error(f"Erro ao criar vector store: {e_faiss}")
         return None, nomes_arquivos_processados
+
