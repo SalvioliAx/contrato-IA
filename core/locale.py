@@ -95,7 +95,7 @@ TRANSLATIONS = {
         "anomalies_subheader_results": "Resultados da Análise:",
         "anomalies_success_no_anomalies": "Nenhuma anomalia significativa foi encontrada.",
         # Dynamic Analyzer
-        "dynamic_analyzer_prompt": "Você é um analista de dados sênior. Sua tarefa é analisar textos de contratos e identificar de 5 a 7 pontos de dados que seriam interessantes para comparar em um dashboard. Sua resposta e descrições devem ser em {language}.",
+        "dynamic_analyzer_prompt": "Você é um analista de dados sênior. Sua tarefa é analisar textos de contratos e identificar de 5 a 7 pontos de dados que seriam interessantes para comparar em um dashboard. Sua resposta e descrições devem ser em {language}. IMPORTANTE: A sua resposta final deve ser APENAS o objeto JSON, sem nenhum texto adicional, explicação ou formatação markdown.",
         "dynamic_analyzer_field_description": "A descrição humanamente legível do campo, formulada como uma pergunta em {language}, ex: 'Qual o valor total do contrato?'.",
     },
     "en": {
@@ -193,7 +193,7 @@ TRANSLATIONS = {
         "anomalies_subheader_results": "Analysis Results:",
         "anomalies_success_no_anomalies": "No significant anomalies were found.",
         # Dynamic Analyzer
-        "dynamic_analyzer_prompt": "You are a senior data analyst. Your task is to analyze contract texts and identify 5 to 7 data points that would be interesting to compare on a dashboard. Your response and descriptions must be in {language}.",
+        "dynamic_analyzer_prompt": "You are a senior data analyst. Your task is to analyze contract texts and identify 5 to 7 data points that would be interesting to compare on a dashboard. Your response and descriptions must be in {language}. IMPORTANT: Your final output must be ONLY the raw JSON object, with no additional text, explanation, or markdown formatting.",
         "dynamic_analyzer_field_description": "A human-readable description of the field, formulated as a question in {language}, e.g., 'What is the total contract value?'.",
     },
     "es": {
@@ -291,7 +291,7 @@ TRANSLATIONS = {
         "anomalies_subheader_results": "Resultados del Análisis:",
         "anomalies_success_no_anomalies": "No se encontraron anomalías significativas.",
         # Dynamic Analyzer
-        "dynamic_analyzer_prompt": "Eres un analista de datos senior. Tu tarea es analizar textos de contratos e identificar de 5 a 7 puntos de datos que serían interesantes para comparar en un dashboard. Tu respuesta y descripciones deben estar en {language}.",
+        "dynamic_analyzer_prompt": "Eres un analista de datos senior. Tu tarea es analizar textos de contratos e identificar de 5 a 7 puntos de datos que serían interesantes para comparar en un dashboard. Tu respuesta y descripciones deben estar en {language}. IMPORTANTE: Tu respuesta final debe ser ÚNICAMENTE el objeto JSON, sin texto adicional, explicaciones o formato markdown.",
         "dynamic_analyzer_field_description": "Una descripción legible por humanos del campo, formulada como una pregunta en {language}, ej: '¿Cuál es el valor total del contrato?'.",
     }
 }
