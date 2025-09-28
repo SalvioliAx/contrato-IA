@@ -6,7 +6,7 @@ import fitz
 
 def render_dashboard_tab(embeddings_global, google_api_key, texts, lang_code):
     """
-    Renderiza a aba de Dashboard, agora com textos localizados e passando o idioma para o serviço.
+    Renderiza a aba de Dashboard, com fluxo de execução corrigido para exibir mensagens.
     """
     st.header(texts["dashboard_header"])
     st.markdown(texts["dashboard_markdown"])
@@ -21,39 +21,48 @@ def render_dashboard_tab(embeddings_global, google_api_key, texts, lang_code):
             st.warning(texts["dashboard_warning_no_files"])
             return
 
-        textos_completos_juntos = ""
-        for arquivo in arquivos_carregados:
-            try:
-                arquivo.seek(0)
-                pdf_bytes = arquivo.read()
-                with fitz.open(stream=pdf_bytes, filetype="pdf") as doc:
-                    for page in doc:
-                        textos_completos_juntos += page.get_text() + "\n"
-                    textos_completos_juntos += "\n\n---\n\n"
-            except Exception as e:
-                st.error(texts["dashboard_error_read_file"].format(filename=arquivo.name, error=e))
-
-        if textos_completos_juntos.strip():
-            dados = extrair_dados_dos_contratos_dinamico(
-                st.session_state.vector_store_atual,
-                st.session_state.nomes_arquivos_atuais,
-                textos_completos_juntos,
-                google_api_key,
-                lang_code
-            )
-            if dados:
-                st.session_state.dados_extraidos = dados
-            else:
-                st.warning(texts["dashboard_warning_no_data"])
-                if "dados_extraidos" in st.session_state:
-                    del st.session_state.dados_extraidos
-        st.rerun()
+        with st.spinner(texts["dashboard_spinner_generating"]):
+            textos_completos_juntos = ""
+            for arquivo in arquivos_carregados:
+                try:
+                    arquivo.seek(0)
+                    pdf_bytes = arquivo.read()
+                    with fitz.open(stream=pdf_bytes, filetype="pdf") as doc:
+                        for page in doc:
+                            textos_completos_juntos += page.get_text() + "\n"
+                        textos_completos_juntos += "\n\n---\n\n"
+                except Exception as e:
+                    st.error(texts["dashboard_error_read_file"].format(filename=arquivo.name, error=e))
+            
+            if textos_completos_juntos.strip():
+                dados = extrair_dados_dos_contratos_dinamico(
+                    st.session_state.vector_store_atual,
+                    st.session_state.nomes_arquivos_atuais,
+                    textos_completos_juntos,
+                    google_api_key,
+                    lang_code
+                )
+                if dados:
+                    st.session_state.dados_extraidos = dados
+                    # CORREÇÃO: Mover o st.rerun() para DENTRO do if de sucesso
+                    st.rerun()
+                else:
+                    st.warning(texts["dashboard_warning_no_data"])
+                    if "dados_extraidos" in st.session_state:
+                        del st.session_state.dados_extraidos
+            # CORREÇÃO: Remover o st.rerun() que estava aqui fora
 
     if "dados_extraidos" in st.session_state and st.session_state.dados_extraidos:
         df = pd.DataFrame(st.session_state.dados_extraidos)
         st.dataframe(df, use_container_width=True)
 
-        colunas_numericas = [col for col in df.columns if pd.to_numeric(df[col], errors='coerce').notna().any()]
+        # A lógica para detectar colunas numéricas foi levemente ajustada para ser mais robusta
+        colunas_numericas = []
+        for col in df.columns:
+            if pd.api.types.is_numeric_dtype(pd.to_numeric(df[col], errors='coerce')):
+                 # Garante que a coluna não seja inteira de NaNs
+                if pd.to_numeric(df[col], errors='coerce').notna().any():
+                    colunas_numericas.append(col)
         
         if colunas_numericas:
             st.markdown("---")
