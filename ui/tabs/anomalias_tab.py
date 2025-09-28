@@ -15,12 +15,12 @@ def render_anomalias_tab(embeddings_global, google_api_key, texts):
 
     df = pd.DataFrame(st.session_state.dados_extraidos)
     
-    if st.button(texts["anomalies_button"], use_container_width=True):
+    if st.button(texts["anomalias_button"], use_container_width=True):
         anomalias = detectar_anomalias_no_dataframe(df)
         if anomalias:
-            st.subheader(texts["anomalies_subheader_results"])
+            st.subheader(texts["anomalias_subheader_results"])
             for a in anomalias:
                 st.markdown(f"- {a}")
         else:
-            st.success(texts["anomalies_success_no_anomalies"])
+            st.success(texts["anomalias_success_no_anomalias"])
 
