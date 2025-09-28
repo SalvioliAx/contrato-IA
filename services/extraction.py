@@ -29,7 +29,7 @@ def extrair_dados_dos_contratos_dinamico(
 
     st.info(f"Campos dinâmicos identificados pela IA para o dashboard: {[p.campo for p in pontos_chave]}")
 
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro", temperature=0)
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0)
     resultados = []
     
     total_ops = len(_nomes_arquivos) * len(pontos_chave)
@@ -71,4 +71,5 @@ def extrair_dados_dos_contratos_dinamico(
         resultados.append(dados)
     barra.empty()
     return resultados
+
 
