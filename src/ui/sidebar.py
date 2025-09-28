@@ -2,6 +2,25 @@ import streamlit as st
 from src.services import collection_manager, document_processor
 from src.utils import reset_analysis_data
 
+def display_language_selector(t):
+    """Exibe os botões de seleção de idioma na barra lateral."""
+    st.sidebar.subheader(t("sidebar.language_header"))
+    
+    # Cria três colunas para os botões de idioma
+    cols = st.sidebar.columns(3)
+    with cols[0]:
+        if st.button(t("ui.language_buttons.pt"), use_container_width=True, key="lang_pt"):
+            st.session_state.language = "pt"
+            st.rerun()
+    with cols[1]:
+        if st.button(t("ui.language_buttons.en"), use_container_width=True, key="lang_en"):
+            st.session_state.language = "en"
+            st.rerun()
+    with cols[2]:
+        if st.button(t("ui.language_buttons.es"), use_container_width=True, key="lang_es"):
+            st.session_state.language = "es"
+            st.rerun()
+
 def handle_upload_section(api_key, embeddings_model, t):
     """Lida com a secção de upload de novos ficheiros PDF."""
     arquivos_pdf_upload = st.sidebar.file_uploader(
@@ -12,7 +31,7 @@ def handle_upload_section(api_key, embeddings_model, t):
     )
 
     if not arquivos_pdf_upload:
-        st.sidebar.warning(t("sidebar.no_files_selected"))
+        st.sidebar.info(t("sidebar.no_files_selected"))
         st.session_state.arquivos_pdf_originais = []
         return
 
@@ -33,7 +52,7 @@ def handle_upload_section(api_key, embeddings_model, t):
             st.session_state.vector_store = vs
             st.session_state.nomes_arquivos = nomes_arqs
             st.session_state.colecao_ativa = None
-            st.session_state.messages = [] # Limpa o chat
+            st.session_state.messages = []
             st.sidebar.success(t("sidebar.success_processed_files", count=len(nomes_arqs)))
             st.rerun()
         else:
@@ -65,15 +84,14 @@ def handle_collection_section(embeddings_model, t):
                 st.session_state.vector_store = vs
                 st.session_state.nomes_arquivos = nomes_arqs
                 st.session_state.colecao_ativa = colecao_selecionada
-                st.session_state.arquivos_pdf_originais = None # Limpa ficheiros de upload
-                st.session_state.messages = [] # Limpa o chat
+                st.session_state.arquivos_pdf_originais = None
+                st.session_state.messages = []
                 st.rerun()
         else:
             st.sidebar.error(t("errors.api_key_or_embeddings_not_configured_short"))
 
 def handle_save_collection_section(t):
-    """Lida com a secção para salvar a coleção atual, se aplicável."""
-    # Só mostra a opção de salvar se os dados vieram de um upload novo
+    """Lida com a secção para salvar a coleção atual."""
     if st.session_state.get("vector_store") and st.session_state.get("arquivos_pdf_originais"):
         st.sidebar.markdown("---")
         st.sidebar.subheader(t("sidebar.save_collection_subheader"))
@@ -95,6 +113,10 @@ def display_sidebar(api_key, embeddings_model, t):
     with st.sidebar:
         st.header(t("sidebar.header"))
 
+        # Adiciona o seletor de idioma
+        display_language_selector(t)
+        st.sidebar.markdown("---")
+
         modo_documento = st.radio(
             t("sidebar.doc_load_mode_label"),
             [t("sidebar.doc_load_mode_upload"), t("sidebar.doc_load_mode_collection")],
@@ -112,8 +134,8 @@ def display_sidebar(api_key, embeddings_model, t):
         handle_save_collection_section(t)
 
         st.sidebar.markdown("---")
-        # Exibe o status atual (coleção ativa ou número de ficheiros carregados)
         if st.session_state.get("colecao_ativa"):
             st.sidebar.markdown(f"**{t('sidebar.active_collection')}:** `{st.session_state.colecao_ativa}`")
         elif st.session_state.get("nomes_arquivos"):
             st.sidebar.markdown(f"**{t('sidebar.loaded_files')}:** {len(st.session_state.nomes_arquivos)}")
+
