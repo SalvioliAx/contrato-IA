@@ -1,80 +1,70 @@
 import streamlit as st
-import re
-import traceback
-from langchain.chains import RetrievalQA
-from langchain.prompts import PromptTemplate
-from langchain_google_genai import ChatGoogleGenerativeAI
+from datetime import datetime
+from src.services.chat import processar_pergunta_chat
+from src.utils import formatar_chat_para_markdown
 
-def processar_pergunta_chat(prompt: str, vector_store, t):
-    """
-    Processa a pergunta do utilizador, extrai a resposta e as fontes,
-    e armazena no estado da sessão para exibição.
-    """
-    if not prompt:
-        return
+def display_chat_tab(t):
+    """Renderiza a aba de Chat Interativo com exibição de fontes e erros."""
+    st.header(t("chat.header"))
 
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    if 'chat_error' in st.session_state:
-        del st.session_state['chat_error']
+    if 'chat_error' in st.session_state and st.session_state.chat_error:
+        st.error(t("errors.detailed_error_intro"))
+        st.code(st.session_state.chat_error, language='text')
+        if st.button(t("errors.clear_error_button")):
+            del st.session_state['chat_error']
+            st.rerun()
 
-    try:
-        if vector_store is None:
-            raise ValueError(t("errors.vector_store_not_initialized"))
+    # CORREÇÃO: Garante que 'nomes_arquivos' tenha um valor padrão (lista vazia)
+    # para evitar o TypeError: len() of NoneType na inicialização.
+    if not st.session_state.get("messages"):
+        nomes_arquivos = st.session_state.get('nomes_arquivos', [])
+        st.session_state.messages = [{
+            "role": "assistant",
+            "content": t("chat.initial_message",
+                         collection=st.session_state.get('colecao_ativa', 'nova'),
+                         count=len(nomes_arquivos))
+        }]
 
-        # CORREÇÃO: Padronizado para um nome de modelo válido e estável.
-        llm_chat = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.2)
-        
-        template = t("chat.prompt_template")
-        prompt_template = PromptTemplate.from_template(template)
+    # Renderiza o histórico do chat
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+            if message["role"] == "assistant" and message.get("sources"):
+                with st.expander(t("chat.view_sources_expander")):
+                    if message.get("clausula_citada") and "não aplicável" not in message["clausula_citada"].lower():
+                         st.markdown(f"**{t('chat.main_reference')}:** {message['clausula_citada']}")
+                         st.markdown("---")
+                    
+                    for doc in message["sources"]:
+                        texto_fonte = doc.page_content
+                        sentenca_chave = message.get("sentenca_chave")
+                        
+                        if sentenca_chave and sentenca_chave in texto_fonte:
+                            texto_fonte_html = texto_fonte.replace(sentenca_chave, f"<mark>{sentenca_chave}</mark>", 1)
+                            st.markdown(texto_fonte_html, unsafe_allow_html=True)
+                        else:
+                            st.markdown(texto_fonte)
+                        
+                        source_name = doc.metadata.get('source', 'N/A')
+                        page_num = doc.metadata.get('page', 'N/A')
+                        st.caption(f"{t('chat.source_caption', source=source_name, page=page_num)}")
+                        st.markdown("---")
 
-        qa_chain = RetrievalQA.from_chain_type(
-            llm=llm_chat,
-            chain_type="stuff",
-            retriever=vector_store.as_retriever(search_type="similarity", search_kwargs={"k": 7}),
-            return_source_documents=True,
-            chain_type_kwargs={"prompt": prompt_template}
+    if len(st.session_state.messages) > 1:
+        chat_exportado = formatar_chat_para_markdown(st.session_state.messages, t)
+        agora = datetime.now().strftime("%Y%m%d_%H%M%S")
+        st.download_button(
+            label=t("chat.export_button"),
+            data=chat_exportado,
+            file_name=f"chat_contratia_{agora}.md",
+            mime="text/markdown"
         )
 
-        resultado = qa_chain.invoke({"query": prompt})
-        resposta_bruta = resultado.get("result", "")
-        fontes = resultado.get("source_documents", [])
+    st.markdown("---")
+    prompt_disabled = bool(st.session_state.get('chat_error'))
+    prompt = st.chat_input(t("chat.input_placeholder"), key="chat_input_main", disabled=prompt_disabled)
+    
+    if prompt:
+        processar_pergunta_chat(prompt, st.session_state.vector_store, t)
+        st.rerun()
 
-        # --- LÓGICA DE PARSING CORRIGIDA PARA RESTAURAR CITAÇÕES ---
-        resposta_principal = resposta_bruta
-        clausula_citada = None
-        sentenca_chave = None
-
-        if '|||CLÁUSULA/ARTIGO PRINCIPAL:' in resposta_bruta:
-            partes = resposta_bruta.split('|||CLÁUSULA/ARTIGO PRINCIPAL:', 1)
-            resposta_principal = partes[0]
-            resto = partes[1] if len(partes) > 1 else ""
-            
-            if '|||TRECHO MAIS RELEVANTE DO CONTEXTO:' in resto:
-                sub_partes = resto.split('|||TRECHO MAIS RELEVANTE DO CONTEXTO:', 1)
-                clausula_citada = sub_partes[0].strip()
-                sentenca_chave = sub_partes[1].strip() if len(sub_partes) > 1 else None
-            else:
-                clausula_citada = resto.strip()
-
-        elif '|||TRECHO MAIS RELEVANTE DO CONTEXTO:' in resposta_bruta:
-            partes = resposta_bruta.split('|||TRECHO MAIS RELEVANTE DO CONTEXTO:', 1)
-            resposta_principal = partes[0]
-            sentenca_chave = partes[1].strip() if len(partes) > 1 else None
-
-        resposta_principal = re.sub(r"RESPOSTA \((em|in|en) .*\):", "", resposta_principal, flags=re.IGNORECASE).strip()
-        
-        st.session_state.messages.append({
-            "role": "assistant", 
-            "content": resposta_principal, 
-            "sources": fontes,
-            "clausula_citada": clausula_citada,
-            "sentenca_chave": sentenca_chave
-        })
-
-    except Exception:
-        error_details = traceback.format_exc()
-        st.session_state.chat_error = error_details
-        st.session_state.messages.append({
-            "role": "assistant",
-            "content": t("errors.chat_processing_error")
-        })
