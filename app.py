@@ -2,16 +2,17 @@ import streamlit as st
 import sys
 import os
 
-# Adiciona o diretório raiz do projeto ao sys.path
-# para garantir que os módulos como 'config' sejam encontrados
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+# Adiciona o diretório raiz do projeto ao início do sys.path
+# para garantir que os módulos locais como 'config' sejam encontrados primeiro.
+PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
 
 from core.utils import manage_api_key, initialize_embeddings
 from ui.sidebar import render_sidebar
 from ui.tabs import chat, dashboard, summary, risks, deadlines, compliance, anomalies
 
 # --- CONFIGURAÇÃO DA PÁGINA ---
-# ... (o restante do código permanece o mesmo) ...
 st.set_page_config(layout="wide", page_title="ContratIA", page_icon="💡")
 hide_streamlit_style = "<style>#MainMenu {visibility: hidden;} footer {visibility: hidden;}</style>"
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
