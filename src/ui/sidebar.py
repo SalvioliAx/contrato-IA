@@ -1,13 +1,14 @@
 import streamlit as st
-from services import collection_manager, document_processor
-from utils import reset_analysis_data
+from src.services import collection_manager, document_processor
+from src.utils import reset_analysis_data
 
 def handle_upload_section(api_key, embeddings_model, t):
     """Lida com a secção de upload de novos ficheiros PDF."""
     arquivos_pdf_upload = st.sidebar.file_uploader(
         t("sidebar.file_uploader_label"),
         type="pdf",
-        accept_multiple_files=True
+        accept_multiple_files=True,
+        key="pdf_uploader"
     )
 
     if not arquivos_pdf_upload:
@@ -17,12 +18,11 @@ def handle_upload_section(api_key, embeddings_model, t):
 
     st.session_state.arquivos_pdf_originais = arquivos_pdf_upload
 
-    if st.sidebar.button(t("sidebar.process_button")):
+    if st.sidebar.button(t("sidebar.process_button"), use_container_width=True):
         if not (api_key and embeddings_model):
             st.sidebar.error(t("errors.api_key_or_embeddings_not_configured_short"))
             return
 
-        # CORREÇÃO: O spinner é chamado aqui, no módulo da UI, e com a sintaxe correta.
         with st.spinner(t("info.processing_and_indexing")):
             vs, nomes_arqs = document_processor.obter_vector_store_de_uploads(
                 arquivos_pdf_upload, embeddings_model, api_key, t
@@ -33,7 +33,7 @@ def handle_upload_section(api_key, embeddings_model, t):
             st.session_state.vector_store = vs
             st.session_state.nomes_arquivos = nomes_arqs
             st.session_state.colecao_ativa = None
-            st.session_state.messages = []
+            st.session_state.messages = [] # Limpa o chat
             st.sidebar.success(t("sidebar.success_processed_files", count=len(nomes_arqs)))
             st.rerun()
         else:
@@ -53,37 +53,39 @@ def handle_collection_section(embeddings_model, t):
         placeholder=t("sidebar.collection_selectbox_placeholder")
     )
 
-    if st.sidebar.button(t("sidebar.load_collection_button")):
+    if st.sidebar.button(t("sidebar.load_collection_button"), use_container_width=True):
         if not colecao_selecionada:
             st.sidebar.warning(t("sidebar.warning_no_collection_selected"))
             return
 
         if embeddings_model:
-            vs, nomes_arqs = collection_manager.carregar_colecao(colecao_selecionada, embeddings_model)
+            vs, nomes_arqs = collection_manager.carregar_colecao(colecao_selecionada, embeddings_model, t)
             if vs and nomes_arqs:
                 reset_analysis_data()
                 st.session_state.vector_store = vs
                 st.session_state.nomes_arquivos = nomes_arqs
                 st.session_state.colecao_ativa = colecao_selecionada
-                st.session_state.arquivos_pdf_originais = None
-                st.session_state.messages = []
+                st.session_state.arquivos_pdf_originais = None # Limpa ficheiros de upload
+                st.session_state.messages = [] # Limpa o chat
                 st.rerun()
         else:
             st.sidebar.error(t("errors.api_key_or_embeddings_not_configured_short"))
 
 def handle_save_collection_section(t):
-    """Lida com a secção para salvar a coleção atual."""
+    """Lida com a secção para salvar a coleção atual, se aplicável."""
+    # Só mostra a opção de salvar se os dados vieram de um upload novo
     if st.session_state.get("vector_store") and st.session_state.get("arquivos_pdf_originais"):
         st.sidebar.markdown("---")
         st.sidebar.subheader(t("sidebar.save_collection_subheader"))
         nome_nova_colecao = st.sidebar.text_input(t("sidebar.new_collection_name_label"))
         
-        if st.sidebar.button(t("sidebar.save_collection_button")):
-            if nome_nova_colecao and st.session_state.nomes_arquivos:
+        if st.sidebar.button(t("sidebar.save_collection_button"), use_container_width=True):
+            if nome_nova_colecao and st.session_state.get("nomes_arquivos"):
                 collection_manager.salvar_colecao_atual(
                     nome_nova_colecao,
                     st.session_state.vector_store,
-                    st.session_state.nomes_arquivos
+                    st.session_state.nomes_arquivos,
+                    t
                 )
             else:
                 st.sidebar.warning(t("sidebar.warning_give_name_to_collection"))
@@ -96,8 +98,11 @@ def display_sidebar(api_key, embeddings_model, t):
         modo_documento = st.radio(
             t("sidebar.doc_load_mode_label"),
             [t("sidebar.doc_load_mode_upload"), t("sidebar.doc_load_mode_collection")],
-            index=0
+            index=0,
+            key="doc_mode_radio"
         )
+
+        st.markdown("---")
 
         if modo_documento == t("sidebar.doc_load_mode_upload"):
             handle_upload_section(api_key, embeddings_model, t)
@@ -106,8 +111,9 @@ def display_sidebar(api_key, embeddings_model, t):
 
         handle_save_collection_section(t)
 
+        st.sidebar.markdown("---")
+        # Exibe o status atual (coleção ativa ou número de ficheiros carregados)
         if st.session_state.get("colecao_ativa"):
             st.sidebar.markdown(f"**{t('sidebar.active_collection')}:** `{st.session_state.colecao_ativa}`")
         elif st.session_state.get("nomes_arquivos"):
             st.sidebar.markdown(f"**{t('sidebar.loaded_files')}:** {len(st.session_state.nomes_arquivos)}")
-
