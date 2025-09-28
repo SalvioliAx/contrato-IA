@@ -3,9 +3,9 @@ import os
 from pathlib import Path
 
 # Adiciona o diretório raiz do projeto ao caminho do Python
-# para garantir que as importações de 'src' funcionem corretamente.
-project_root = Path(__file__).parent
-sys.path.insert(0, str(project_root))
+project_root = Path(__file__).parent.resolve()
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
 
 import streamlit as st
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
@@ -13,8 +13,17 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 # Importações locais do projeto
 from src.config import configure_page, initialize_session_state, get_api_key
 from src.localization import Localization
-from src.ui.sidebar import display_sidebar  # Nome da função corrigido aqui
-from src.ui.tabs import chat_tab, dashboard_tab, summary_tab, risk_tab, deadline_tab, compliance_tab, anomaly_tab
+from src.ui.sidebar import display_sidebar
+
+# --- Importação direta das funções de cada aba ---
+from src.ui.tabs.chat_tab import display_chat_tab
+from src.ui.tabs.dashboard_tab import display_dashboard_tab
+from src.ui.tabs.summary_tab import display_summary_tab
+from src.ui.tabs.risk_tab import display_risk_tab
+from src.ui.tabs.deadline_tab import display_deadline_tab
+from src.ui.tabs.compliance_tab import display_compliance_tab
+from src.ui.tabs.anomaly_tab import display_anomaly_tab
+
 
 def main():
     """Função principal que executa a aplicação Streamlit."""
@@ -62,7 +71,7 @@ def main():
         st.session_state.embeddings_model = None
 
     # --- 3. RENDERIZAÇÃO DA UI ---
-    display_sidebar(t)  # Chamada da função com o nome corrigido
+    display_sidebar(t)
     
     tab_titles = [
         t("tabs.chat"), t("tabs.dashboard"), t("tabs.summary"), 
@@ -81,19 +90,19 @@ def main():
         st.info(t("info.upload_documents_to_start"))
     else:
         with tab1:
-            chat_tab.display_chat_tab(t)
+            display_chat_tab(t)
         with tab2:
-            dashboard_tab.display_dashboard_tab(t)
+            display_dashboard_tab(t)
         with tab3:
-            summary_tab.display_summary_tab(t)
+            display_summary_tab(t)
         with tab4:
-            risk_tab.display_risk_tab(t)
+            display_risk_tab(t)
         with tab5:
-            deadline_tab.display_deadline_tab(t)
+            display_deadline_tab(t)
         with tab6:
-            compliance_tab.display_compliance_tab(t)
+            display_compliance_tab(t)
         with tab7:
-            anomaly_tab.display_anomaly_tab(t)
+            display_anomaly_tab(t)
 
 if __name__ == "__main__":
     main()
