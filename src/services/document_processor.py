@@ -42,7 +42,8 @@ def obter_vector_store_de_uploads(lista_arquivos_pdf_upload, _embeddings_obj, ap
 
     for arquivo_pdf_upload in lista_arquivos_pdf_upload:
         nome_arquivo = arquivo_pdf_upload.name
-        st.info(f"Processando arquivo: {nome_arquivo}...")
+        # CORREÇÃO: Usa st.sidebar para que esta mensagem apareça na barra lateral
+        st.sidebar.info(f"Processando arquivo: {nome_arquivo}...")
         documentos_arquivo_atual = []
         texto_extraido_com_sucesso = False
         temp_file_path = Path(f"temp_{nome_arquivo}")
@@ -85,7 +86,7 @@ def obter_vector_store_de_uploads(lista_arquivos_pdf_upload, _embeddings_obj, ap
 
             # Tentativa 3: Gemini Vision
             if not texto_extraido_com_sucesso and llm_vision:
-                st.info(_t("info.extracting_text_with_gemini", filename=nome_arquivo))
+                st.sidebar.info(_t("info.extracting_text_with_gemini", filename=nome_arquivo))
                 documentos_arquivo_atual = []
                 try:
                     arquivo_pdf_upload.seek(0)
@@ -107,7 +108,7 @@ def obter_vector_store_de_uploads(lista_arquivos_pdf_upload, _embeddings_obj, ap
                             ]
                         )
                         
-                        with st.spinner(_t("info.gemini_processing_page", page=page_num_gemini + 1, filename=nome_arquivo)):
+                        with st.sidebar.spinner(_t("info.gemini_processing_page", page=page_num_gemini + 1, filename=nome_arquivo)):
                             ai_msg = llm_vision.invoke([human_message])
                         
                         if isinstance(ai_msg, AIMessage) and ai_msg.content and isinstance(ai_msg.content, str):
@@ -121,16 +122,16 @@ def obter_vector_store_de_uploads(lista_arquivos_pdf_upload, _embeddings_obj, ap
                     if any(doc.page_content.strip() for doc in documentos_arquivo_atual):
                         texto_extraido_com_sucesso = True
                 except Exception as e_gemini:
-                    st.error(f"Erro ao usar Gemini Vision para {nome_arquivo}: {str(e_gemini)[:500]}")
+                    st.sidebar.error(f"Erro ao usar Gemini Vision para {nome_arquivo}: {str(e_gemini)[:500]}")
             
             if texto_extraido_com_sucesso and documentos_arquivo_atual:
                 documentos_totais.extend(documentos_arquivo_atual)
                 nomes_arquivos_processados.append(nome_arquivo)
             else:
-                st.error(f"Não foi possível extrair texto do arquivo: {nome_arquivo}.")
+                st.sidebar.error(f"Não foi possível extrair texto do arquivo: {nome_arquivo}.")
 
         except Exception as e_geral_arquivo:
-            st.error(f"Erro geral ao processar o arquivo {nome_arquivo}: {e_geral_arquivo}")
+            st.sidebar.error(f"Erro geral ao processar o arquivo {nome_arquivo}: {e_geral_arquivo}")
         finally:
             if temp_file_path.exists():
                 os.remove(temp_file_path)
@@ -148,6 +149,6 @@ def obter_vector_store_de_uploads(lista_arquivos_pdf_upload, _embeddings_obj, ap
         vector_store = FAISS.from_documents(docs_fragmentados, _embeddings_obj)
         return vector_store, nomes_arquivos_processados
     except Exception as e_faiss:
-        st.error(f"Erro ao criar o vector store com FAISS: {e_faiss}")
+        st.sidebar.error(f"Erro ao criar o vector store com FAISS: {e_faiss}")
         return None, nomes_arquivos_processados
 
