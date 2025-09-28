@@ -41,7 +41,7 @@ def obter_vector_store_de_uploads(_lista_arquivos_pdf_upload, _embeddings_obj, a
     if api_key:
         try:
             # CORREÇÃO FINAL: Usando o nome do modelo especificado pelo utilizador.
-            llm_vision = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.1, request_timeout=300)
+            llm_vision = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0.1, request_timeout=300)
         except Exception as e:
             st.warning(_t("warnings.vision_model_init_failed", error=e))
 
@@ -103,4 +103,5 @@ def obter_vector_store_de_uploads(_lista_arquivos_pdf_upload, _embeddings_obj, a
     
     vector_store = FAISS.from_documents(docs_fragmentados, _embeddings_obj)
     return vector_store, nomes_arquivos_processados
+
 
