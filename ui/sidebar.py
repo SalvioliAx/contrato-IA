@@ -4,58 +4,55 @@ from services.collections import (
 )
 from services.document_loader import obter_vector_store_de_uploads
 
-def render_sidebar(embeddings_global, google_api_key):
+def render_sidebar(embeddings_global, google_api_key, texts):
     """
-    Renderiza a barra lateral para upload de arquivos e gerenciamento de coleções.
+    Renderiza a barra lateral, agora usando textos do dicionário de localização.
     """
-    st.sidebar.header("📂 Gerenciador de Documentos")
+    st.sidebar.header(texts["sidebar_header"])
 
-    # Widget para upload de múltiplos arquivos PDF
     uploaded_files = st.sidebar.file_uploader(
-        "Carregar novos contratos (PDF)", type=["pdf"], accept_multiple_files=True, key="upload_pdf"
+        texts["sidebar_uploader_label"], type=["pdf"], accept_multiple_files=True, key="upload_pdf"
     )
 
-    # Lógica para salvar a sessão atual como uma coleção
-    nome_colecao_salvar = st.sidebar.text_input("Nome para salvar a coleção atual:")
-    if st.sidebar.button("💾 Salvar coleção"):
-        if "vector_store_atual" in st.session_state and uploaded_files: # Só permite salvar se veio de um upload
+    nome_colecao_salvar = st.sidebar.text_input(texts["sidebar_save_collection_label"])
+    if st.sidebar.button(texts["sidebar_save_collection_button"]):
+        if "vector_store_atual" in st.session_state and uploaded_files:
             salvar_colecao_atual(
                 nome_colecao_salvar,
                 st.session_state.vector_store_atual,
                 st.session_state.nomes_arquivos_atuais
             )
         else:
-            st.sidebar.warning("Carregue novos arquivos para poder salvar uma coleção.")
-
+            st.sidebar.warning(texts["sidebar_save_collection_warning"])
 
     st.sidebar.markdown("---")
-    # Lógica para carregar uma coleção existente
     colecoes_existentes = listar_colecoes_salvas()
     if colecoes_existentes:
-        colecao_selecionada = st.sidebar.selectbox("Ou abrir uma coleção salva:", colecoes_existentes, index=None, placeholder="Selecione uma coleção")
-        if st.sidebar.button("📂 Carregar coleção"):
+        colecao_selecionada = st.sidebar.selectbox(
+            texts["sidebar_load_collection_label"],
+            colecoes_existentes,
+            index=None,
+            placeholder=texts["sidebar_load_collection_placeholder"]
+        )
+        if st.sidebar.button(texts["sidebar_load_collection_button"]):
             if colecao_selecionada and embeddings_global:
                 vs, nomes = carregar_colecao(colecao_selecionada, embeddings_global)
                 if vs:
-                    # Atualiza o estado da sessão com a coleção carregada
                     st.session_state.vector_store_atual = vs
                     st.session_state.nomes_arquivos_atuais = nomes
-                    # ADICIONADO: Limpa os arquivos originais ao carregar uma coleção
-                    st.session_state.arquivos_pdf_originais = None 
-                    st.session_state.messages = [] # Limpa o chat
+                    st.session_state.arquivos_pdf_originais = None
+                    st.session_state.messages = []
                     st.rerun()
             else:
-                st.sidebar.error("Selecione uma coleção e certifique-se que a API Key está configurada.")
+                st.sidebar.error(texts["sidebar_load_collection_error"])
 
-    # Processa os arquivos recém-carregados
     if uploaded_files:
-        # Botão para iniciar o processamento, evitando reprocessamento a cada interação
-        if st.sidebar.button("Processar Documentos Carregados"):
+        if st.sidebar.button(texts["sidebar_process_button"]):
             vs, nomes = obter_vector_store_de_uploads(uploaded_files, embeddings_global, google_api_key)
             if vs:
                 st.session_state.vector_store_atual = vs
                 st.session_state.nomes_arquivos_atuais = nomes
-                # ADICIONADO: Salva os objetos de arquivo originais na sessão
                 st.session_state.arquivos_pdf_originais = uploaded_files
-                st.session_state.messages = [] # Limpa o chat
-                st.rerun() # Recarrega a página para refletir o novo estado
+                st.session_state.messages = []
+                st.rerun()
+
