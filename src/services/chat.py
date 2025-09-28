@@ -1,12 +1,18 @@
 import streamlit as st
-from src.services import chat
+# Alteração: Importa a função específica diretamente para evitar importações circulares
+from src.services.chat import processar_pergunta_chat
 from src.utils import formatar_chat_para_markdown
 
 def display_chat_tab(t):
     """Renderiza a aba de Chat Interativo."""
     st.header(t("chat.header"))
 
-    if not st.session_state.get("messages"):
+    # Garante que a lista de mensagens existe no estado da sessão
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+    # Mensagem inicial se o chat estiver vazio
+    if not st.session_state.messages:
         st.session_state.messages.append({
             "role": "assistant",
             "content": t("chat.initial_message",
@@ -25,7 +31,6 @@ def display_chat_tab(t):
                         st.markdown("---")
                     
                     for doc_fonte in message["sources"]:
-                        # Lógica para exibir fontes (pode ser aprimorada)
                         st.caption(f"Fonte: {doc_fonte.metadata.get('source', 'N/A')} (Pág: {doc_fonte.metadata.get('page', 'N/A')})")
                         st.markdown(f"> {doc_fonte.page_content[:300]}...")
                         st.markdown("---")
@@ -48,7 +53,8 @@ def display_chat_tab(t):
         
         with st.spinner(t("chat.thinking_spinner")):
             try:
-                resposta_ia = chat.processar_pergunta_chat(
+                # Alteração: Chama a função diretamente
+                resposta_ia = processar_pergunta_chat(
                     prompt,
                     st.session_state.vector_store,
                     st.session_state.language,
