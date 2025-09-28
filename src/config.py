@@ -42,8 +42,7 @@ def initialize_session_state():
         "anomalias_resultados": None,
         "language": "pt", # Idioma padrão
         "api_key_input": None,
-        "embeddings_model": None,
-        "localization": None
+        "embeddings_model": None
     }
     for key, value in default_state.items():
         if key not in st.session_state:
@@ -78,3 +77,4 @@ def get_api_key():
         return google_api_key
 
     return None
+
