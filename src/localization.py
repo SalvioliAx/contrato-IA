@@ -7,9 +7,8 @@ class Localization:
     Classe para gerenciar os textos e traduções da aplicação.
     """
     def __init__(self, default_lang: str = "pt"):
-        # CORREÇÃO: Usa o diretório de trabalho atual (cwd) como base,
-        # que no Streamlit Cloud geralmente é a raiz do repositório.
-        # Isso é mais confiável do que basear-se no caminho do ficheiro.
+        # Usa o diretório de trabalho atual (cwd) como base.
+        # No Streamlit Cloud, geralmente é a raiz do repositório.
         base_path = Path.cwd()
         self.locales_dir = base_path / "locales"
         
@@ -18,7 +17,7 @@ class Localization:
         self.translations = self.languages.get(self.current_language, {})
 
         if not self.languages:
-            st.warning(f"Pasta de traduções 'locales' não encontrada no caminho: {self.locales_dir}. A interface pode não ser traduzida.")
+            st.warning(f"Pasta de traduções 'locales' não encontrada em: {self.locales_dir}. A interface pode não ser traduzida.")
 
     def _load_languages(self) -> dict:
         """Carrega todos os ficheiros de tradução .json do diretório de locales."""
@@ -32,7 +31,7 @@ class Localization:
                 with open(file_path, "r", encoding="utf-8") as f:
                     langs[lang_code] = json.load(f)
             except (json.JSONDecodeError, IOError) as e:
-                print(f"Error loading language file {file_path}: {e}")
+                print(f"Erro ao carregar o arquivo de idioma {file_path}: {e}")
         return langs
 
     def set_language(self, lang_code: str):
@@ -41,12 +40,14 @@ class Localization:
             self.current_language = lang_code
             self.translations = self.languages[lang_code]
         else:
+            # Fallback para o idioma padrão se o código solicitado não existir
             self.current_language = "pt"
             self.translations = self.languages.get("pt", {})
 
     def get_translator(self):
         """
         Retorna uma função 't' que busca uma tradução por chave.
+        Permite a formatação de strings com argumentos.
         """
         def translate(key: str, **kwargs):
             keys = key.split('.')
@@ -54,10 +55,11 @@ class Localization:
             try:
                 for k in keys:
                     value = value[k]
+                # Se argumentos forem passados e o valor for uma string, formata a string.
                 if kwargs and isinstance(value, str):
                     return value.format(**kwargs)
                 return value
             except (KeyError, TypeError):
+                # Se a chave não for encontrada, retorna a própria chave como fallback.
                 return key
         return translate
-
