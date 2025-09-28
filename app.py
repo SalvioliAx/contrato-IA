@@ -10,7 +10,7 @@ if PROJECT_ROOT not in sys.path:
 
 from core.utils import manage_api_key, initialize_embeddings
 from ui.sidebar import render_sidebar
-from ui.tabs import chat_tab, dashboard_tab, summary_tab, risks_tab, deadlines_tab, compliance_tab, anomalies_tab
+from ui.tabs import chat, dashboard, summary, risks, deadlines, compliance, anomalies
 
 # --- CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(layout="wide", page_title="ContratIA", page_icon="💡")
