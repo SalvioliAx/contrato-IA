@@ -54,27 +54,54 @@ def get_api_key():
     """
     Obtém a chave de API do Google, priorizando os secrets do Streamlit,
     depois variáveis de ambiente e, por último, o input do utilizador.
+    Valida se a chave encontrada não está vazia.
     """
+    # --- INÍCIO DO CÓDIGO DE DEPURAÇÃO TEMPORÁRIO ---
+    # Este bloco de código irá ajudá-lo a ver o que está nos secrets.
+    # Pode removê-lo depois de resolver o problema.
+    with st.expander("🔍 Informações de Depuração dos Secrets", expanded=True):
+        st.warning("Esta mensagem é para depuração e deve ser removida mais tarde.")
+        try:
+            if not st.secrets:
+                st.error("st.secrets está completamente vazio.")
+            else:
+                st.write("Secrets encontrados:", list(st.secrets.keys()))
+                if "GOOGLE_API_KEY" in st.secrets:
+                    st.success("A chave 'GOOGLE_API_KEY' foi encontrada nos secrets.")
+                    key_value = st.secrets["GOOGLE_API_KEY"]
+                    st.info(f"Comprimento da chave: {len(key_value)}")
+                    if not key_value or not key_value.strip():
+                        st.error("PROBLEMA: O valor da chave está vazio ou contém apenas espaços.")
+                    else:
+                        st.success("PARECE OK: O valor da chave não está vazio.")
+                else:
+                    st.error("PROBLEMA: A chave 'GOOGLE_API_KEY' NÃO foi encontrada. Verifique se há erros de digitação.")
+        except Exception as e:
+            st.error(f"Ocorreu uma exceção ao tentar ler os secrets: {e}")
+    # --- FIM DO CÓDIGO DE DEPURAÇÃO ---
+
+
     # Tenta obter dos secrets do Streamlit (ideal para deploy)
     try:
-        google_api_key = st.secrets["GOOGLE_API_KEY"]
-        os.environ["GOOGLE_API_KEY"] = google_api_key
-        return google_api_key
-    except (KeyError, FileNotFoundError):
+        google_api_key = st.secrets.get("GOOGLE_API_KEY")
+        if google_api_key and google_api_key.strip():
+            os.environ["GOOGLE_API_KEY"] = google_api_key
+            return google_api_key
+    except Exception: # Captura qualquer erro potencial ao aceder aos secrets
         pass
 
     # Tenta obter das variáveis de ambiente (bom para desenvolvimento)
     google_api_key = os.getenv("GOOGLE_API_KEY")
-    if google_api_key:
+    if google_api_key and google_api_key.strip():
         os.environ["GOOGLE_API_KEY"] = google_api_key
         return google_api_key
 
     # Como último recurso, pede ao utilizador na barra lateral
-    # O input real está na UI (sidebar.py), aqui apenas recuperamos o valor
     if st.session_state.get("api_key_input"):
         google_api_key = st.session_state.api_key_input
-        os.environ["GOOGLE_API_KEY"] = google_api_key
-        return google_api_key
+        if google_api_key and google_api_key.strip():
+            os.environ["GOOGLE_API_KEY"] = google_api_key
+            return google_api_key
 
     return None
 
