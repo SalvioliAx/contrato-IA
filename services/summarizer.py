@@ -30,4 +30,3 @@ def gerar_resumo_executivo(arquivo_pdf_bytes, nome_arquivo_original, google_api_
         return res['text']
     except Exception as e:
         return f"Erro no resumo: {e}"
-

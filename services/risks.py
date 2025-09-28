@@ -8,7 +8,7 @@ def analisar_documento_para_riscos(texto, nome_arquivo, google_api_key):
     if not texto or not google_api_key:
         return "Erro: sem texto ou API."
 
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.2)
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0.2)
     prompt = PromptTemplate.from_template(
         "Analise o contrato ({nome}) e identifique riscos contratuais:\n{texto}\n\nRelatório:"
     )

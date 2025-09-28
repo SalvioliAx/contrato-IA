@@ -8,7 +8,7 @@ def verificar_conformidade_documento(ref_texto, ref_nome, doc_texto, doc_nome, g
     if not ref_texto or not doc_texto or not google_api_key:
         return "Erro: faltam dados ou chave API."
 
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.1)
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0.1)
     prompt = PromptTemplate.from_template(
         "Compare o DOCUMENTO A ANALISAR ({doc_nome}) com o DOCUMENTO DE REFERÊNCIA ({ref_nome}).\n\n"
         "Documento de referência:\n{ref}\n\nDocumento a analisar:\n{doc}\n\nRelatório de conformidade:"

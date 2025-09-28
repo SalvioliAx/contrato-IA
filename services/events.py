@@ -12,7 +12,7 @@ def extrair_eventos_dos_contratos(docs: List[dict], google_api_key: str):
     if not docs or not google_api_key:
         return []
 
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0)
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0)
     parser = PydanticOutputParser(pydantic_object=ListaDeEventos)
     prompt = PromptTemplate.from_template(
         "Analise o contrato {arquivo_fonte} e extraia eventos e datas:\n{texto_contrato}\n\n{format_instructions}"

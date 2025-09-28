@@ -140,4 +140,3 @@ def obter_vector_store_de_uploads(lista_arquivos_pdf_upload, _embeddings_obj, go
     except Exception as e_faiss:
         st.error(f"Erro ao criar vector store: {e_faiss}")
         return None, nomes_arquivos_processados
-

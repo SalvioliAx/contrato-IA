@@ -13,7 +13,7 @@ def extrair_dados_dos_contratos(_vector_store: Optional[FAISS], _nomes_arquivos:
     if not _vector_store or not google_api_key or not _nomes_arquivos:
         return []
 
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0)
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0)
 
     resultados = []
     mapa_campos = {
