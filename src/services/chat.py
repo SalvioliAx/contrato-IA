@@ -21,7 +21,7 @@ def processar_pergunta_chat(prompt, vector_store, t):
             raise ValueError("Vector store não foi inicializado corretamente.")
 
         # ATUALIZAÇÃO: Alterado o nome do modelo para uma versão estável
-        llm_chat = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0.2)
+        llm_chat = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.2)
         
         template = t("chat.prompt_template")
         prompt_template = PromptTemplate.from_template(template)
@@ -53,5 +53,6 @@ def processar_pergunta_chat(prompt, vector_store, t):
             "role": "assistant",
             "content": t("errors.chat_processing_error")
         })
+
 
 
