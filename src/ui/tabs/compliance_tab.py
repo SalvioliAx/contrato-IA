@@ -66,4 +66,3 @@ def display_compliance_tab(t):
         for chave, relatorio in resultados_finais.items():
             with st.expander(t("compliance.report_expander_label", key=chave.replace('_vs_', ' vs ')), expanded=True):
                 st.markdown(relatorio)
-
