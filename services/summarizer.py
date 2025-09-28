@@ -5,7 +5,7 @@ from langchain.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 from core.locale import TRANSLATIONS
 
-@st.cache_data(show_spinner="Gerando resumo...")
+@st.cache_data # Removido show_spinner
 def gerar_resumo_executivo(arquivo_pdf_bytes, nome_arquivo_original, google_api_key, lang_code):
     """
     Gera um resumo executivo de um documento PDF, agora sensível ao idioma.
@@ -26,8 +26,7 @@ def gerar_resumo_executivo(arquivo_pdf_bytes, nome_arquivo_original, google_api_
 
     llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0.3)
     
-    # Usa o prompt do arquivo de traduções
-    prompt_text = TRANSLATIONS[lang_code]["summary_prompt"].format(language=lang_code)
+    prompt_text = TRANSLATIONS[lang_code]["summary_prompt"].format(language=TRANSLATIONS[lang_code]["lang_selector_label"])
     
     prompt = PromptTemplate.from_template(
         prompt_text + "\n\nCONTRATO:\n{texto_contrato}\n\nRESUMO:"
