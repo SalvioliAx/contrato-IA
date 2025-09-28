@@ -24,7 +24,7 @@ def identificar_pontos_chave_dinamicos(textos_contratos: str, google_api_key: st
     if not textos_contratos or not google_api_key:
         return []
 
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro", temperature=0.1)
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0.1)
     parser = PydanticOutputParser(pydantic_object=ListaPontosChave)
 
     prompt = PromptTemplate(
@@ -50,3 +50,4 @@ def identificar_pontos_chave_dinamicos(textos_contratos: str, google_api_key: st
     except Exception as e:
         st.error(f"Erro ao identificar pontos chave dinâmicos: {e}")
         return []
+
