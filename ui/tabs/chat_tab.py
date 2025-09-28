@@ -55,4 +55,3 @@ def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
                 except Exception as e:
                     st.error(f"{texts['chat_error']} {e}")
 
-
