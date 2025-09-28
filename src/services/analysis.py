@@ -10,7 +10,7 @@ import base64
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from langchain_google_genai import ChatGoogle_genai
+from langchain_google_genai import ChatGoogleGenerativeAI # NOME CORRIGIDO AQUI
 from langchain.output_parsers import PydanticOutputParser, OutputFixingParser
 from langchain_core.messages import AIMessage, HumanMessage
 
@@ -22,10 +22,9 @@ from src.models import InfoContrato, ListaDeEventos
 def extrair_dados_dos_contratos(_vector_store, _nomes_arquivos: list, _t) -> list:
     if not _vector_store or not _nomes_arquivos: return []
     
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0)
+    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0) # NOME CORRIGIDO AQUI
     resultados_finais = []
     
-    # Mapa de extração (usando a função de tradução)
     mapa_campos_para_extracao = {
         "nome_banco_emissor": (_t("analysis.q_banco"), _t("analysis.i_banco")),
         "valor_principal_numerico": (_t("analysis.q_valor"), _t("analysis.i_valor")),
@@ -69,14 +68,13 @@ def extrair_dados_dos_contratos(_vector_store, _nomes_arquivos: list, _t) -> lis
                         "pergunta": pergunta_chave, "resposta_label": _t("analysis.answer_label")
                     })
                     resposta = resultado['text'].strip()
-                    dados_contrato_atual[campo] = resposta # Processamento numérico será feito depois
+                    dados_contrato_atual[campo] = resposta
                 except Exception as e:
                     dados_contrato_atual[campo] = "Erro na IA"
             else:
                 dados_contrato_atual[campo] = _t("analysis.context_not_found")
             time.sleep(1.5)
 
-        # Validação e conversão após extrair todos os campos de um arquivo
         try:
             info_validada = InfoContrato(**dados_contrato_atual)
             resultados_finais.append(info_validada.model_dump())
@@ -87,9 +85,7 @@ def extrair_dados_dos_contratos(_vector_store, _nomes_arquivos: list, _t) -> lis
     barra_progresso.empty()
     return resultados_finais
 
-# --- FUNÇÕES DE ANÁLISE DE DOCUMENTO ÚNICO ---
 def _extrair_texto_completo(pdf_bytes, nome_arquivo, _t):
-    """Função helper para extrair texto completo de um PDF, com fallback para Gemini."""
     texto_completo = ""
     try:
         with fitz.open(stream=pdf_bytes, filetype="pdf") as doc_fitz:
@@ -100,10 +96,10 @@ def _extrair_texto_completo(pdf_bytes, nome_arquivo, _t):
     if not texto_completo.strip():
         st.info(_t("analysis.info_gemini_fallback", file=nome_arquivo))
         try:
-            llm_vision = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.1)
+            llm_vision = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.1) # NOME CORRIGIDO AQUI
             prompt_ocr = _t("analysis.prompt_ocr")
             with fitz.open(stream=pdf_bytes, filetype="pdf") as doc_vision:
-                for page_num in range(min(len(doc_vision), 5)): # Limitar para não ser muito caro
+                for page_num in range(min(len(doc_vision), 5)):
                     page_obj = doc_vision.load_page(page_num)
                     pix = page_obj.get_pixmap(dpi=200)
                     base64_image = base64.b64encode(pix.tobytes("png")).decode('utf-8')
@@ -126,7 +122,7 @@ def gerar_resumo_executivo(arquivo_pdf_bytes, nome_arquivo_original, _t):
     texto_completo = _extrair_texto_completo(arquivo_pdf_bytes, nome_arquivo_original, _t)
     if not texto_completo: return _t("analysis.error_no_text_for_summary", file=nome_arquivo_original)
 
-    llm_resumo = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.3)
+    llm_resumo = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.3) # NOME CORRIGIDO AQUI
     template_prompt_resumo = PromptTemplate.from_template(_t("analysis.prompt_summary"))
     chain_resumo = LLMChain(llm=llm_resumo, prompt=template_prompt_resumo)
     try:
@@ -140,7 +136,7 @@ def gerar_resumo_executivo(arquivo_pdf_bytes, nome_arquivo_original, _t):
 def analisar_documento_para_riscos(texto_completo_doc, nome_arquivo_doc, _t):
     if not texto_completo_doc: return _t("analysis.error_no_text_for_risk", file=nome_arquivo_doc)
 
-    llm_riscos = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.2)
+    llm_riscos = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.2) # NOME CORRIGIDO AQUI
     prompt_riscos_template = PromptTemplate.from_template(_t("analysis.prompt_risk"))
     chain_riscos = LLMChain(llm=llm_riscos, prompt=prompt_riscos_template)
     try:
@@ -154,9 +150,9 @@ def analisar_documento_para_riscos(texto_completo_doc, nome_arquivo_doc, _t):
 def extrair_eventos_dos_contratos(textos_completos_docs: List[dict], _t) -> List[dict]:
     if not textos_completos_docs: return []
     
-    llm_eventos = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0, request_timeout=120)
+    llm_eventos = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0, request_timeout=120) # NOME CORRIGIDO AQUI
     parser = PydanticOutputParser(pydantic_object=ListaDeEventos)
-    output_fixing_parser = OutputFixingParser.from_llm(parser=parser, llm=ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.0))
+    output_fixing_parser = OutputFixingParser.from_llm(parser=parser, llm=ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.0)) # NOME CORRIGIDO AQUI
     
     prompt_template_str = _t("analysis.prompt_events")
     prompt_eventos = PromptTemplate(
@@ -197,7 +193,7 @@ def verificar_conformidade_documento(texto_doc_referencia, nome_doc_referencia, 
     if not texto_doc_referencia or not texto_doc_analisar:
         return _t("analysis.error_missing_docs_compliance")
 
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.1, request_timeout=180)
+    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.1, request_timeout=180) # NOME CORRIGIDO AQUI
     prompt_template = PromptTemplate.from_template(_t("analysis.prompt_compliance"))
     chain = LLMChain(llm=llm, prompt=prompt_template)
     
@@ -210,12 +206,10 @@ def verificar_conformidade_documento(texto_doc_referencia, nome_doc_referencia, 
     except Exception as e:
         return _t("analysis.error_compliance_analysis", error=e)
 
-# --- ANÁLISE DE ANOMALIAS ---
 def detectar_anomalias_no_dataframe(df: pd.DataFrame, _t) -> List[str]:
     if df.empty: return [_t("analysis.anomaly_no_data")]
     
     anomalias = []
-    # Lógica de anomalias numéricas e categóricas (simplificada para brevidade)
     campos_numericos = ["valor_principal_numerico", "prazo_total_meses", "taxa_juros_anual_numerica"]
     for campo in campos_numericos:
         if campo in df.columns:
