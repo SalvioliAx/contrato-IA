@@ -15,10 +15,16 @@ from langchain_core.documents import Document
 def get_embeddings_model(api_key: str):
     """
     Inicializa e retorna o modelo de embeddings da Google.
+    Levanta um ValueError se a chave de API for inválida.
     """
     if not api_key:
         raise ValueError("A chave de API não foi fornecida.")
-    return GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=api_key)
+    try:
+        # O modelo de embeddings é específico e diferente dos modelos de chat.
+        return GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=api_key)
+    except Exception as e:
+        # Captura erros de inicialização (ex: chave inválida) e levanta uma exceção mais clara.
+        raise ValueError(f"Falha ao inicializar o modelo de embeddings: {e}")
 
 @st.cache_resource(show_spinner=False)
 def obter_vector_store_de_uploads(_lista_arquivos_pdf_upload, _embeddings_obj, api_key, _t):
@@ -34,37 +40,67 @@ def obter_vector_store_de_uploads(_lista_arquivos_pdf_upload, _embeddings_obj, a
     llm_vision = None
     if api_key:
         try:
-            # ATUALIZAÇÃO: Alterado o nome do modelo para uma versão estável
-            llm_vision = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0.1, request_timeout=300)
+            # CORREÇÃO FINAL: Usando o nome do modelo especificado pelo utilizador.
+            llm_vision = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.1, request_timeout=300)
         except Exception as e:
-            st.warning(f"Não foi possível inicializar o modelo de visão do Gemini: {e}")
+            st.warning(_t("warnings.vision_model_init_failed", error=e))
 
-    for arquivo_pdf_upload in _lista_arquivos_pdf_upload:
-        nome_arquivo = arquivo_pdf_upload.name
-        st.info(_t("info.processing_file", filename=nome_arquivo))
+    for arquivo_pdf in _lista_arquivos_pdf_upload:
+        nome_arquivo = arquivo_pdf.name
+        st.sidebar.info(_t("info.processing_file", filename=nome_arquivo))
         texto_extraido = False
-        documentos_arquivo_atual = []
+        documentos_do_arquivo = []
 
-        # ... (lógica de extração de texto com PyPDF, PyMuPDF) ...
+        try:
+            arquivo_pdf.seek(0)
+            pdf_bytes = arquivo_pdf.read()
+            
+            # Tentativa 1: PyMuPDF (fitz)
+            with fitz.open(stream=pdf_bytes, filetype="pdf") as doc_fitz:
+                for num_pagina, pagina in enumerate(doc_fitz):
+                    texto_pagina = pagina.get_text("text")
+                    if texto_pagina and texto_pagina.strip():
+                        documentos_do_arquivo.append(Document(page_content=texto_pagina, metadata={"source": nome_arquivo, "page": num_pagina}))
+                        texto_extraido = True
+            
+            # Tentativa 2: Gemini Vision (se PyMuPDF falhar e o modelo de visão estiver disponível)
+            if not texto_extraido and llm_vision:
+                st.sidebar.warning(_t("warnings.pymupdf_failed_trying_gemini", filename=nome_arquivo))
+                with fitz.open(stream=pdf_bytes, filetype="pdf") as doc_fitz_vision:
+                    for page_num in range(len(doc_fitz_vision)):
+                        page_obj = doc_fitz_vision.load_page(page_num)
+                        pix = page_obj.get_pixmap(dpi=300)
+                        img_bytes = pix.tobytes("png")
+                        base64_image = base64.b64encode(img_bytes).decode('utf-8')
+                        
+                        human_message = HumanMessage(content=[
+                            {"type": "text", "text": _t("analysis.ocr_prompt")},
+                            {"type": "image_url", "image_url": f"data:image/png;base64,{base64_image}"}
+                        ])
+                        
+                        ai_msg = llm_vision.invoke([human_message])
+                        texto_pagina_gemini = ai_msg.content if isinstance(ai_msg, AIMessage) else ""
 
-        # Tentativa com Gemini Vision
-        if not texto_extraido and llm_vision:
-            try:
-                # ... (lógica de extração com Gemini Vision) ...
-                pass
-            except Exception as e_gemini:
-                st.error(f"Erro no Gemini Vision para {nome_arquivo}: {e_gemini}")
-    
+                        if texto_pagina_gemini and texto_pagina_gemini.strip():
+                            documentos_do_arquivo.append(Document(page_content=texto_pagina_gemini, metadata={"source": nome_arquivo, "page": page_num}))
+                            texto_extraido = True
+                        time.sleep(2) # Evitar sobrecarregar a API
+
+            if texto_extraido:
+                documentos_totais.extend(documentos_do_arquivo)
+                nomes_arquivos_processados.append(nome_arquivo)
+            else:
+                st.sidebar.error(_t("errors.text_extraction_failed", filename=nome_arquivo))
+
+        except Exception as e:
+            st.sidebar.error(_t("errors.file_processing_error", filename=nome_arquivo, error=e))
+
     if not documentos_totais:
         return None, []
 
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1500, chunk_overlap=200)
     docs_fragmentados = text_splitter.split_documents(documentos_totais)
-
-    if not docs_fragmentados:
-        return None, nomes_arquivos_processados
-
+    
     vector_store = FAISS.from_documents(docs_fragmentados, _embeddings_obj)
     return vector_store, nomes_arquivos_processados
-
 
