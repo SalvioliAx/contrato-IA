@@ -1,0 +1,231 @@
+{
+    "tabs": {
+        "chat": "💬 Chat",
+        "dashboard": "📈 Dashboard",
+        "summary": "📜 Resumo",
+        "risks": "🚩 Riscos",
+        "deadlines": "🗓️ Prazos",
+        "compliance": "⚖️ Conformidade",
+        "anomalies": "📊 Anomalias"
+    },
+    "sidebar": {
+        "manage_documents_header": "Gerir Documentos",
+        "api_key_input_label": "(OU) Cole a sua Chave de API do Google aqui:",
+        "language_settings_header": "Configurações de Idioma",
+        "chat_language_label": "Idioma para o CHAT:",
+        "doc_load_mode_label": "Como carregar os documentos?",
+        "doc_load_mode_upload": "Fazer novo upload de PDFs",
+        "doc_load_mode_collection": "Carregar coleção existente",
+        "file_uploader_label": "Selecione um ou mais contratos em PDF",
+        "process_uploads_button": "Processar Documentos Carregados",
+        "select_collection_label": "Escolha uma coleção:",
+        "select_collection_placeholder": "Selecione uma coleção",
+        "load_collection_button": "Carregar Coleção Selecionada",
+        "save_collection_header": "Salvar Coleção Atual",
+        "new_collection_name_label": "Nome para a nova coleção:",
+        "save_collection_button": "Salvar Coleção",
+        "active_collection": "Coleção Ativa",
+        "loaded_files": "Ficheiros Carregados"
+    },
+    "chat": {
+        "header": "Converse com os seus documentos",
+        "initial_message": "Olá! Documentos da coleção '{collection}' prontos ({count} ficheiro(s)). Qual a sua pergunta?",
+        "this_session": "sessão atual",
+        "view_sources_expander": "Ver Fontes e Detalhes da Resposta",
+        "main_reference": "Referência Principal",
+        "source_caption": "Fonte: {source} (Pág: {page})",
+        "export_button": "📥 Exportar Conversa",
+        "input_placeholder": "Faça a sua pergunta sobre os contratos...",
+        "export": {
+            "title": "Histórico da Conversa com Analisador-IA",
+            "user_title": "Você",
+            "ai_title": "IA",
+            "sources_title": "Fontes Utilizadas",
+            "source_label": "Fonte {i} (Doc: `{doc}`, Pág: {page}{method})",
+            "method": "Método"
+        }
+    },
+    "dashboard": {
+        "header": "Análise Comparativa de Dados Contratuais",
+        "description": "Clique no botão para extrair e comparar os dados chave dos documentos carregados (conforme definido no schema `InfoContrato`).",
+        "generate_button": "🚀 Gerar Dados para Dashboard e Anomalias"
+    },
+    "summary": {
+        "header": "📜 Resumo Executivo de um Contrato",
+        "select_contract_label": "Escolha um contrato para resumir:",
+        "select_file_placeholder": "Selecione um ficheiro",
+        "generate_button": "✍️ Gerar Resumo Executivo",
+        "summary_of_contract": "Resumo do Contrato: {file}"
+    },
+    "risks": {
+        "header": "🚩 Análise de Cláusulas de Risco",
+        "description": "Analisa os documentos carregados na sessão atual em busca de cláusulas potencialmente arriscadas.",
+        "analyze_button": "🔎 Analisar Riscos em Todos os Documentos Carregados",
+        "expander_title": "Riscos Identificados em: {file}"
+    },
+    "deadlines": {
+        "header": "🗓️ Monitorização de Prazos e Vencimentos",
+        "description": "Extrai e organiza datas e prazos importantes dos documentos carregados na sessão atual.",
+        "analyze_button": "🔍 Analisar Prazos e Datas Importantes",
+        "all_events_subheader": "Todos os Eventos e Prazos Identificados",
+        "upcoming_events_subheader": "Próximos Eventos (Próximos 90 dias)"
+    },
+    "compliance": {
+        "header": "⚖️ Verificador de Conformidade Contratual",
+        "description": "Compare um documento com um documento de referência para identificar desalinhamentos.",
+        "reference_doc_label": "1. Documento de Referência:",
+        "reference_doc_placeholder": "Selecione o doc. de referência",
+        "analysis_docs_label": "2. Documento(s) a Analisar:",
+        "analysis_docs_placeholder": "Selecione o(s) doc(s) para análise",
+        "verify_button": "🔎 Verificar Conformidade",
+        "report_expander_title": "Relatório"
+    },
+    "anomalies": {
+        "header": "📊 Deteção de Anomalias Contratuais",
+        "description": "Identifica dados que fogem do padrão no conjunto de contratos carregados. **Nota:** Esta funcionalidade depende da qualidade e consistência da extração de dados realizada na aba '📈 Dashboard'.",
+        "detect_button": "🚨 Detetar Anomalias Agora",
+        "results_header": "Resultados da Deteção de Anomalias:",
+        "no_data_to_analyze": "Nenhum dado para analisar anomalias.",
+        "numerical_anomaly": "**Anomalia Numérica em `{file}`:** Campo '{field}' com valor `{value}` está distante da média ({mean}).",
+        "categorical_anomaly": "**Anomalia Categórica:** O valor/categoria '`{value}`' para o campo '{field}' é incomum (presente em {freq}% dos contratos: {files}...).",
+        "no_anomalies_found": "Nenhuma anomalia significativa detetada com os critérios atuais.",
+        "no_significant_anomalies": "Nenhuma anomalia significativa detetada com os critérios atuais, ou os dados não foram suficientes para a análise."
+    },
+    "warnings": {
+        "api_key_not_configured": "Chave de API do Google não configurada nos Secrets.",
+        "no_files_selected": "Nenhum ficheiro selecionado.",
+        "no_collection_selected": "Nenhuma coleção selecionada.",
+        "collection_name_and_docs_required": "Por favor, forneça um nome e certifique-se de que há documentos carregados.",
+        "pypdf_failed_fallback": "PyPDFLoader falhou para {file}. A tentar PyMuPDF.",
+        "pymupdf_failed_fallback": "PyMuPDF (fitz) falhou para {file}. A tentar Gemini Vision.",
+        "generate_dashboard_data_first": "Os dados para análise de anomalias ainda não foram gerados. Por favor, vá para a aba '📈 Dashboard' e clique em '🚀 Gerar Dados para Dashboard e Anomalias' primeiro.",
+        "upload_at_least_two_docs_for_compliance": "Carregue pelo menos dois documentos para fazer uma comparação.",
+        "load_docs_for_dashboard": "Carregue documentos ou uma coleção válida para usar o dashboard.",
+        "no_data_extracted": "Nenhum dado foi extraído para o dashboard. Verifique os logs ou os ficheiros.",
+        "upload_docs_for_summary": "Carregue documentos para usar a função de resumo.",
+        "no_file_selected_for_summary": "Nenhum ficheiro selecionado para resumir.",
+        "upload_docs_for_risk_analysis": "Carregue documentos para ativar a análise de riscos.",
+        "no_text_extracted_for_risk_analysis": "Não foi possível extrair texto dos documentos para análise de riscos.",
+        "upload_docs_for_deadlines": "Carregue documentos para ativar a monitorização de prazos.",
+        "no_text_extracted_for_deadlines": "Não foi possível extrair texto dos documentos para análise de prazos."
+    },
+    "info": {
+        "upload_documents_to_start": "👈 Por favor, carregue e processe documentos PDF ou uma coleção existente na barra lateral para habilitar as funcionalidades.",
+        "processing_and_indexing": "A processar e indexar documentos... Isto pode levar alguns minutos, especialmente com o Gemini Vision.",
+        "no_saved_collections": "Nenhuma coleção salva ainda.",
+        "analyzing_dashboard_data": "A analisar os dados extraídos da aba 'Dashboard' em busca de anomalias.",
+        "extracted_data_table": "Tabela de dados extraídos dos contratos. Use a barra de rolagem horizontal se necessário.",
+        "no_deadlines_extracted": "Nenhum prazo ou evento foi extraído dos documentos.",
+        "no_upcoming_events": "Nenhum evento encontrado para os próximos 90 dias.",
+        "analyzing_risks_in_file": "A analisar riscos em: {file}...",
+        "processing_file": "A processar ficheiro: {file}...",
+        "trying_gemini_vision": "A tentar Gemini Vision para {file}...",
+        "gemini_processing_page": "Gemini a processar página {page}/{total} de {file}...",
+        "creating_vector_store": "A criar vector store com {chunks} fragmentos de {files} ficheiros.",
+        "searching_and_thinking": "A pesquisar e a pensar...",
+        "extracting_field_from_file": "A extrair '{field}' de {file} ({current}/{total})",
+        "fallback_to_gemini_full_text": "Texto não extraído por métodos convencionais para {file}. A tentar Gemini Vision...",
+        "analyzing_deadlines_in_file": "A analisar prazos em: {file}",
+        "analyzing_compliance_progress": "A analisar '{file1}' vs '{file2}'..."
+    },
+    "success": {
+        "documents_processed": "{count} Documento(s) processado(s)!",
+        "collection_saved": "Coleção '{name}' salva com sucesso!",
+        "text_extracted_pypdf": "Texto extraído com PyPDFLoader para {file}.",
+        "text_extracted_pymupdf": "Texto extraído com PyMuPDF para {file}.",
+        "text_extracted_gemini": "Texto extraído com Gemini Vision para {file}.",
+        "vector_store_created": "Vector store criado com sucesso!",
+        "data_extracted_for_contracts": "Dados extraídos para {count} contratos.",
+        "risk_analysis_complete": "Análise de riscos concluída.",
+        "deadline_extraction_complete": "Extração de datas e prazos concluída!",
+        "compliance_analysis_complete": "Análise de conformidade concluída."
+    },
+    "errors": {
+        "api_key_or_embeddings_not_configured": "Chave de API do Google ou o modelo de Embeddings não estão configurados. Verifique a barra lateral.",
+        "document_processing_failed": "Falha ao processar documentos. Verifique os logs acima.",
+        "collection_name_required": "Por favor, forneça um nome para a coleção.",
+        "collection_save_error": "Erro ao salvar coleção: {error}",
+        "qa_chain_error": "Erro durante a execução da cadeia de QA: {error}",
+        "generic_chat_error": "Desculpe, ocorreu um erro ao processar a sua pergunta.",
+        "pydantic_validation_error": "Erro de validação Pydantic para {file}: {error}.",
+        "file_not_found_internal": "Ficheiro selecionado não encontrado (isto não deveria acontecer).",
+        "read_error_reference_doc": "Erro ao ler documento de referência {file}",
+        "read_error_analysis_doc": "Erro ao ler documento a analisar {file}",
+        "text_extraction_failed": "Não foi possível extrair texto do ficheiro: {file}. O ficheiro pode estar vazio, corrompido ou ser uma imagem demasiado complexa.",
+        "general_file_processing_error": "Erro geral ao processar o ficheiro {file}: {error}",
+        "no_text_extracted_from_any_doc": "Nenhum texto pôde ser extraído de nenhum dos documentos fornecidos.",
+        "text_splitting_failed": "A fragmentação do texto não resultou em nenhum documento. Verifique o conteúdo extraído.",
+        "faiss_creation_error": "Erro ao criar o vector store com FAISS: {error}",
+        "gemini_vision_error": "Erro ao usar o Gemini Vision para {file}: {error}",
+        "file_or_api_key_missing": "Erro: Ficheiro ou chave de API não fornecidos.",
+        "text_extraction_failed_for_summary": "Erro: Não foi possível ler o conteúdo do PDF {file} para resumo.",
+        "summary_generation_error": "Erro ao gerar resumo: {error}",
+        "text_or_api_key_missing_for_analysis": "Não foi possível analisar: Texto ou Chave API ausente.",
+        "risk_analysis_error": "Erro ao analisar riscos para '{file}': {error}",
+        "deadline_extraction_error": "Erro crítico ao processar datas para '{file}'. Erro: {error}",
+        "compliance_analysis_error": "Erro ao gerar análise de conformidade para '{file1}' vs '{file2}': {error}"
+    },
+    "prompts": {
+        "gemini_ocr": {
+            "prompt": "Você é um especialista em OCR. Extraia todo o texto visível desta página de documento da forma mais precisa possível. Mantenha a estrutura do texto original, incluindo parágrafos e quebras de linha, quando apropriado. Se houver tabelas, tente preservar a sua estrutura textual."
+        },
+        "chat_qa": {
+            "en": "You are an analytical assistant. Use the context excerpts to answer the question completely and explanatorily. Do not just answer with 'Yes' or 'No'. Explain the reasoning for your answer based on the context.\nIf the context does not contain the answer, state that you could not find the information in the documents.\n\nCONTEXT:\n{context}\n\nQUESTION: {question}\n\n--- RESPONSE FORMATTING INSTRUCTIONS ---\nFollow the format below EXACTLY:\nANSWER (in English):\n[Your explanatory answer here]\n\n|||MAIN CLAUSE/ARTICLE:\n[Cite the most relevant clause or article number, if any. E.g., Clause 5.1, Article 12. If none, write 'Not applicable']\n\n|||MOST RELEVANT EXCERPT FROM THE CONTEXT:\n[Quote the exact sentence or short paragraph from the context that supports your answer]",
+            "es": "Eres un asistente analítico. Utiliza los fragmentos de contexto para responder la pregunta de forma completa y explicativa. No respondas solo con 'Sí' o 'No'. Explica el porqué de tu respuesta basándote en el contexto.\nSi el contexto no contiene la respuesta, indica que no has encontrado la información en los documentos.\n\nCONTEXTO:\n{context}\n\nPREGUNTA: {question}\n\n--- INSTRUCCIONES DE FORMATO DE RESPUESTA ---\nSigue el formato a continuación EXACTAMENTE:\nRESPUESTA (en Español):\n[Tu respuesta explicativa aquí]\n\n|||CLÁUSULA/ARTÍCULO PRINCIPAL:\n[Cita el número de la cláusula o artículo más relevante, si existe. Ej: Cláusula 5.1, Artículo 12. Si no hay, escribe 'No aplicable']\n\n|||FRAGMENTO MÁS RELEVANTE DEL CONTEXTO:\n[Cita la oración exacta o el párrafo corto del contexto que fundamenta tu respuesta]",
+            "pt": "Você é um assistente analítico. Use os trechos de contexto para responder à pergunta de forma completa e explicativa. Não responda apenas com 'Sim' ou 'Não'. Explique o porquê da sua resposta com base no contexto.\nSe o contexto não contiver a resposta, informe que não encontrou a informação nos documentos.\n\nCONTEXTO:\n{context}\n\nPERGUNTA: {question}\n\n--- INSTRUÇÕES DE FORMATAÇÃO DA RESPOSTA ---\nSiga o formato abaixo EXATAMENTE:\nRESPOSTA (em Português):\n[Sua resposta explicativa aqui]\n\n|||CLÁUSULA/ARTIGO PRINCIPAL:\n[Cite o número da cláusula ou artigo mais relevante, se houver. Ex: Cláusula 5.1, Artigo 12. Se não houver, escreva 'Não aplicável']\n\n|||TRECHO MAIS RELEVANTE DO CONTEXTO:\n[Cite a sentença ou pequeno parágrafo exato do contexto que fundamenta sua resposta]"
+        },
+        "data_extraction_chain": {
+            "template": "Com base no contexto fornecido, responda à seguinte pergunta de forma precisa. {instrucao}\n\nContexto:\n{contexto}\n\nPergunta: {pergunta}\nResposta:"
+        },
+        "data_extraction_map": {
+            "nome_banco_emissor": {
+                "pergunta": "Qual o nome principal do banco, instituição financeira ou empresa emissora deste contrato?",
+                "instrucao": "Responda apenas com o nome. Se não encontrar, diga 'Não encontrado'."
+            },
+            "valor_principal_numerico": {
+                "pergunta": "Qual o valor monetário principal ou limite de crédito central deste contrato?",
+                "instrucao": "Se encontrar um valor, forneça apenas o número (ex: 10000.50). Se não encontrar, responda 'Não encontrado'."
+            },
+            "prazo_total_meses": {
+                "pergunta": "Qual o prazo de vigência total deste contrato em meses? Se estiver em anos, converta para meses.",
+                "instrucao": "Se encontrar, forneça apenas o número de meses. Se não encontrar, responda 'Não encontrado'."
+            },
+            "taxa_juros_anual_numerica": {
+                "pergunta": "Qual a principal taxa de juros anual (ou facilmente conversível para anual) mencionada?",
+                "instrucao": "Se encontrar, forneça apenas o número percentual (ex: 12.5). Se não encontrar, responda 'Não encontrado'."
+            },
+            "possui_clausula_rescisao_multa": {
+                "pergunta": "Este contrato menciona explicitamente uma multa monetária ou percentual em caso de rescisão?",
+                "instrucao": "Responda apenas com 'Sim', 'Não', ou 'Não claro'."
+            },
+            "condicao_limite_credito": {
+                "pergunta": "Qual é a política ou condição para definir o limite de crédito?",
+                "instrucao": "Resuma a política em uma ou duas frases. Se não encontrar, responda 'Não encontrado'."
+            },
+            "condicao_juros_rotativo": {
+                "pergunta": "Sob quais condições os juros do crédito rotativo são aplicados?",
+                "instrucao": "Resuma a regra em uma ou duas frases. Se não encontrar, responda 'Não encontrado'."
+            },
+            "condicao_anuidade": {
+                "pergunta": "Qual é a política de cobrança da anuidade descrita no contrato?",
+                "instrucao": "Resuma a política em uma ou duas frases. Se não encontrar, responda 'Não encontrado'."
+            },
+            "condicao_cancelamento": {
+                "pergunta": "Quais são as regras para o cancelamento ou rescisão do contrato?",
+                "instrucao": "Resuma as regras em uma ou duas frases. Se não encontrar, responda 'Não encontrado'."
+            }
+        },
+        "summary": {
+            "template": "Você é um assistente especializado em analisar e resumir documentos jurídicos, como contratos.\nCom base no texto do contrato fornecido abaixo, crie um resumo executivo em 5 a 7 tópicos concisos (bullet points).\nDestaque os seguintes aspetos, se presentes: as partes principais envolvidas, o objeto principal do contrato, prazo de vigência (se houver), principais obrigações financeiras ou condições de pagamento, e as principais condições ou motivos para rescisão ou cancelamento do contrato.\nSeja claro e direto.\n\nTEXTO DO CONTRATO:\n{texto_contrato}\n\nRESUMO EXECUTIVO:"
+        },
+        "risk_analysis": {
+            "template": "Você é um advogado especialista em análise de riscos contratuais. Analise o texto do contrato fornecido abaixo e identifique cláusulas ou omissões que possam representar riscos significativos. Para cada risco identificado, por favor:\n1. Descreva o risco de forma clara e concisa.\n2. Cite o trecho exato da cláusula relevante (ou mencione a ausência de uma cláusula esperada).\n3. Classifique o risco (ex: Financeiro, Operacional, Legal, Rescisão, Propriedade Intelectual, Confidencialidade, etc.).\nConcentre-se nos riscos mais impactantes. Se nenhum risco significativo for encontrado, declare isso explicitamente.\nUse formatação Markdown para a sua resposta, com um título para cada risco.\n\nTEXTO DO CONTRATO ({nome_arquivo}):\n{texto_contrato}\n\nANÁLISE DE RISCOS:"
+        },
+        "event_extraction": {
+            "template": "Analise o texto do contrato abaixo. A sua tarefa é identificar TODOS os eventos, datas, prazos e períodos importantes mencionados.\nPara cada evento encontrado, extraia as seguintes informações:\n1. 'descricao_evento': Uma descrição clara e concisa do evento (ex: 'Data de assinatura do contrato', 'Vencimento da primeira parcela', 'Prazo final para entrega do produto', 'Início da vigência', 'Período de carência para alteração de vencimento').\n2. 'data_evento_str': A data específica do evento no formato AAAA-MM-DD. Se uma data EXATA não puder ser determinada ou não se aplicar (ex: '10 dias antes do vencimento', 'prazo indeterminado', 'na fatura mensal'), preencha este campo OBRIGATORIAMENTE com a string 'Não Especificado'. NUNCA use null, None ou deixe o campo vazio.\n3. 'trecho_relevante': O trecho curto e exato do contrato que menciona este evento/data.\n\n{format_instructions}\n\nTEXTO DO CONTRATO ({arquivo_fonte}):\n{texto_contrato}\n\nATENÇÃO: O campo 'data_evento_str' DEVE SEMPRE ser uma string. Se não houver data específica, use 'Não Especificado'.\nLISTA DE EVENTOS ENCONTRADOS:"
+        },
+        "compliance_check": {
+            "template": "Você é um especialista em conformidade e auditoria contratual. A sua tarefa é comparar o 'DOCUMENTO A ANALISAR' com o 'DOCUMENTO DE REFERÊNCIA' (ex: um Código de Ética ou Política Interna).\n\nDOCUMENTO DE REFERÊNCIA ({nome_doc_referencia}):\n--------------------------------------------\n{texto_doc_referencia}\n--------------------------------------------\n\nDOCUMENTO A ANALISAR ({nome_doc_analisar}):\n--------------------------------------------\n{texto_doc_analisar}\n--------------------------------------------\n\nPor favor, identifique e liste quaisquer cláusulas, termos ou omissões significativas no 'DOCUMENTO A ANALISAR' que possam:\n1. Contradizer diretamente os princípios ou regras estabelecidas no 'DOCUMENTO DE REFERÊNCIA'.\n2. Estar em desalinhamento ético ou de conduta com o 'DOCUMENTO DE REFERÊNCIA'.\n3. Representar um risco de não conformidade com as diretrizes do 'DOCUMENTO DE REFERÊNCIA'.\n\nPara cada ponto de não conformidade ou potencial conflito identificado:\na. Descreva o problema/conflito de forma clara e objetiva.\nb. Cite o trecho exato (ou o número da cláusula, se aplicável) do 'DOCUMENTO A ANALISAR' que levanta a questão.\nc. Cite o trecho exato ou princípio (ou o número da cláusula/item, se aplicável) do 'DOCUMENTO DE REFERÊNCIA' que está sendo potencialmente violado ou que serve de base para a comparação.\nd. Ofereça uma breve explicação sobre o motivo do conflito ou desalinhamento.\n\nSe nenhum conflito ou ponto de não conformidade significativo for encontrado, declare isso explicitamente como 'Nenhum conflito de conformidade significativo identificado'.\nUse formatação Markdown para a sua resposta, organizando os pontos claramente. Use títulos (###) para cada conflito encontrado.\n\nRELATÓRIO DE ANÁLISE DE CONFORMIDADE:"
+        }
+    }
+}
