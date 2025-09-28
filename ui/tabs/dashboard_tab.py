@@ -27,10 +27,13 @@ def render_dashboard_tab(embeddings_global, google_api_key):
             try:
                 arquivo.seek(0)
                 pdf_bytes = arquivo.read()
+                # CORREÇÃO: Iterar sobre as páginas do documento para extrair o texto
                 with fitz.open(stream=pdf_bytes, filetype="pdf") as doc:
-                    textos_completos_juntos += doc.get_text() + "\n\n---\n\n"
+                    for page in doc:
+                        textos_completos_juntos += page.get_text() + "\n"
+                    textos_completos_juntos += "\n\n---\n\n" # Separador entre documentos
             except Exception as e:
-                st.error(f"Erro ao ler {arquivo.name}: {e}")
+                st.error(f"Erro ao ler o ficheiro {arquivo.name}: {e}")
 
         if textos_completos_juntos.strip():
             # 2. Chamar o novo serviço de extração dinâmica
@@ -46,6 +49,7 @@ def render_dashboard_tab(embeddings_global, google_api_key):
                 st.warning("A extração dinâmica não retornou dados.")
                 if "dados_extraidos" in st.session_state:
                     del st.session_state.dados_extraidos
+        st.rerun() # Adicionado para garantir que a UI atualize após o processamento
 
     if "dados_extraidos" in st.session_state and st.session_state.dados_extraidos:
         df = pd.DataFrame(st.session_state.dados_extraidos)
@@ -54,7 +58,6 @@ def render_dashboard_tab(embeddings_global, google_api_key):
         # 3. Lógica dinâmica para visualização de gráficos
         colunas_numericas = []
         for col in df.columns:
-            # Tenta converter a coluna para numérico e verifica se há pelo menos um número
             if pd.to_numeric(df[col], errors='coerce').notna().any():
                 colunas_numericas.append(col)
         
@@ -69,7 +72,6 @@ def render_dashboard_tab(embeddings_global, google_api_key):
             
             if coluna_selecionada:
                 df_chart = df.copy()
-                # Limpa e converte a coluna para o gráfico
                 df_chart[coluna_selecionada] = pd.to_numeric(df_chart[coluna_selecionada], errors='coerce')
                 
                 chart = alt.Chart(df_chart).mark_bar().encode(
