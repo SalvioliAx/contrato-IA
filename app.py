@@ -1,105 +1,77 @@
-import sys
-from pathlib import Path
 import streamlit as st
 
-# Adiciona o diretório 'src' ao caminho do Python para garantir que as importações funcionem
-sys.path.append(str(Path(__file__).resolve().parent / "src"))
+# Importações dos módulos da aplicação
+from src.config import configure_page, initialize_session_state, get_api_key
+from src.localization import Localization
+from src.sidebar import display_sidebar
+from src.services import document_processor
 
-# Importação dos módulos da aplicação
-from config import configure_page, initialize_session_state, get_api_key
-from localization import Localization
-from ui import sidebar
-from services import document_processor
-from ui.tabs import (
-    chat_tab, dashboard_tab, summary_tab, risk_tab,
-    deadline_tab, compliance_tab, anomaly_tab
-)
+# Importações das abas da UI
+from src.ui import chat_tab, dashboard_tab, summary_tab, risk_tab, deadline_tab, compliance_tab, anomaly_tab
 
 def main():
-    """Função principal que executa a aplicação Streamlit."""
-    # --- 1. CONFIGURAÇÃO INICIAL DA PÁGINA E ESTADO ---
+    """
+    Função principal que orquestra a aplicação Streamlit ContratIA.
+    """
+    # 1. Configuração inicial da página e do estado
     configure_page()
     initialize_session_state()
 
-    # Instancia e configura o localizador
-    if "localization" not in st.session_state:
-        st.session_state.localization = Localization()
+    # 2. Configuração da localização e tradução
+    # (Assume que o idioma é gerido no session_state, inicializado em config.py)
+    loc = Localization(default_lang=st.session_state.get("language", "pt"))
+    # Language switching logic can be added to the sidebar if needed
+    # loc.set_language(st.session_state.language)
+    t = loc.get_translator()
+
+    # 3. Gestão da Chave de API e Modelos
+    api_key = get_api_key(t)
     
-    # Define o idioma com base na seleção do utilizador
-    lang = st.session_state.get("language", "pt")
-    st.session_state.localization.set_language(lang)
-    t = st.session_state.localization.get_translator()
-
-    # Layout do cabeçalho
-    col1, col2 = st.columns([3, 1])
-    with col1:
-        st.title("💡 ContratIA")
-    with col2:
-        cols = st.columns(3)
-        with cols[0]:
-            if st.button("🇧🇷 PT", use_container_width=True):
-                st.session_state.language = "pt"
-                st.rerun()
-        with cols[1]:
-            if st.button("🇺🇸 EN", use_container_width=True):
-                st.session_state.language = "en"
-                st.rerun()
-        with cols[2]:
-            if st.button("🇪🇸 ES", use_container_width=True):
-                st.session_state.language = "es"
-                st.rerun()
-
-    # --- 2. GESTÃO DA API KEY E MODELO DE EMBEDDINGS ---
-    google_api_key = get_api_key(t)
-    embeddings_initialized = False
-    initialization_error = None
-
-    if google_api_key:
+    # Inicializa o modelo de embeddings apenas se a chave estiver disponível
+    if api_key and not st.session_state.get("embeddings_model"):
         try:
-            st.session_state.embeddings_model = document_processor.get_embeddings_model(google_api_key)
-            if st.session_state.embeddings_model:
-                embeddings_initialized = True
-        except Exception as e:
-            # CORREÇÃO: Captura o erro e usa uma nova chave de tradução para uma mensagem mais detalhada
-            print(f"ERRO DETALHADO DE INICIALIZAÇÃO: {e}") 
-            initialization_error = t("errors.embedding_initialization_failed_detailed", error=str(e))
-    else:
-        initialization_error = t("errors.api_key_or_embeddings_not_configured")
+            st.session_state.embeddings_model = document_processor.get_embeddings_model(api_key)
+        except ValueError as e:
+            st.sidebar.error(f"{t('errors.embedding_init_failed')}: {e}")
+            st.session_state.embeddings_model = None
+            
+    embeddings_model = st.session_state.get("embeddings_model")
 
-    # Renderiza a barra lateral
-    sidebar.display_sidebar(google_api_key, st.session_state.embeddings_model, t)
+    # 4. Renderizar a Barra Lateral
+    display_sidebar(api_key, embeddings_model, t)
 
-    # --- 3. LÓGICA DE EXIBIÇÃO DO CONTEÚDO PRINCIPAL ---
-    if not embeddings_initialized:
-        if initialization_error:
-            st.error(initialization_error, icon="🚨")
-        else:
-            st.error(t("errors.api_key_or_embeddings_not_configured"), icon="🚨")
-    elif not st.session_state.get("vector_store"):
-        st.info(t("info.please_load_docs"))
+    # 5. Lógica do Layout Principal (Abas)
+    st.title("💡 ContratIA")
+
+    # Verifica se os pré-requisitos para as abas funcionarem estão carregados
+    documentos_prontos = api_key and embeddings_model and st.session_state.get("vector_store") is not None
+
+    if not (api_key and embeddings_model):
+        st.error(t("errors.api_key_or_embeddings_not_configured_full"))
+    elif not documentos_prontos:
+        st.info(t("info.load_docs_to_enable_features"))
     else:
-        # Define as abas da aplicação
-        tab_titles = [
+        # Cria as abas
+        tab_chat, tab_dashboard, tab_resumo, tab_riscos, tab_prazos, tab_conformidade, tab_anomalias = st.tabs([
             t("tabs.chat"), t("tabs.dashboard"), t("tabs.summary"), t("tabs.risks"),
             t("tabs.deadlines"), t("tabs.compliance"), t("tabs.anomalies")
-        ]
-        tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(tab_titles)
+        ])
 
-        with tab1:
+        # Renderiza o conteúdo de cada aba
+        with tab_chat:
             chat_tab.display_chat_tab(t)
-        with tab2:
+        with tab_dashboard:
             dashboard_tab.display_dashboard_tab(t)
-        with tab3:
+        with tab_resumo:
             summary_tab.display_summary_tab(t)
-        with tab4:
+        with tab_riscos:
             risk_tab.display_risk_tab(t)
-        with tab5:
+        with tab_prazos:
             deadline_tab.display_deadline_tab(t)
-        with tab6:
+        with tab_conformidade:
             compliance_tab.display_compliance_tab(t)
-        with tab7:
+        with tab_anomalias:
             anomaly_tab.display_anomaly_tab(t)
 
 if __name__ == "__main__":
     main()
-
