@@ -12,7 +12,7 @@ def analisar_documento_para_riscos(texto, nome_arquivo, google_api_key, lang_cod
     if not texto or not google_api_key:
         return "Erro: sem texto ou API."
 
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro", temperature=0.2)
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0.2)
     
     prompt_text = TRANSLATIONS[lang_code]["risks_prompt"].format(nome=nome_arquivo, language=TRANSLATIONS[lang_code]["lang_selector_label"])
     
@@ -26,4 +26,5 @@ def analisar_documento_para_riscos(texto, nome_arquivo, google_api_key, lang_cod
         return res['text']
     except Exception as e:
         return f"Erro na análise de riscos: {e}"
+
 
