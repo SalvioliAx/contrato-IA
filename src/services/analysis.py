@@ -1,19 +1,19 @@
 import streamlit as st
 import re
 import time
-import numpy as np
 import pandas as pd
 from typing import List
+from datetime import datetime
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.output_parsers import PydanticOutputParser, OutputFixingParser
-from langchain_core.messages import AIMessage, HumanMessage
+from langchain.output_parsers import PydanticOutputParser
+from langchain_core.messages import HumanMessage
 
-from src.models import InfoContrato, ListaDeEventos, EventoContratual
+from src.models import InfoContrato, ListaDeEventos
 
-# --- EXTRAÇÃO DE DADOS ESTRUTURADOS ---
+# --- EXTRAÇÃO DE DADOS ESTRUTURADOS (DASHBOARD) ---
 
 @st.cache_data(show_spinner=False)
 def extrair_dados_dos_contratos(_vector_store, _nomes_arquivos: list, _t) -> list:
@@ -21,10 +21,10 @@ def extrair_dados_dos_contratos(_vector_store, _nomes_arquivos: list, _t) -> lis
     if not _vector_store or not _nomes_arquivos:
         return []
 
-    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0)
+    # CORREÇÃO: Padronizado para um nome de modelo válido e estável.
+    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0)
     resultados_finais = []
     
-    # Mapeamento dos campos para extração com as perguntas traduzíveis
     mapa_campos = {
         "nome_banco_emissor": "analysis.bank_name_question",
         "valor_principal_numerico": "analysis.principal_value_question",
@@ -65,8 +65,7 @@ def extrair_dados_dos_contratos(_vector_store, _nomes_arquivos: list, _t) -> lis
                     resultado = chain_extracao.invoke({"contexto": contexto, "pergunta": pergunta_completa})
                     resposta = resultado.get('text', '').strip()
 
-                    # Lógica de processamento da resposta da IA
-                    if campo in ["valor_principal_numerico", "prazo_total_meses", "taxa_juros_anual_numerica"]:
+                    if campo in ["valor_principal_numerico", "taxa_juros_anual_numerica"]:
                         numeros = re.findall(r"[\d]+(?:[.,]\d+)*", resposta)
                         if numeros:
                             valor_str = numeros[0].replace('.', '').replace(',', '.')
@@ -76,6 +75,12 @@ def extrair_dados_dos_contratos(_vector_store, _nomes_arquivos: list, _t) -> lis
                             dados_contrato_atual[campo] = float(valor_str)
                         else:
                             dados_contrato_atual[campo] = None
+                    elif campo == "prazo_total_meses":
+                        numeros = re.findall(r'\d+', resposta)
+                        if numeros:
+                             dados_contrato_atual[campo] = int(numeros[0])
+                        else:
+                             dados_contrato_atual[campo] = None
                     elif campo == "possui_clausula_rescisao_multa":
                         if any(x in resposta.lower() for x in ["sim", "yes", "sí"]): dados_contrato_atual[campo] = "Sim"
                         elif any(x in resposta.lower() for x in ["não", "nao", "no"]): dados_contrato_atual[campo] = "Não"
@@ -107,20 +112,18 @@ def detectar_anomalias_no_dataframe(df: pd.DataFrame, _t) -> List[str]:
         return [_t("anomalies.no_data")]
     
     anomalias = []
-    # Análise de outliers numéricos
     for campo in ["valor_principal_numerico", "prazo_total_meses", "taxa_juros_anual_numerica"]:
         if campo in df.columns:
             serie = pd.to_numeric(df[campo], errors='coerce').dropna()
-            if len(serie) > 1:
+            if len(serie) > 2: # Precisa de pelo menos 3 pontos para uma análise de desvio minimamente útil
                 media, desvio_pad = serie.mean(), serie.std()
-                if desvio_pad > 0:
+                if desvio_pad > 1e-6: # Evitar divisão por zero ou float imprecisions
                     limite_superior = media + 2 * desvio_pad
                     limite_inferior = media - 2 * desvio_pad
-                    outliers = df[~serie.between(limite_inferior, limite_superior)]
+                    outliers = df[(pd.to_numeric(df[campo], errors='coerce') < limite_inferior) | (pd.to_numeric(df[campo], errors='coerce') > limite_superior)]
                     for _, linha in outliers.iterrows():
                         anomalias.append(_t("anomalies.numeric_anomaly", file=linha['arquivo_fonte'], field=campo, value=linha[campo], mean=f"{media:.2f}"))
 
-    # Análise de categorias raras
     for campo in ["possui_clausula_rescisao_multa", "nome_banco_emissor"]:
         if campo in df.columns and len(df) > 5:
             contagem = df[campo].value_counts(normalize=True)
@@ -135,7 +138,7 @@ def detectar_anomalias_no_dataframe(df: pd.DataFrame, _t) -> List[str]:
 
 @st.cache_data(show_spinner=False)
 def extrair_eventos_dos_contratos(_textos_completos: List[dict], _t) -> List[dict]:
-    """Extrai datas e prazos importantes de uma lista de textos de documentos."""
+    """Extrai datas e prazos importantes, convertendo para objetos datetime."""
     if not _textos_completos: return []
 
     llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0)
@@ -151,50 +154,63 @@ def extrair_eventos_dos_contratos(_textos_completos: List[dict], _t) -> List[dic
 
     for doc_info in _textos_completos:
         try:
-            resultado = chain.invoke({"texto_contrato": doc_info["texto"][:25000], "arquivo_fonte": doc_info["nome"]})
+            resultado = chain.invoke({"texto_contrato": doc_info["texto"][:30000], "arquivo_fonte": doc_info["nome"]})
             lista_eventos = parser.parse(resultado['text'])
             for evento in lista_eventos.eventos:
+                data_obj = None
+                if evento.data_evento_str and evento.data_evento_str.lower() not in ["não especificado", "n/a", ""]:
+                    try:
+                        data_obj = datetime.strptime(evento.data_evento_str, "%Y-%m-%d").date()
+                    except ValueError:
+                        try:
+                            data_obj = datetime.strptime(evento.data_evento_str, "%d/%m/%Y").date()
+                        except ValueError:
+                            pass
+                
                 todos_eventos.append({
-                    "Arquivo Fonte": doc_info["nome"], "Evento": evento.descricao_evento,
-                    "Data Informada": evento.data_evento_str, "Trecho Relevante": evento.trecho_relevante
+                    "Arquivo Fonte": doc_info["nome"],
+                    "Evento": evento.descricao_evento,
+                    "Data Informada": evento.data_evento_str,
+                    "Data Objeto": data_obj,
+                    "Trecho Relevante": evento.trecho_relevante
                 })
         except Exception as e:
             st.warning(f"Erro ao extrair eventos de {doc_info['nome']}: {e}")
-        time.sleep(1)
+        time.sleep(1.5)
         
     return todos_eventos
 
 @st.cache_data(show_spinner=False)
 def verificar_conformidade_documento(_texto_referencia, _nome_referencia, _texto_analisar, _nome_analisar, _t):
-    """Compara um documento com um documento de referência para verificar conformidade."""
+    """Compara um documento com um documento de referência."""
     if not _texto_referencia or not _texto_analisar: return _t("errors.missing_compliance_docs")
 
-    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0.1)
+    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.1)
     template = _t("analysis.compliance_prompt_template")
     prompt = PromptTemplate.from_template(template)
     chain = LLMChain(llm=llm, prompt=prompt)
 
     try:
         resultado = chain.invoke({
-            "texto_doc_referencia": _texto_referencia[:25000], "nome_doc_referencia": _nome_referencia,
-            "texto_doc_analisar": _texto_analisar[:25000], "nome_doc_analisar": _nome_analisar
+            "texto_doc_referencia": _texto_referencia[:30000], "nome_doc_referencia": _nome_referencia,
+            "texto_doc_analisar": _texto_analisar[:30000], "nome_doc_analisar": _nome_analisar
         })
         return resultado.get('text', _t("errors.compliance_analysis_failed"))
     except Exception as e:
         return f"{_t('errors.compliance_analysis_failed')}: {e}"
 
 @st.cache_data(show_spinner=False)
-def gerar_resumo_executivo(_texto_completo, _t):
+def gerar_resumo_executivo(_texto_completo, _nome_arquivo, _t):
     """Gera um resumo executivo a partir do texto completo de um documento."""
     if not _texto_completo.strip(): return _t("errors.no_text_for_summary")
     
-    llm_resumo = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0.3)
+    llm_resumo = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.3)
     template = _t("analysis.summary_prompt_template")
     prompt = PromptTemplate.from_template(template)
     chain = LLMChain(llm=llm_resumo, prompt=prompt)
     
     try:
-        resultado = chain.invoke({"texto_contrato": _texto_completo[:30000]})
+        resultado = chain.invoke({"texto_contrato": _texto_completo[:35000]})
         return resultado.get('text', _t("errors.summary_generation_failed"))
     except Exception as e:
         return f"{_t('errors.summary_generation_failed')}: {e}"
@@ -204,15 +220,13 @@ def analisar_documento_para_riscos(_texto_completo, _nome_arquivo, _t):
     """Analisa o texto de um documento para identificar cláusulas de risco."""
     if not _texto_completo.strip(): return _t("errors.no_text_for_risk_analysis")
 
-    llm_riscos = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0.2)
+    llm_riscos = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.2)
     template = _t("analysis.risk_prompt_template")
     prompt = PromptTemplate.from_template(template)
     chain = LLMChain(llm=llm_riscos, prompt=prompt)
 
     try:
-        resultado = chain.invoke({"texto_contrato": _texto_completo[:30000], "nome_arquivo": _nome_arquivo})
+        resultado = chain.invoke({"texto_contrato": _texto_completo[:35000], "nome_arquivo": _nome_arquivo})
         return resultado.get('text', _t("errors.risk_analysis_failed"))
     except Exception as e:
         return f"{_t('errors.risk_analysis_failed')}: {e}"
-
-
