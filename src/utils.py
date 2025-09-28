@@ -30,7 +30,7 @@ def get_full_text_from_uploads(uploaded_files, t):
             if not texto_doc.strip():
                 st.info(t("info.extracting_text_with_gemini", filename=file.name))
                 # ATUALIZAÇÃO: Alterado o nome do modelo para uma versão estável
-                llm_vision = ChatGoogleGenerativeAI(model="gemini-pro-vision", temperature=0.1)
+                llm_vision = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0.1)
                 with fitz.open(stream=pdf_bytes, filetype="pdf") as doc_fitz_vision:
                     for page_num in range(len(doc_fitz_vision)):
                         # ... (lógica de extração com Gemini Vision) ...
@@ -50,4 +50,5 @@ def formatar_chat_para_markdown(mensagens, t):
         elif msg["role"] == "assistant":
             texto_formatado += f"## {t('chat.export_ia_title')}:\n{msg['content']}\n\n"
     return texto_formatado
+
 
