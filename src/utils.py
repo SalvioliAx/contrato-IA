@@ -17,28 +17,53 @@ def reset_analysis_data():
             del st.session_state[key]
 
 def get_full_text_from_uploads(uploaded_files, t):
-    """Extrai o texto completo de uma lista de ficheiros carregados."""
+    """Extrai o texto completo de uma lista de ficheiros carregados, com fallback para IA."""
     textos_completos = []
+    if not uploaded_files:
+        return textos_completos
+
     for file in uploaded_files:
+        texto_doc = ""
         try:
             file.seek(0)
             pdf_bytes = file.read()
-            texto_doc = ""
-            with fitz.open(stream=pdf_bytes, filetype="pdf") as doc_fitz:
-                texto_doc = "".join(page.get_text() for page in doc_fitz)
             
+            # Tenta extrair com PyMuPDF
+            with fitz.open(stream=pdf_bytes, filetype="pdf") as doc_fitz:
+                for page in doc_fitz:
+                    texto_doc += page.get_text() + "\n"
+            
+            # Se PyMuPDF não extrair texto, tenta com Gemini Vision
             if not texto_doc.strip():
                 st.info(t("info.extracting_text_with_gemini", filename=file.name))
-                # ATUALIZAÇÃO: Alterado o nome do modelo para uma versão estável
-                llm_vision = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0.1)
+                # CORREÇÃO FINAL: Usando o nome do modelo especificado pelo utilizador.
+                llm_vision = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.1)
+                
                 with fitz.open(stream=pdf_bytes, filetype="pdf") as doc_fitz_vision:
                     for page_num in range(len(doc_fitz_vision)):
-                        # ... (lógica de extração com Gemini Vision) ...
-                        pass
-            
-            textos_completos.append({"nome": file.name, "texto": texto_doc})
+                        page_obj = doc_fitz_vision.load_page(page_num)
+                        pix = page_obj.get_pixmap(dpi=200)
+                        img_bytes_ocr = pix.tobytes("png")
+                        base64_image_ocr = base64.b64encode(img_bytes_ocr).decode('utf-8')
+                        
+                        human_message_ocr = HumanMessage(content=[
+                            {"type": "text", "text": t("analysis.ocr_prompt")},
+                            {"type": "image_url", "image_url": f"data:image/png;base64,{base64_image_ocr}"}
+                        ])
+                        
+                        ai_msg_ocr = llm_vision.invoke([human_message_ocr])
+                        if isinstance(ai_msg_ocr, AIMessage) and ai_msg_ocr.content:
+                            texto_doc += ai_msg_ocr.content + "\n\n"
+                        time.sleep(1)
+
+            if texto_doc.strip():
+                textos_completos.append({"nome": file.name, "texto": texto_doc})
+            else:
+                st.warning(t("warnings.text_extraction_failed_for_file", filename=file.name))
+
         except Exception as e:
-            st.error(f"Erro ao ler {file.name}: {e}")
+            st.error(t("errors.file_processing_error", filename=file.name, error=e))
+            
     return textos_completos
 
 def formatar_chat_para_markdown(mensagens, t):
@@ -48,7 +73,13 @@ def formatar_chat_para_markdown(mensagens, t):
         if msg["role"] == "user":
             texto_formatado += f"## {t('chat.export_user_title')}:\n{msg['content']}\n\n"
         elif msg["role"] == "assistant":
-            texto_formatado += f"## {t('chat.export_ia_title')}:\n{msg['content']}\n\n"
+            texto_formatado += f"## {t('chat.export_ai_title')}:\n{msg['content']}\n"
+            if "sources" in msg and msg["sources"]:
+                texto_formatado += f"### {t('chat.export_sources_title')}:\n"
+                for i, doc in enumerate(msg["sources"]):
+                    source_name = doc.metadata.get('source', 'N/A')
+                    page_num = doc.metadata.get('page', 'N/A')
+                    texto_formatado += f"- **{t('chat.export_source_item', index=i+1, source=source_name, page=page_num)}**:\n  > {doc.page_content[:500]}...\n\n"
+            texto_formatado += "---\n\n"
     return texto_formatado
-
 
