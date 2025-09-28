@@ -1,4 +1,32 @@
 {
+    "lang": {
+        "pt": "🇧🇷 PT",
+        "en": "🇺🇸 EN",
+        "es": "🇪🇸 ES"
+    },
+    "sidebar": {
+        "header": "Gestionar Documentos",
+        "doc_load_mode_label": "¿Cómo cargar los documentos?",
+        "doc_load_mode_upload": "Subir nuevos PDFs",
+        "doc_load_mode_collection": "Cargar colección existente",
+        "file_uploader_label": "Seleccione uno o más contratos en PDF",
+        "no_files_selected": "Ningún archivo seleccionado.",
+        "process_button": "Procesar Documentos Subidos",
+        "warning_no_files_to_process": "Por favor, seleccione al menos un archivo PDF para procesar.",
+        "success_processed_files": "¡{count} archivo(s) procesado(s) con éxito!",
+        "error_processing_files": "Error al procesar los documentos. Verifique los logs.",
+        "no_collections_saved": "Aún no hay colecciones guardadas.",
+        "collection_selectbox_label": "Elija una colección:",
+        "collection_selectbox_placeholder": "Seleccione una colección",
+        "load_collection_button": "Cargar Colección Seleccionada",
+        "warning_no_collection_selected": "Por favor, seleccione una colección para cargar.",
+        "save_collection_subheader": "Guardar Colección Actual",
+        "new_collection_name_label": "Nombre para la nueva colección:",
+        "save_collection_button": "Guardar Colección",
+        "warning_give_name_to_collection": "Por favor, asigne un nombre y asegúrese de que haya documentos cargados.",
+        "active_collection": "Colección Activa",
+        "loaded_files": "Archivos Cargados"
+    },
     "tabs": {
         "chat": "💬 Chat",
         "dashboard": "📈 Dashboard",
@@ -8,228 +36,92 @@
         "compliance": "⚖️ Conformidad",
         "anomalies": "📊 Anomalías"
     },
-    "sidebar": {
-        "manage_documents_header": "Gestionar Documentos",
-        "api_key_input_label": "(O) Pegue su clave de API de Google aquí:",
-        "doc_load_mode_label": "¿Cómo cargar los documentos?",
-        "doc_load_mode_upload": "Subir nuevos PDFs",
-        "doc_load_mode_collection": "Cargar colección existente",
-        "file_uploader_label": "Seleccione uno o más contratos en PDF",
-        "process_uploads_button": "Procesar Documentos Subidos",
-        "select_collection_label": "Elija una colección:",
-        "select_collection_placeholder": "Seleccione una colección",
-        "load_collection_button": "Cargar Colección Seleccionada",
-        "save_collection_header": "Guardar Colección Actual",
-        "new_collection_name_label": "Nombre para la nueva colección:",
-        "save_collection_button": "Guardar Colección",
-        "active_collection": "Colección Activa",
-        "loaded_files": "Archivos Cargados"
-    },
     "chat": {
         "header": "Converse con sus documentos",
-        "initial_message": "¡Hola! Los documentos de la colección '{collection}' están listos ({count} archivo(s)). ¿Cuál es su pregunta?",
         "this_session": "sesión actual",
+        "initial_message": "¡Hola! Los documentos de la colección '{collection}' están listos ({count} archivo(s)). ¿Cuál es su pregunta?",
         "view_sources_expander": "Ver Fuentes y Detalles de la Respuesta",
         "main_reference": "Referencia Principal",
-        "source_caption": "Fuente: {source} (Página: {page})",
+        "source_caption": "Fuente: {source} (Pág: {page})",
         "export_button": "📥 Exportar Conversación",
         "input_placeholder": "Haga su pregunta sobre los contratos...",
-        "export": {
-            "title": "Historial de Conversación con Analista-IA",
-            "user_title": "Usted",
-            "ai_title": "IA",
-            "sources_title": "Fuentes Utilizadas",
-            "source_label": "Fuente {i} (Doc: `{doc}`, Pág: {page}{method})",
-            "method": "Método"
-        }
+        "processing_error": "Disculpe, ocurrió un error al procesar su pregunta."
     },
     "dashboard": {
-        "header": "Análisis Comparativo de Datos de Contratos",
-        "description": "Haga clic en el botón para extraer y comparar los datos clave de los documentos cargados (según lo definido en el esquema `InfoContrato`).",
-        "generate_button": "🚀 Generar Datos para Dashboard y Anomalías"
+        "header": "Análisis Comparativo de Datos Contractuales",
+        "description": "Haga clic en el botón para extraer y comparar los datos clave de los documentos cargados.",
+        "generate_button": "🚀 Generar Datos para Dashboard y Anomalías",
+        "success_message": "Datos extraídos para {count} contratos.",
+        "warning_no_data": "No se extrajeron datos para el dashboard.",
+        "data_table_info": "Tabla de datos extraídos de los contratos."
     },
     "summary": {
-        "header": "📜 Resumen Ejecutivo de un Contrato",
-        "select_contract_label": "Elija un contrato para resumir:",
-        "select_file_placeholder": "Seleccione un archivo",
+        "header": "Resumen Ejecutivo de un Contrato",
+        "selectbox_label": "Elija un contrato para resumir:",
+        "selectbox_placeholder": "Seleccione un archivo",
         "generate_button": "✍️ Generar Resumen Ejecutivo",
-        "summary_of_contract": "Resumen del Contrato: {file}"
+        "error_file_not_found": "Archivo seleccionado no encontrado.",
+        "info_collections_mode": "La función de resumen individual está optimizada para subidas nuevas. Para colecciones, use el chat para pedir resúmenes.",
+        "warning_load_docs": "Cargue documentos para usar la función de resumen.",
+        "summary_of_contract": "Resumen del Contrato: {filename}"
     },
     "risks": {
-        "header": "🚩 Análisis de Cláusulas de Riesgo",
+        "header": "Análisis de Cláusulas de Riesgo",
         "description": "Analiza los documentos cargados en la sesión actual en busca de cláusulas potencialmente arriesgadas.",
-        "analyze_button": "🔎 Analizar Riesgos en Todos los Documentos Cargados",
-        "expander_title": "Riesgos Identificados en: {file}"
+        "generate_button": "🔎 Analizar Riesgos en Todos los Documentos",
+        "success_message": "Análisis de riesgos completado.",
+        "warning_no_text": "No se pudo extraer texto de los documentos para el análisis de riesgos.",
+        "info_collections_mode": "El Análisis de Riesgos detallado funciona mejor con archivos recién subidos.",
+        "info_upload_docs": "Suba documentos para habilitar el análisis de riesgos.",
+        "expander_title": "Riesgos Identificados en: {filename}"
     },
     "deadlines": {
-        "header": "🗓️ Seguimiento de Plazos y Vencimientos",
+        "header": "Monitoreo de Plazos y Vencimientos",
         "description": "Extrae y organiza fechas y plazos importantes de los documentos cargados en la sesión actual.",
-        "analyze_button": "🔍 Analizar Plazos y Fechas Importantes",
-        "all_events_subheader": "Todos los Eventos y Plazos Identificados",
-        "upcoming_events_subheader": "Próximos Eventos (Próximos 90 días)"
+        "generate_button": "🔍 Analizar Plazos y Fechas Importantes",
+        "warning_no_text": "No se pudo extraer texto de los documentos para el análisis de plazos.",
+        "all_events_header": "Todos los Eventos y Plazos Identificados",
+        "next_events_header": "Próximos Eventos (Próximos 90 días)",
+        "no_next_events": "No se encontraron eventos para los próximos 90 días.",
+        "info_collections_mode": "El Monitoreo de Plazos funciona mejor con archivos recién subidos.",
+        "info_upload_docs": "Suba documentos para habilitar el monitoreo de plazos."
     },
     "compliance": {
-        "header": "⚖️ Verificador de Conformidad Contractual",
+        "header": "Verificador de Conformidad Contractual",
         "description": "Compare un documento con un documento de referencia para identificar desajustes.",
-        "reference_doc_label": "1. Documento de Referencia:",
-        "reference_doc_placeholder": "Seleccione el doc. de referencia",
-        "analysis_docs_label": "2. Documento(s) a Analizar:",
-        "analysis_docs_placeholder": "Seleccione el/los doc(s) para análisis",
-        "verify_button": "🔎 Verificar Conformidad",
-        "report_expander_title": "Informe"
+        "ref_doc_label": "1. Documento de Referencia:",
+        "ref_doc_placeholder": "Seleccione el doc. de referencia",
+        "ana_doc_label": "2. Documento(s) a Analizar:",
+        "ana_doc_placeholder": "Seleccione el/los doc(s) para análisis",
+        "warning_need_two_docs": "Cargue al menos dos documentos para hacer una comparación.",
+        "generate_button": "🔎 Verificar Conformidad",
+        "error_reading_ref_doc": "Error al leer el documento de referencia: {filename}",
+        "error_reading_ana_doc": "Error al leer el documento a analizar: {filename}",
+        "success_message": "Análisis de conformidad completado.",
+        "expander_title": "Informe: {analysis_key}",
+        "info_collections_mode": "La Verificación de Conformidad funciona mejor con archivos recién subidos.",
+        "info_upload_docs": "Suba documentos para habilitar la verificación de conformidad."
     },
     "anomalies": {
-        "header": "📊 Detección de Anomalías Contractuales",
-        "description": "Identifica datos que se desvían del patrón en el conjunto de contratos cargados. **Nota:** Esta funcionalidad depende de la calidad y consistencia de la extracción de datos realizada en la pestaña '📈 Dashboard'.",
-        "detect_button": "🚨 Detectar Anomalías Ahora",
+        "header": "Detección de Anomalías Contractuales",
+        "description": "Identifica datos que se desvían del patrón en el conjunto de contratos cargados. Depende de los datos generados en el Dashboard.",
+        "warning_no_data": "Los datos para el análisis de anomalías aún no se han generado. Por favor, vaya a la pestaña 'Dashboard' y genere los datos primero.",
+        "info_analyzing": "Analizando los datos extraídos de la pestaña 'Dashboard'...",
+        "generate_button": "🚨 Detectar Anomalías Ahora",
         "results_header": "Resultados de la Detección de Anomalías:",
-        "no_data_to_analyze": "No hay datos para analizar anomalías.",
-        "numerical_anomaly": "**Anomalía Numérica en `{file}`:** El campo '{field}' con valor `{value}` está lejos del promedio ({mean}).",
-        "categorical_anomaly": "**Anomalía Categórica:** El valor/categoría '`{value}`' para el campo '{field}' es inusual (presente en el {freq}% de los contratos: {files}...).",
-        "no_anomalies_found": "No se detectaron anomalías significativas con los criterios actuales.",
-        "no_significant_anomalies": "No se detectaron anomalías significativas con los criterios actuales, o los datos no fueron suficientes para el análisis."
-    },
-    "warnings": {
-        "api_key_not_configured": "Clave de API de Google no configurada en los Secrets.",
-        "no_files_selected": "No se han seleccionado archivos.",
-        "no_collection_selected": "No se ha seleccionado ninguna colección.",
-        "collection_name_and_docs_required": "Proporcione un nombre y asegúrese de que haya documentos cargados.",
-        "pypdf_failed_fallback": "PyPDFLoader falló para {file}. Intentando con PyMuPDF.",
-        "pymupdf_failed_fallback": "PyMuPDF (fitz) falló para {file}. Intentando con Gemini Vision.",
-        "generate_dashboard_data_first": "Los datos para el análisis de anomalías aún no se han generado. Vaya a la pestaña '📈 Dashboard' y haga clic en '🚀 Generar Datos para Dashboard y Anomalías' primero.",
-        "upload_at_least_two_docs_for_compliance": "Suba al menos dos documentos para realizar una comparación.",
-        "load_docs_for_dashboard": "Cargue documentos o una colección válida para usar el dashboard.",
-        "no_data_extracted": "No se extrajeron datos para el dashboard. Revise los registros o los archivos.",
-        "upload_docs_for_summary": "Cargue documentos para usar la función de resumen.",
-        "no_file_selected_for_summary": "No se ha seleccionado ningún archivo para resumir.",
-        "upload_docs_for_risk_analysis": "Cargue documentos para habilitar el análisis de riesgos.",
-        "no_text_extracted_for_risk_analysis": "No se pudo extraer texto de los documentos para el análisis de riesgos.",
-        "upload_docs_for_deadlines": "Cargue documentos para habilitar el seguimiento de plazos.",
-        "no_text_extracted_for_deadlines": "No se pudo extraer texto de los documentos para el análisis de plazos."
+        "no_anomalies_found": "No se detectaron anomalías significativas con los criterios actuales."
     },
     "info": {
-        "upload_documents_to_start": "👈 Por favor, cargue y procese documentos PDF o una colección existente en la barra lateral para habilitar las funcionalidades.",
-        "processing_and_indexing": "Procesando e indexando documentos... Esto puede tardar unos minutos, especialmente con Gemini Vision.",
-        "no_saved_collections": "Aún no hay colecciones guardadas.",
-        "analyzing_dashboard_data": "Analizando los datos extraídos de la pestaña 'Dashboard' en busca de anomalías.",
-        "extracted_data_table": "Tabla de datos extraídos de los contratos. Use la barra de desplazamiento horizontal si es necesario.",
-        "no_deadlines_extracted": "No se extrajeron plazos ni eventos de los documentos.",
-        "no_upcoming_events": "No se encontraron eventos para los próximos 90 días.",
-        "analyzing_risks_in_file": "Analizando riesgos en: {file}...",
-        "processing_file": "Procesando archivo: {file}...",
-        "trying_gemini_vision": "Intentando con Gemini Vision para {file}...",
-        "gemini_processing_page": "Gemini procesando página {page}/{total} de {file}...",
-        "creating_vector_store": "Creando almacén de vectores con {chunks} fragmentos de {files} archivos.",
-        "searching_and_thinking": "Buscando y pensando...",
-        "extracting_field_from_file": "Extrayendo '{field}' de {file} ({current}/{total})",
-        "fallback_to_gemini_full_text": "Texto no extraído por métodos convencionales para {file}. Intentando con Gemini Vision...",
-        "analyzing_deadlines_in_file": "Analizando plazos en: {file}",
-        "analyzing_compliance_progress": "Analizando '{file1}' vs '{file2}'..."
-    },
-    "success": {
-        "documents_processed": "¡{count} Documento(s) procesado(s)!",
-        "collection_saved": "¡Colección '{name}' guardada con éxito!",
-        "text_extracted_pypdf": "Texto extraído con PyPDFLoader para {file}.",
-        "text_extracted_pymupdf": "Texto extraído con PyMuPDF para {file}.",
-        "text_extracted_gemini": "Texto extraído con Gemini Vision para {file}.",
-        "vector_store_created": "¡Almacén de vectores creado con éxito!",
-        "data_extracted_for_contracts": "Datos extraídos para {count} contratos.",
-        "risk_analysis_complete": "Análisis de riesgos completado.",
-        "deadline_extraction_complete": "¡Extracción de fechas y plazos completada!",
-        "compliance_analysis_complete": "Análisis de conformidad completado."
+        "processing_and_indexing": "Procesando e indexando documentos... Esto puede tardar unos minutos.",
+        "please_load_docs": "👈 Por favor, cargue y procese documentos PDF o una colección existente en la barra lateral para comenzar.",
+        "extracting_text_with_gemini": "Texto no extraído por métodos convencionales para {filename}. Intentando con Gemini Vision...",
+        "gemini_processing_page": "Gemini procesando página {page} de {filename}..."
     },
     "errors": {
-        "api_key_or_embeddings_not_configured": "La Clave de API de Google o el modelo de Embeddings no están configurados. Revise la barra lateral.",
-        "document_processing_failed": "Fallo al procesar los documentos. Revise los registros anteriores.",
-        "collection_name_required": "Por favor, proporcione un nombre para la colección.",
-        "collection_save_error": "Error al guardar la colección: {error}",
-        "qa_chain_error": "Error durante la ejecución de la cadena de QA: {error}",
-        "generic_chat_error": "Lo sentimos, ocurrió un error al procesar su pregunta.",
-        "pydantic_validation_error": "Error de validación de Pydantic para {file}: {error}.",
-        "file_not_found_internal": "Archivo seleccionado no encontrado (esto no debería ocurrir).",
-        "read_error_reference_doc": "Error al leer el documento de referencia {file}",
-        "read_error_analysis_doc": "Error al leer el documento a analizar {file}",
-        "text_extraction_failed": "No se pudo extraer texto del archivo: {file}. El archivo puede estar vacío, dañado o ser demasiado complejo.",
-        "general_file_processing_error": "Error general al procesar el archivo {file}: {error}",
-        "no_text_extracted_from_any_doc": "No se pudo extraer texto de ninguno de los documentos proporcionados.",
-        "text_splitting_failed": "La fragmentación del texto no resultó en ningún documento. Verifique el contenido extraído.",
-        "faiss_creation_error": "Error al crear el almacén de vectores con FAISS: {error}",
-        "gemini_vision_error": "Error al usar Gemini Vision para {file}: {error}",
-        "file_or_api_key_missing": "Error: Archivo o clave de API no proporcionados.",
-        "text_extraction_failed_for_summary": "Error: No se pudo leer el contenido del PDF {file} para el resumen.",
-        "summary_generation_error": "Error al generar el resumen: {error}",
-        "text_or_api_key_missing_for_analysis": "No se pudo analizar: Falta texto o Clave de API.",
-        "risk_analysis_error": "Error al analizar riesgos para '{file}': {error}",
-        "deadline_extraction_error": "Error crítico al procesar fechas para '{file}'. Error: {error}",
-        "compliance_analysis_error": "Error al generar el análisis de conformidad para '{file1}' vs '{file2}': {error}"
-    },
-    "prompts": {
-        "gemini_ocr": {
-            "prompt": "Eres un experto en OCR. Extrae todo el texto visible de esta página de documento con la mayor precisión posible. Mantén la estructura del texto original, incluidos los párrafos y los saltos de línea, cuando sea apropiado. Si hay tablas, intenta preservar su estructura textual."
-        },
-        "chat_qa": {
-            "en": "You are an analytical assistant. Use the context excerpts to answer the question completely and explanatorily. Do not just answer with 'Yes' or 'No'. Explain the reasoning for your answer based on the context.\nIf the context does not contain the answer, state that you could not find the information in the documents.\n\nCONTEXT:\n{context}\n\nQUESTION: {question}\n\n--- RESPONSE FORMATTING INSTRUCTIONS ---\nFollow the format below EXACTLY:\nANSWER (in English):\n[Your explanatory answer here]\n\n|||MAIN CLAUSE/ARTICLE:\n[Cite the most relevant clause or article number, if any. E.g., Clause 5.1, Article 12. If none, write 'Not applicable']\n\n|||MOST RELEVANT EXCERPT FROM THE CONTEXT:\n[Quote the exact sentence or short paragraph from the context that supports your answer]",
-            "es": "Eres un asistente analítico. Utiliza los fragmentos de contexto para responder la pregunta de forma completa y explicativa. No respondas solo con 'Sí' o 'No'. Explica el porqué de tu respuesta basándote en el contexto.\nSi el contexto no contiene la respuesta, indica que no has encontrado la información en los documentos.\n\nCONTEXTO:\n{context}\n\nPREGUNTA: {question}\n\n--- INSTRUCCIONES DE FORMATO DE RESPUESTA ---\nSigue el formato a continuación EXACTAMENTE:\nRESPUESTA (en Español):\n[Tu respuesta explicativa aquí]\n\n|||CLÁUSULA/ARTÍCULO PRINCIPAL:\n[Cita el número de la cláusula o artículo más relevante, si existe. Ej: Cláusula 5.1, Artículo 12. Si no hay, escribe 'No aplicable']\n\n|||FRAGMENTO MÁS RELEVANTE DEL CONTEXTO:\n[Cita la oración exacta o el párrafo corto del contexto que fundamenta tu respuesta]",
-            "pt": "Você é um assistente analítico. Use os trechos de contexto para responder à pergunta de forma completa e explicativa. Não responda apenas com 'Sim' ou 'Não'. Explique o porquê da sua respuesta com base no contexto.\nSe o contexto não contiver a respuesta, informe que não encontrou a informação nos documentos.\n\nCONTEXTO:\n{context}\n\nPERGUNTA: {question}\n\n--- INSTRUÇÕES DE FORMATAÇÃO DA RESPOSTA ---\nSiga o formato abaixo EXATAMENTE:\nRESPOSTA (em Português):\n[Sua respuesta explicativa aqui]\n\n|||CLÁUSULA/ARTIGO PRINCIPAL:\n[Cite o número da cláusula ou artigo mais relevante, se houver. Ex: Cláusula 5.1, Artigo 12. Se não houver, escreva 'Não aplicável']\n\n|||TRECHO MAIS RELEVANTE DO CONTEXTO:\n[Cite a sentença ou pequeno parágrafo exato do contexto que fundamenta sua respuesta]"
-        },
-        "data_extraction_chain": {
-            "template": "Basado en el contexto proporcionado, responde a la siguiente pregunta con precisión. {instrucao}\n\nContexto:\n{contexto}\n\nPregunta: {pergunta}\nRespuesta:"
-        },
-        "data_extraction_map": {
-            "nome_banco_emissor": {
-                "pergunta": "¿Cuál es el nombre principal del banco, institución financiera o empresa emisora de este contrato?",
-                "instrucao": "Responde solo con el nombre. Si no lo encuentras, di 'No encontrado'."
-            },
-            "valor_principal_numerico": {
-                "pergunta": "¿Cuál es el valor monetario principal o el límite de crédito central de este contrato?",
-                "instrucao": "Si encuentras un valor, proporciona solo el número (ej: 10000.50). Si no lo encuentras, responde 'No encontrado'."
-            },
-            "prazo_total_meses": {
-                "pergunta": "¿Cuál es el plazo total de este contrato en meses? Si está en años, conviértelo a meses.",
-                "instrucao": "Si lo encuentras, proporciona solo el número de meses. Si no lo encuentras, responde 'No encontrado'."
-            },
-            "taxa_juros_anual_numerica": {
-                "pergunta": "¿Cuál es la principal tasa de interés anual (o fácilmente convertible a anual) mencionada?",
-                "instrucao": "Si la encuentras, proporciona solo el número del porcentaje (ej: 12.5). Si no la encuentras, responde 'No encontrado'."
-            },
-            "possui_clausula_rescisao_multa": {
-                "pergunta": "¿Este contrato menciona explícitamente una penalización monetaria o porcentual en caso de rescisión?",
-                "instrucao": "Responde solo con 'Sí', 'No', o 'No está claro'."
-            },
-            "condicao_limite_credito": {
-                "pergunta": "¿Cuál es la política o condición para definir el límite de crédito?",
-                "instrucao": "Resume la política en una o dos frases. Si no la encuentras, responde 'No encontrado'."
-            },
-            "condicao_juros_rotativo": {
-                "pergunta": "¿Bajo qué condiciones se aplican los intereses del crédito revolvente?",
-                "instrucao": "Resume la regla en una o dos frases. Si no la encuentras, responde 'No encontrado'."
-            },
-            "condicao_anuidade": {
-                "pergunta": "¿Cuál es la política de cobro de la cuota anual descrita en el contrato?",
-                "instrucao": "Resume la política en una o dos frases. Si no la encuentras, responde 'No encontrado'."
-            },
-            "condicao_cancelamento": {
-                "pergunta": "¿Cuáles son las reglas para cancelar o rescindir el contrato?",
-                "instrucao": "Resume las reglas en una o dos frases. Si no las encuentras, responde 'No encontrado'."
-            }
-        },
-        "summary": {
-            "template": "Eres un asistente especializado en analizar y resumir documentos legales, como contratos.\nBasado en el texto del contrato proporcionado a continuación, crea un resumen ejecutivo en 5 a 7 puntos concisos.\nDestaca los siguientes aspectos, si están presentes: las partes principales involucradas, el objeto principal del contrato, el plazo de vigencia (si lo hay), las principales obligaciones financieras o condiciones de pago, y las principales condiciones o motivos para la rescisión o cancelación del contrato.\nSé claro y directo.\n\nTEXTO DEL CONTRATO:\n{texto_contrato}\n\nRESUMEN EJECUTIVO:"
-        },
-        "risk_analysis": {
-            "template": "Eres un abogado especialista en análisis de riesgos contractuales. Analiza el texto del contrato proporcionado a continuación e identifica cláusulas u omisiones que puedan representar riesgos significativos. Para cada riesgo identificado, por favor:\n1. Describe el riesgo de forma clara y concisa.\n2. Cita el fragmento exacto de la cláusula relevante (o menciona la ausencia de una cláusula esperada).\n3. Clasifica el riesgo (ej: Financiero, Operacional, Legal, Rescisión, Propiedad Intelectual, Confidencialidad, etc.).\nConcéntrate en los riesgos de mayor impacto. Si no se encuentran riesgos significativos, decláralo explícitamente.\nUsa formato Markdown para tu respuesta, con un título para cada riesgo.\n\nTEXTO DEL CONTRATO ({nome_arquivo}):\n{texto_contrato}\n\nANÁLISIS DE RIESGOS:"
-        },
-        "event_extraction": {
-            "template": "Analiza el texto del contrato a continuación. Tu tarea es identificar TODOS los eventos, fechas, plazos y períodos importantes mencionados.\nPara cada evento encontrado, extrae la siguiente información:\n1. 'descricao_evento': Una descripción clara y concisa del evento (ej: 'Fecha de firma del contrato', 'Vencimiento de la primera cuota', 'Plazo final para la entrega del producto', 'Fecha de entrada en vigor', 'Período de carencia para cambiar la fecha de vencimiento').\n2. 'data_evento_str': La fecha específica del evento en formato AAAA-MM-DD. Si no se puede determinar una fecha EXACTA o no aplica (ej: '10 días antes del vencimiento', 'plazo indeterminado', 'en la factura mensual'), DEBES rellenar este campo con la cadena 'No Especificado'. NUNCA uses null, None o dejes el campo vacío.\n3. 'trecho_relevante': El fragmento corto y exacto del contrato que menciona este evento/fecha.\n\n{format_instructions}\n\nTEXTO DEL CONTRATO ({arquivo_fonte}):\n{texto_contrato}\n\nATENCIÓN: El campo 'data_evento_str' SIEMPRE DEBE ser una cadena. Si no hay una fecha específica, usa 'No Especificado'.\nLISTA DE EVENTOS ENCONTRADOS:"
-        },
-        "compliance_check": {
-            "template": "Eres un especialista en conformidad y auditoría contractual. Tu tarea es comparar el 'DOCUMENTO A ANALIZAR' con el 'DOCUMENTO DE REFERENCIA' (ej: un Código de Ética o Política Interna).\n\nDOCUMENTO DE REFERENCIA ({nome_doc_referencia}):\n--------------------------------------------\n{texto_doc_referencia}\n--------------------------------------------\n\nDOCUMENTO A ANALIZAR ({nome_doc_analisar}):\n--------------------------------------------\n{texto_doc_analisar}\n--------------------------------------------\n\nPor favor, identifica y enumera cualquier cláusula, término u omisión significativa en el 'DOCUMENTO A ANALIZAR' que pueda:\n1. Contradecir directamente los principios o reglas establecidas en el 'DOCUMENTO DE REFERENCIA'.\n2. Estar en desalineación ética o de conducta con el 'DOCUMENTO DE REFERENCIA'.\n3. Representar un riesgo de incumplimiento con las directrices del 'DOCUMENTO DE REFERENCIA'.\n\nPara cada punto de incumplimiento o posible conflicto identificado:\na. Describe el problema/conflicto de forma clara y objetiva.\nb. Cita el fragmento exacto (o el número de la cláusula, si aplica) del 'DOCUMENTO A ANALIZAR' que plantea la cuestión.\nc. Cita el fragmento exacto o principio (o el número de la cláusula/ítem, si aplica) del 'DOCUMENTO DE REFERENCIA' que se está violando potencialmente o que sirve de base para la comparación.\nd. Ofrece una breve explicación sobre el motivo del conflicto o desalineación.\n\nSi no se encuentra ningún conflicto o punto de incumplimiento significativo, decláralo explícitamente como 'No se identificaron conflictos de conformidad significativos'.\nUsa formato Markdown para tu respuesta, organizando los puntos claramente. Usa títulos (###) para cada conflicto encontrado.\n\nINFORME DE ANÁLISIS DE CONFORMIDAD:"
-        }
-    },
-    "language_selector_options": {
-        "pt": "🇧🇷 PT",
-        "en": "🇺🇸 EN",
-        "es": "🇪🇸 ES"
+        "api_key_or_embeddings_not_configured": "La Clave de API de Google no está configurada o el modelo de Embeddings no se pudo inicializar. Verifique la barra lateral.",
+        "api_key_or_embeddings_not_configured_short": "Clave de API o Embeddings no configurados.",
+        "embedding_initialization_failed": "Error al inicializar el modelo de Embeddings. Verifique su clave de API y la conexión. Error: {error}",
+        "embedding_initialization_failed_detailed": "### Fallo Crítico al Iniciar el Modelo de IA\n\nLa aplicación no pudo conectarse a los servicios de Google AI con la clave proporcionada.\n\n**Posibles Causas:**\n1.  La Clave de API (`GOOGLE_API_KEY`) que configuró en los 'Secrets' de Streamlit es incorrecta o inválida.\n2.  La API \"Generative Language\" **no está habilitada** para esta clave en su cuenta de Google Cloud Console.\n\n**Qué hacer:**\n* **Verifique su clave:** Confirme que la clave en los 'Secrets' esté copiada correctamente.\n* **Habilite la API:** Vaya a su [Google Cloud Console](https://console.cloud.google.com/), seleccione el proyecto asociado a su clave y asegúrese de que la API \"Generative Language\" esté habilitada.\n\n**Error técnico:** `{error}`"
     }
 }
 
