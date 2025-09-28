@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from langchain_community.vectorstores import FAISS
 
-# Assume que COLECOES_DIR é definido em config.py e acessado de lá
+# Assume que COLECOES_DIR é definido em config.py
 from src.config import COLECOES_DIR
 
 def listar_colecoes_salvas():
@@ -13,10 +13,7 @@ def listar_colecoes_salvas():
     return [d.name for d in COLECOES_DIR.iterdir() if d.is_dir()]
 
 def salvar_colecao_atual(nome_colecao, vector_store_atual, nomes_arquivos_atuais, t):
-    """
-    Salva o vector store e o manifesto da coleção atual no disco.
-    Nota: esta função não é cacheada, por isso 't' não precisa de underscore.
-    """
+    """Salva o vector store e o manifesto da coleção atual no disco."""
     if not nome_colecao.strip():
         st.error(t("collection_manager.error_provide_name"))
         return False
@@ -35,9 +32,7 @@ def salvar_colecao_atual(nome_colecao, vector_store_atual, nomes_arquivos_atuais
 
 @st.cache_resource(show_spinner=True)
 def carregar_colecao(nome_colecao, _embeddings_obj, _t):
-    """
-    Carrega uma coleção de vetores e seu manifesto a partir do disco.
-    """
+    """Carrega uma coleção de vetores e seu manifesto a partir do disco."""
     st.info(_t("collection_manager.loading_collection", name=nome_colecao))
     caminho_colecao = COLECOES_DIR / nome_colecao
     caminho_indice = caminho_colecao / "faiss_index"
@@ -61,4 +56,3 @@ def carregar_colecao(nome_colecao, _embeddings_obj, _t):
     except Exception as e:
         st.error(_t("collection_manager.error_loading_collection", name=nome_colecao, error=e))
         return None, None
-
