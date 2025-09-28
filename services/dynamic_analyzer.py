@@ -18,7 +18,7 @@ def identificar_pontos_chave_dinamicos(textos_contratos: str, google_api_key: st
     if not textos_contratos or not google_api_key:
         return []
 
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro", temperature=0.1)
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0.1)
     
     # Atualiza a descrição do Pydantic dinamicamente com base no idioma
     PontoChave.model_fields['descricao'].description = TRANSLATIONS[lang_code]['dynamic_analyzer_field_description'].format(language=lang_code)
@@ -57,4 +57,5 @@ def identificar_pontos_chave_dinamicos(textos_contratos: str, google_api_key: st
     except Exception as e:
         st.error(f"Erro ao identificar pontos chave dinâmicos: {e}")
         return []
+
 
