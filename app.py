@@ -1,99 +1,67 @@
-import sys
-from pathlib import Path
 import streamlit as st
+from core.utils import manage_api_key, initialize_embeddings
+from ui.sidebar import render_sidebar
+from ui.tabs import chat, dashboard, summary, risks, deadlines, compliance, anomalies
 
-# Adiciona o diretório 'src' ao sys.path para garantir que as importações funcionem
-# em diferentes ambientes (local vs. Streamlit Cloud).
-# Esta é uma prática robusta para projetos com subpastas.
-src_path = Path(__file__).parent / "src"
-if str(src_path) not in sys.path:
-    sys.path.insert(0, str(src_path))
+# --- CONFIGURAÇÃO DA PÁGINA ---
+st.set_page_config(layout="wide", page_title="ContratIA", page_icon="💡")
+hide_streamlit_style = "<style>#MainMenu {visibility: hidden;} footer {visibility: hidden;}</style>"
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
-# Importações dos módulos da aplicação (note que agora não usamos o prefixo 'src.')
-from config import configure_page, initialize_session_state, get_api_key
-from localization import Localization
-from ui.sidebar import display_sidebar  # CORREÇÃO: Caminho correto para a sidebar
-from services import document_processor
-
-# Importações das abas da UI
-from ui.tabs import chat_tab, dashboard_tab, summary_tab, risk_tab, deadline_tab, compliance_tab, anomaly_tab
+st.title("💡 ContratIA")
 
 def main():
-    """Função principal que executa a aplicação Streamlit."""
-    
-    # --- 1. CONFIGURAÇÃO INICIAL DA PÁGINA E ESTADO ---
-    configure_page()
-    initialize_session_state()
-
-    # Inicializa o gestor de localização (traduções)
-    if 'localization' not in st.session_state:
-        st.session_state.localization = Localization()
-
-    # --- Seletor de Idioma ---
-    cols = st.columns([0.8, 0.2])
-    with cols[0]:
-        st.title("💡 ContratIA")
-    with cols[1]:
-        lang_cols = st.columns(3)
-        if lang_cols[0].button("🇧🇷 PT", use_container_width=True):
-            st.session_state.language = "pt"
-            st.rerun()
-        if lang_cols[1].button("🇺🇸 EN", use_container_width=True):
-            st.session_state.language = "en"
-            st.rerun()
-        if lang_cols[2].button("🇪🇸 ES", use_container_width=True):
-            st.session_state.language = "es"
-            st.rerun()
-
-    st.session_state.localization.set_language(st.session_state.get("language", "pt"))
-    t = st.session_state.localization.get_translator()
-    
-    # --- 2. GESTÃO DA API KEY E MODELO DE EMBEDDINGS ---
-    google_api_key = get_api_key(t)
-    embeddings_initialized = False
-    initialization_error = None
-    
+    """Função principal para executar a aplicação Streamlit."""
+    # --- CHAVE DE API & EMBEDDINGS ---
+    # Gerencia a chave de API e inicializa o modelo de embeddings uma vez.
+    google_api_key = manage_api_key()
     if google_api_key:
-        try:
-            st.session_state.embeddings_model = document_processor.get_embeddings_model(google_api_key)
-            embeddings_initialized = True
-        except ValueError as e:
-            initialization_error = str(e)
-    else:
-        initialization_error = t("errors.api_key_or_embeddings_not_configured")
+        initialize_embeddings()
 
-    # Renderiza a barra lateral
-    display_sidebar(google_api_key, st.session_state.embeddings_model, t)
+    # --- BARRA LATERAL (SIDEBAR) ---
+    # A barra lateral gerencia o upload de documentos e o carregamento de coleções.
+    # Ela atualiza o estado da sessão com base nas ações do usuário.
+    render_sidebar()
 
-    # --- 3. LÓGICA DE EXIBIÇÃO DO CONTEÚDO PRINCIPAL ---
-    if not embeddings_initialized:
-        st.error(t("errors.critical_ia_model_failure"))
-        st.warning(t("errors.possible_causes"))
-        st.markdown(t("errors.what_to_do_markdown"))
-        if initialization_error:
-            st.error(f"**{t('errors.technical_error_title')}:** `{initialization_error}`")
+    # --- ABAS DE CONTEÚDO PRINCIPAL ---
+    # Verifica se os componentes necessários estão prontos para renderizar as abas.
+    documentos_prontos = (
+        st.session_state.get("google_api_key")
+        and st.session_state.get("embeddings_model")
+        and st.session_state.get("vector_store")
+    )
+
+    if not documentos_prontos:
+        if not st.session_state.get("google_api_key"):
+            st.error("Chave de API do Google não está configurada. Verifique a barra lateral.")
+        else:
+            st.info("👈 Por favor, carregue e processe documentos PDF ou uma coleção existente na barra lateral para habilitar as funcionalidades.")
         return
 
-    # Define as abas da aplicação
-    tab_keys = ["chat", "dashboard", "summary", "risks", "deadlines", "compliance", "anomalies"]
-    tab_titles = [t(f"tabs.{key}") for key in tab_keys]
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(tab_titles)
+    # --- DEFINE AS ABAS ---
+    tab_chat, tab_dashboard, tab_resumo, tab_riscos, tab_prazos, tab_conformidade, tab_anomalias_tab = st.tabs([
+        "💬 Chat", "📈 Dashboard", "📜 Resumo", "🚩 Riscos", "🗓️ Prazos", "⚖️ Conformidade", "📊 Anomalias"
+    ])
 
-    with tab1:
-        chat_tab.display_chat_tab(t)
-    with tab2:
-        dashboard_tab.display_dashboard_tab(t)
-    with tab3:
-        summary_tab.display_summary_tab(t)
-    with tab4:
-        risk_tab.display_risk_tab(t)
-    with tab5:
-        deadline_tab.display_deadline_tab(t)
-    with tab6:
-        compliance_tab.display_compliance_tab(t)
-    with tab7:
-        anomaly_tab.display_anomaly_tab(t)
+    # --- RENDERIZA AS ABAS ---
+    with tab_chat:
+        chat.render()
+    with tab_dashboard:
+        dashboard.render()
+    with tab_resumo:
+        summary.render()
+    with tab_riscos:
+        risks.render()
+    with tab_prazos:
+        deadlines.render()
+    with tab_conformidade:
+        compliance.render()
+    with tab_anomalias_tab:
+        anomalies.render()
 
 if __name__ == "__main__":
+    # Inicializa chaves do estado da sessão se não existirem
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+    
     main()
-
