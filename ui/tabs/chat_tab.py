@@ -32,7 +32,7 @@ def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
         st.session_state.messages.append({"role": "user", "content": user_input})
         with st.chat_message("user"): st.markdown(user_input)
 
-        llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro", temperature=0.1)
+        llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0.1)
         retriever = st.session_state.vector_store_atual.as_retriever(search_kwargs={"k": 5})
 
         prompt_template_str = texts["chat_prompt"]
@@ -54,4 +54,5 @@ def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
                     st.rerun()
                 except Exception as e:
                     st.error(f"{texts['chat_error']} {e}")
+
 
