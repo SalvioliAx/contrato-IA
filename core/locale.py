@@ -35,7 +35,7 @@ TRANSLATIONS = {
         "chat_input_placeholder": "Digite sua pergunta sobre os contratos...",
         "chat_spinner_thinking": "Analisando documentos...",
         "chat_error": "Ocorreu um erro ao processar sua pergunta:",
-        "chat_prompt": "Use os trechos de contexto para responder à pergunta em {language}. Responda de forma completa e explicativa com base no contexto. Se o contexto não contiver a resposta, informe que não encontrou a informação nos documentos.",
+        "chat_prompt": "Use os trechos de contexto para responder à pergunta em {language}. Responda de forma completa e explicativa com base no contexto. Se o contexto não contiver a resposta, informe que não encontrou a informação nos documentos.\n\nCONTEXTO:\n{context}\n\nPERGUNTA:\n{question}\n\nRESPOSTA:",
         # Dashboard
         "dashboard_header": "Dashboard Dinâmico",
         "dashboard_markdown": "Clique no botão para que a IA analise os contratos, identifique os dados mais relevantes e gere um dashboard comparativo.",
@@ -126,7 +126,7 @@ TRANSLATIONS = {
         "chat_input_placeholder": "Type your question about the contracts...",
         "chat_spinner_thinking": "Analyzing documents...",
         "chat_error": "An error occurred while processing your question:",
-        "chat_prompt": "Use the context snippets to answer the question in {language}. Provide a complete and explanatory answer based on the context. If the context does not contain the answer, state that you could not find the information in the documents.",
+        "chat_prompt": "Use the context snippets to answer the question in {language}. Provide a complete and explanatory answer based on the context. If the context does not contain the answer, state that you could not find the information in the documents.\n\nCONTEXT:\n{context}\n\nQUESTION:\n{question}\n\nANSWER:",
         # Dashboard
         "dashboard_header": "Dynamic Dashboard",
         "dashboard_markdown": "Click the button for the AI to analyze the contracts, identify the most relevant data points, and generate a comparative dashboard.",
@@ -217,7 +217,7 @@ TRANSLATIONS = {
         "chat_input_placeholder": "Escriba su pregunta sobre los contratos...",
         "chat_spinner_thinking": "Analizando documentos...",
         "chat_error": "Ocurrió un error al procesar su pregunta:",
-        "chat_prompt": "Usa los fragmentos de contexto para responder a la pregunta en {language}. Da una respuesta completa y explicativa basada en el contexto. Si el contexto no contiene la respuesta, indica que no encontraste la información en los documentos.",
+        "chat_prompt": "Usa los fragmentos de contexto para responder a la pregunta en {language}. Da una respuesta completa y explicativa basada en el contexto. Si el contexto no contiene la respuesta, indica que no encontraste la información en los documentos.\n\nCONTEXTO:\n{context}\n\nPREGUNTA:\n{question}\n\nRESPUESTA:",
         # Dashboard
         "dashboard_header": "Dashboard Dinámico",
         "dashboard_markdown": "Haga clic en el botón para que la IA analice los contratos, identifique los datos más relevantes y genere un dashboard comparativo.",
