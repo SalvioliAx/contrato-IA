@@ -1,19 +1,22 @@
 import streamlit as st
-from datetime import datetime
-from src.services import chat
+from src.services.chat import processar_pergunta_chat
 from src.utils import formatar_chat_para_markdown
 
-def render(t):
+def display_chat_tab(t):
     """Renderiza a aba de Chat Interativo."""
     st.header(t("chat.header"))
 
+    # Garante que a lista de mensagens existe no estado da sessão
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
     # Mensagem inicial se o chat estiver vazio
     if not st.session_state.messages:
-        colecao_info = st.session_state.get('colecao_ativa', t("chat.this_session"))
-        num_arquivos = len(st.session_state.get("nomes_arquivos", []))
         st.session_state.messages.append({
             "role": "assistant",
-            "content": t("chat.initial_message", collection=colecao_info, count=num_arquivos)
+            "content": t("chat.initial_message",
+                         collection=st.session_state.get('colecao_ativa', 'upload atual'),
+                         count=len(st.session_state.get("nomes_arquivos", [])))
         })
 
     # Renderiza o histórico do chat
@@ -26,34 +29,39 @@ def render(t):
                         st.markdown(f"**{t('chat.main_reference')}:** {message['clausula_citada']}")
                         st.markdown("---")
                     
-                    for doc in message["sources"]:
-                        texto_fonte = doc.page_content
-                        # Destaca o trecho relevante se encontrado
-                        if message.get("sentenca_chave") and message["sentenca_chave"] in texto_fonte:
-                            texto_html = texto_fonte.replace(message["sentenca_chave"], f"<mark>{message['sentenca_chave']}</mark>", 1)
-                            st.markdown(texto_html, unsafe_allow_html=True)
-                        else:
-                            st.markdown(texto_fonte)
-                        
-                        source = doc.metadata.get('source', 'N/A')
-                        page = doc.metadata.get('page', 'N/A')
-                        st.caption(t("chat.source_caption", source=source, page=page))
+                    for doc_fonte in message["sources"]:
+                        st.caption(f"Fonte: {doc_fonte.metadata.get('source', 'N/A')} (Pág: {doc_fonte.metadata.get('page', 'N/A')})")
+                        st.markdown(f"> {doc_fonte.page_content[:300]}...")
                         st.markdown("---")
 
-    # Botão de exportação
+    # Botão de exportar
     if len(st.session_state.messages) > 1:
-        chat_md = formatar_chat_para_markdown(st.session_state.messages, t)
-        agora = datetime.now().strftime("%Y%m%d_%H%M%S")
+        chat_exportado_md = formatar_chat_para_markdown(st.session_state.messages, t)
         st.download_button(
             label=t("chat.export_button"),
-            data=chat_md,
-            file_name=f"conversa_contratos_{agora}.md",
+            data=chat_exportado_md,
+            file_name="conversa_contratos.md",
             mime="text/markdown"
         )
     
     st.markdown("---")
+
     # Input do utilizador
-    prompt = st.chat_input(t("chat.input_placeholder"), key="chat_input_main")
-    if prompt:
-        chat.handle_chat_submission(prompt, st.session_state.vector_store, t)
+    if prompt := st.chat_input(t("chat.input_placeholder")):
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        
+        with st.spinner(t("chat.thinking_spinner")):
+            try:
+                resposta_ia = processar_pergunta_chat(
+                    prompt,
+                    st.session_state.vector_store,
+                    st.session_state.language,
+                    t
+                )
+                st.session_state.messages.append(resposta_ia)
+            except Exception as e:
+                st.error(t("errors.chat_qa_failed", error=e))
+                st.session_state.messages.append({"role": "assistant", "content": t("errors.chat_processing_error")})
+        
         st.rerun()
+
