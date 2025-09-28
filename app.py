@@ -36,7 +36,21 @@ if "embeddings_model" not in st.session_state:
 
 # --- 3. RENDERIZAÇÃO DA INTERFACE ---
 
-st.title("💡 ContratIA")
+# Layout do cabeçalho com título e seletor de idioma
+header_cols = st.columns([3, 1])
+with header_cols[0]:
+    st.title("💡 ContratIA")
+
+with header_cols[1]:
+    # Obter as opções de idioma do ficheiro de tradução
+    lang_options = t("language_selector_options")
+    # Criar botões para cada idioma
+    lang_btn_cols = st.columns(len(lang_options))
+    for i, (lang_code, lang_text) in enumerate(lang_options.items()):
+        if lang_btn_cols[i].button(lang_text, key=f"lang_{lang_code}", use_container_width=True):
+            if st.session_state.language != lang_code:
+                st.session_state.language = lang_code
+                st.rerun()
 
 # Renderiza a barra lateral e obtém o estado dela (se os documentos foram processados)
 render_sidebar(google_api_key, st.session_state.embeddings_model, t)
