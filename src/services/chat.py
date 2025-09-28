@@ -5,9 +5,10 @@ from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-def processar_pergunta_chat(prompt, vector_store, t):
+def processar_pergunta_chat(prompt: str, vector_store, t):
     """
-    Processa a pergunta do utilizador, com logs detalhados para depuração.
+    Processa a pergunta do utilizador, extrai a resposta e as fontes,
+    e armazena no estado da sessão para exibição.
     """
     if not prompt:
         return
@@ -18,10 +19,10 @@ def processar_pergunta_chat(prompt, vector_store, t):
 
     try:
         if vector_store is None:
-            raise ValueError("Vector store não foi inicializado corretamente.")
+            raise ValueError(t("errors.vector_store_not_initialized"))
 
-        # ATUALIZAÇÃO: Alterado o nome do modelo para uma versão estável
-        llm_chat = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0.2)
+        # CORREÇÃO: Padronizado para um nome de modelo válido e estável.
+        llm_chat = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.2)
         
         template = t("chat.prompt_template")
         prompt_template = PromptTemplate.from_template(template)
@@ -35,15 +36,39 @@ def processar_pergunta_chat(prompt, vector_store, t):
         )
 
         resultado = qa_chain.invoke({"query": prompt})
-
         resposta_bruta = resultado.get("result", "")
         fontes = resultado.get("source_documents", [])
-        
-        partes_resposta = re.split(r'\|\|\|CLÁUSULA/ARTIGO PRINCIPAL:|\|\|\|TRECHO MAIS RELEVANTE DO CONTEXTO:', resposta_bruta)
-        resposta_principal = partes_resposta[0].strip().replace("RESPOSTA (em Português):", "").strip()
+
+        # --- LÓGICA DE PARSING CORRIGIDA PARA RESTAURAR CITAÇÕES ---
+        resposta_principal = resposta_bruta
+        clausula_citada = None
+        sentenca_chave = None
+
+        if '|||CLÁUSULA/ARTIGO PRINCIPAL:' in resposta_bruta:
+            partes = resposta_bruta.split('|||CLÁUSULA/ARTIGO PRINCIPAL:', 1)
+            resposta_principal = partes[0]
+            resto = partes[1] if len(partes) > 1 else ""
+            
+            if '|||TRECHO MAIS RELEVANTE DO CONTEXTO:' in resto:
+                sub_partes = resto.split('|||TRECHO MAIS RELEVANTE DO CONTEXTO:', 1)
+                clausula_citada = sub_partes[0].strip()
+                sentenca_chave = sub_partes[1].strip() if len(sub_partes) > 1 else None
+            else:
+                clausula_citada = resto.strip()
+
+        elif '|||TRECHO MAIS RELEVANTE DO CONTEXTO:' in resposta_bruta:
+            partes = resposta_bruta.split('|||TRECHO MAIS RELEVANTE DO CONTEXTO:', 1)
+            resposta_principal = partes[0]
+            sentenca_chave = partes[1].strip() if len(partes) > 1 else None
+
+        resposta_principal = re.sub(r"RESPOSTA \((em|in|en) .*\):", "", resposta_principal, flags=re.IGNORECASE).strip()
         
         st.session_state.messages.append({
-            "role": "assistant", "content": resposta_principal, "sources": fontes
+            "role": "assistant", 
+            "content": resposta_principal, 
+            "sources": fontes,
+            "clausula_citada": clausula_citada,
+            "sentenca_chave": sentenca_chave
         })
 
     except Exception:
@@ -53,7 +78,3 @@ def processar_pergunta_chat(prompt, vector_store, t):
             "role": "assistant",
             "content": t("errors.chat_processing_error")
         })
-
-
-
-
