@@ -2,6 +2,9 @@ from typing import Optional, List
 from pydantic import BaseModel, Field
 
 class InfoContrato(BaseModel):
+    """
+    Schema para extração de informações estruturadas de um contrato.
+    """
     arquivo_fonte: str = Field(description="O nome do arquivo de origem do contrato.")
     nome_banco_emissor: Optional[str] = Field(default="Não encontrado")
     valor_principal_numerico: Optional[float] = None
@@ -14,10 +17,16 @@ class InfoContrato(BaseModel):
     condicao_cancelamento: Optional[str] = Field(default="Não encontrado")
 
 class EventoContratual(BaseModel):
+    """
+    Schema para um único evento ou prazo extraído de um contrato.
+    """
     descricao_evento: str
     data_evento_str: Optional[str] = "Não Especificado"
     trecho_relevante: Optional[str] = None
 
 class ListaDeEventos(BaseModel):
+    """
+    Schema para uma lista de eventos contratuais de um arquivo fonte.
+    """
     eventos: List[EventoContratual]
     arquivo_fonte: str
