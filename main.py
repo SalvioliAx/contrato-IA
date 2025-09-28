@@ -80,3 +80,4 @@ else:
 
     with tab_map["anomalies"]:
         anomaly_tab.render(t)
+
