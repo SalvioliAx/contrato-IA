@@ -55,3 +55,4 @@ class Localization:
                 # Retorna a própria chave se a tradução não for encontrada
                 return key
         return translate
+

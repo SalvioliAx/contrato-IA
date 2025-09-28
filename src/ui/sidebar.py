@@ -5,7 +5,7 @@ from src.utils import reset_analysis_data
 def render_sidebar(api_key, embeddings_model, t):
     """
     Renderiza todos os componentes da barra lateral, incluindo upload de ficheiros,
-    gestão de coleções e seleção de idioma.
+    gestão de coleções. O seletor de idioma foi movido para main.py.
     """
     st.sidebar.header(t("sidebar.manage_documents_header"))
 
@@ -20,35 +20,6 @@ def render_sidebar(api_key, embeddings_model, t):
         if st.session_state.api_key_input:
             st.rerun() # Recarrega a aplicação para usar a nova chave
         return # Para a execução se não houver chave
-
-    # Seleção de idioma
-    st.sidebar.header(t("sidebar.language_settings_header"))
-    
-    # Mapeamento de código de idioma para nome completo
-    language_options = {"pt": "Português", "en": "English", "es": "Español"}
-    
-    # Obtém o nome completo do idioma atual para exibir no selectbox
-    current_language_name = language_options.get(st.session_state.get("language", "pt"))
-
-    def format_func(code):
-        return language_options[code]
-
-    selected_language_name = st.sidebar.selectbox(
-        t("sidebar.chat_language_label"),
-        options=list(language_options.keys()),
-        format_func=format_func,
-        key="language_selector"
-    )
-
-    # Inverte o mapeamento para encontrar o código a partir do nome selecionado
-    selected_language_code = next(
-        code for code, name in language_options.items() if name == language_options[selected_language_name]
-    )
-
-    # Atualiza o estado da sessão se o idioma mudar
-    if st.session_state.language != selected_language_code:
-        st.session_state.language = selected_language_code
-        st.rerun() # Recarrega para aplicar o novo idioma
 
     st.sidebar.markdown("---")
 
