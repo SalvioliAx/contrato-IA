@@ -3,27 +3,36 @@ from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-@st.cache_data(show_spinner="Checking document compliance...")
+@st.cache_data(show_spinner="Verificando conformidade...")
 def verificar_conformidade_documento(ref_texto, ref_nome, doc_texto, doc_nome, google_api_key, lang_code):
+    """
+    Verifica a conformidade entre dois documentos, com prompt sensível ao idioma.
+    """
     if not ref_texto or not doc_texto or not google_api_key:
-        return "Error: Document texts or API key missing."
+        return "Erro: faltam dados ou chave API."
 
     llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0.1)
-    prompt = PromptTemplate.from_template(
-        "You are an auditor. Compare 'DOCUMENT TO ANALYZE' ({doc_nome}) with 'REFERENCE DOCUMENT' ({ref_nome}).\n"
-        "Identify and list clauses in 'DOCUMENT TO ANALYZE' that contradict or are misaligned with 'REFERENCE DOCUMENT'.\n"
-        "Your response must be in {language}.\n\n"
-        "Reference Document:\n{ref}\n\n"
-        "Document to Analyze:\n{doc}\n\n"
-        "COMPLIANCE REPORT:"
+    
+    # O prompt de conformidade é complexo, então adicionamos a instrução de idioma aqui.
+    prompt_template = (
+        "Você é um especialista em conformidade. Compare o DOCUMENTO A ANALISAR ({doc_nome}) "
+        "com o DOCUMENTO DE REFERÊNCIA ({ref_nome}). "
+        "Seu relatório final deve ser escrito em {language}.\n\n"
+        "Documento de referência:\n{ref}\n\nDocumento a analisar:\n{doc}\n\nRelatório de conformidade:"
     )
-    chain = LLMChain(llm=llm, prompt=prompt.partial(language=lang_code))
+    
+    prompt = PromptTemplate.from_template(prompt_template)
+    
+    chain = LLMChain(llm=llm, prompt=prompt)
     try:
         res = chain.invoke({
-            "ref_nome": ref_nome, "ref": ref_texto[:25000],
-            "doc_nome": doc_nome, "doc": doc_texto[:25000]
+            "doc_nome": doc_nome,
+            "ref_nome": ref_nome,
+            "language": lang_code,
+            "ref": ref_texto[:25000],
+            "doc": doc_texto[:25000]
         })
         return res['text']
     except Exception as e:
-        return f"Error in compliance analysis: {e}"
+        return f"Erro na análise de conformidade: {e}"
 
