@@ -4,25 +4,30 @@ from src.utils import reset_analysis_data
 
 def handle_upload_section(api_key, embeddings_model, t):
     """Lida com a secção de upload de novos ficheiros PDF."""
-    arquivos_pdf_upload = st.file_uploader(
+    # CORREÇÃO: Adicionar prefixo st.sidebar.
+    arquivos_pdf_upload = st.sidebar.file_uploader(
         t("sidebar.file_uploader_label"),
         type="pdf",
         accept_multiple_files=True,
         key="uploader_sidebar"
     )
     if not arquivos_pdf_upload:
-        st.info(t("sidebar.no_files_selected"))
+        # CORREÇÃO: Adicionar prefixo st.sidebar.
+        st.sidebar.info(t("sidebar.no_files_selected"))
 
-    if st.button(t("sidebar.process_button"), key="btn_proc_upload", use_container_width=True):
+    # CORREÇÃO: Adicionar prefixo st.sidebar.
+    if st.sidebar.button(t("sidebar.process_button"), key="btn_proc_upload", use_container_width=True):
         if not arquivos_pdf_upload:
-            st.warning(t("sidebar.warning_no_files_to_process"))
+            # CORREÇÃO: Adicionar prefixo st.sidebar.
+            st.sidebar.warning(t("sidebar.warning_no_files_to_process"))
             return
 
         if not (api_key and embeddings_model):
-            st.error(t("errors.api_key_or_embeddings_not_configured_short"))
+            # CORREÇÃO: Adicionar prefixo st.sidebar.
+            st.sidebar.error(t("errors.api_key_or_embeddings_not_configured_short"))
             return
         
-        with st.spinner(t("info.processing_and_indexing")):
+        with st.sidebar.spinner(t("info.processing_and_indexing")):
             vs, nomes_arqs = document_processor.obter_vector_store_de_uploads(
                 arquivos_pdf_upload, embeddings_model, api_key, t
             )
@@ -34,32 +39,39 @@ def handle_upload_section(api_key, embeddings_model, t):
             st.session_state.arquivos_pdf_originais = arquivos_pdf_upload
             st.session_state.colecao_ativa = None
             st.session_state.messages = []
-            st.success(t("sidebar.success_processed_files", count=len(nomes_arqs)))
+            # CORREÇÃO: Adicionar prefixo st.sidebar.
+            st.sidebar.success(t("sidebar.success_processed_files", count=len(nomes_arqs)))
             st.rerun()
         else:
-            st.error(t("sidebar.error_processing_files"))
+            # CORREÇÃO: Adicionar prefixo st.sidebar.
+            st.sidebar.error(t("sidebar.error_processing_files"))
 
 def handle_collection_section(embeddings_model, t):
     """Lida com a secção de carregamento de coleções existentes."""
     colecoes = collection_manager.listar_colecoes_salvas()
     if not colecoes:
-        st.info(t("sidebar.no_collections_saved"))
+        # CORREÇÃO: Adicionar prefixo st.sidebar.
+        st.sidebar.info(t("sidebar.no_collections_saved"))
         return
 
-    colecao_selecionada = st.selectbox(
+    # CORREÇÃO: Adicionar prefixo st.sidebar.
+    colecao_selecionada = st.sidebar.selectbox(
         t("sidebar.collection_selectbox_label"),
         colecoes,
         key="select_colecao",
         index=None,
         placeholder=t("sidebar.collection_selectbox_placeholder")
     )
-    if st.button(t("sidebar.load_collection_button"), key="btn_load_colecao", use_container_width=True):
+    # CORREÇÃO: Adicionar prefixo st.sidebar.
+    if st.sidebar.button(t("sidebar.load_collection_button"), key="btn_load_colecao", use_container_width=True):
         if not colecao_selecionada:
-            st.warning(t("sidebar.warning_no_collection_selected"))
+            # CORREÇÃO: Adicionar prefixo st.sidebar.
+            st.sidebar.warning(t("sidebar.warning_no_collection_selected"))
             return
         
         if not embeddings_model:
-            st.error(t("errors.api_key_or_embeddings_not_configured_short"))
+            # CORREÇÃO: Adicionar prefixo st.sidebar.
+            st.sidebar.error(t("errors.api_key_or_embeddings_not_configured_short"))
             return
 
         vs, nomes_arqs = collection_manager.carregar_colecao(
@@ -93,7 +105,6 @@ def handle_save_collection_section(t):
         else:
             st.sidebar.warning(t("sidebar.warning_give_name_to_collection"))
 
-# CORREÇÃO: Adiciona os argumentos que faltavam à assinatura da função
 def display_sidebar(api_key, embeddings_model, t):
     """Renderiza a barra lateral completa da aplicação."""
     st.sidebar.header(t("sidebar.header"))
