@@ -17,7 +17,7 @@ def display_anomaly_tab(t):
         st.session_state.anomalias_resultados = analysis.detectar_anomalias_no_dataframe(df_para_anomalias.copy(), t)
         st.rerun()
 
-    if "anomalias_resultados" in st.session_state:
+    if "anomalias_resultados" in st.session_state and st.session_state.anomalias_resultados:
         st.subheader(t("anomalies.results_subheader"))
         resultados = st.session_state.anomalias_resultados
         if resultados:
@@ -25,4 +25,3 @@ def display_anomaly_tab(t):
                 st.markdown(f"- {item}")
         else:
             st.info(t("info.no_anomalies_found"))
-
