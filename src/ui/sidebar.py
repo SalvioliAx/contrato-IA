@@ -4,8 +4,8 @@ from src.utils import reset_analysis_data
 
 def render_sidebar(api_key, embeddings_model, t):
     """
-    Renderiza todos os componentes da barra lateral, incluindo upload de ficheiros,
-    gestão de coleções. O seletor de idioma foi movido para main.py.
+    Renderiza todos os componentes da barra lateral, incluindo upload de ficheiros
+    e gestão de coleções.
     """
     st.sidebar.header(t("sidebar.manage_documents_header"))
 
@@ -43,8 +43,8 @@ def render_sidebar(api_key, embeddings_model, t):
         if st.sidebar.button(t("sidebar.save_collection_button"), use_container_width=True):
             if nome_nova_colecao and st.session_state.nomes_arquivos:
                 collection_manager.salvar_colecao_atual(
-                    nome_nova_colecao, 
-                    st.session_state.vector_store, 
+                    nome_nova_colecao,
+                    st.session_state.vector_store,
                     st.session_state.nomes_arquivos,
                     t
                 )
@@ -69,12 +69,12 @@ def handle_upload_section(api_key, embeddings_model, t):
         if not arquivos_pdf_upload:
             st.sidebar.warning(t("warnings.no_files_selected"))
             return
-        
+
         with st.spinner(t("info.processing_and_indexing")):
             vs, nomes_arqs = document_processor.obter_vector_store_de_uploads(
                 arquivos_pdf_upload, embeddings_model, api_key, t
             )
-        
+
         if vs and nomes_arqs:
             reset_analysis_data()
             st.session_state.vector_store = vs
@@ -104,7 +104,7 @@ def handle_collection_section(embeddings_model, t):
         if not colecao_selecionada:
             st.sidebar.warning(t("warnings.no_collection_selected"))
             return
-            
+
         vs, nomes_arqs = collection_manager.carregar_colecao(colecao_selecionada, embeddings_model)
         if vs and nomes_arqs:
             reset_analysis_data()
