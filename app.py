@@ -1,5 +1,4 @@
 import sys
-import os
 from pathlib import Path
 
 # Adiciona o diretório raiz do projeto ao caminho do Python
