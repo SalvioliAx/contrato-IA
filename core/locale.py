@@ -99,7 +99,7 @@ TRANSLATIONS = {
         "dynamic_analyzer_field_description": "A descrição humanamente legível do campo, formulada como uma pergunta em {language}, ex: 'Qual o valor total do contrato?'.",
     },
     "en": {
-        # General
+        # Geral
         "lang_selector_label": "Language",
         "app_title": "ContratIA",
         "error_api_key": "Google API Key or Embeddings model not configured. Please check the sidebar.",
@@ -185,9 +185,11 @@ TRANSLATIONS = {
         "compliance_button": "Check Compliance",
         "compliance_error_read": "Error reading file {filename}: {e}",
         "compliance_warning_same_doc": "Please select two different documents for comparison.",
-        # Anomalies
-        "anomalies_header": "Anomaly Detection",
-        "anomalies_markdown": "This tab analyzes the data extracted from the dashboard to find outliers.",
+        # Anomalias
+        # CORRIGIDO: Chave alterada de 'anomalies_header' para 'anomalias_header' para consistência com o código Python.
+        "anomalias_header": "Anomaly Detection", 
+        # CORRIGIDO: Chave alterada de 'anomalies_markdown' para 'anomalias_markdown' para consistência com o código Python.
+        "anomalias_markdown": "This tab analyzes the data extracted from the dashboard to find outliers.", 
         "anomalias_info_run_dashboard": "To begin, go to the 'Dashboard' tab and click 'Generate Dynamic Dashboard with AI'.",
         "anomalias_button": "Detect Anomalies in Data",
         "anomalias_subheader_results": "Analysis Results:",
@@ -197,7 +199,7 @@ TRANSLATIONS = {
         "dynamic_analyzer_field_description": "A human-readable description of the field, formulated as a question in {language}, e.g., 'What is the total contract value?'.",
     },
     "es": {
-        # General
+        # Geral
         "lang_selector_label": "Idioma",
         "app_title": "ContratIA",
         "error_api_key": "La clave de API de Google o el modelo de Embeddings no están configurados. Verifique la barra lateral.",
@@ -241,7 +243,7 @@ TRANSLATIONS = {
         "chat_prompt": "Usa los fragmentos de contexto para responder a la pregunta en {language}. Da una respuesta completa y explicativa basada en el contexto. Si el contexto no contiene la respuesta, indica que no encontraste la información en los documentos.\n\nCONTEXTO:\n{context}\n\nPREGUNTA:\n{question}\n\nRESPUESTA:",
         # Dashboard
         "dashboard_header": "Dashboard Dinámico",
-        "dashboard_markdown": "Haga clic en el botón para que la IA analice los contratos, identifique los datos más relevantes y genere un dashboard comparativo.",
+        "dashboard_markdown": "Haga clic en el botón para que la IA analize los contratos, identifique los datos más relevantes y genere un dashboard comparativo.",
         "dashboard_info_load_docs": "Cargue documentos en la barra lateral para usar el dashboard.",
         "dashboard_button_generate": "Generar Dashboard Dinámico con IA",
         "dashboard_warning_no_files": "Esta función requiere los archivos originales. Por favor, cargue los documentos de nuevo en la barra lateral.",
@@ -252,7 +254,7 @@ TRANSLATIONS = {
         "dashboard_chart_axis_x": "Archivo de Origen",
         "dashboard_chart_title": "Comparativa de {column}",
         "dashboard_info_no_numeric": "No se extrajeron columnas puramente numéricas para generar gráficos.",
-        # Resumen
+        # Resumo
         "summary_header": "Resumen Ejecutivo",
         "summary_info_load_docs": "Cargue uno o más documentos en la barra lateral para generar un resumen.",
         "summary_selectbox_placeholder": "Seleccione un archivo",
@@ -275,7 +277,7 @@ TRANSLATIONS = {
         "deadlines_warning_no_text": "No se pudo extraer texto de {filename} para el análisis de plazos.",
         "deadlines_error_read": "Error al leer el archivo {filename}: {e}",
         "deadlines_warning_no_events": "No se encontraron eventos o plazos en los documentos.",
-        # Conformidad
+        # Conformidade
         "compliance_header": "Verificación de Conformidad",
         "compliance_info_load_docs": "Cargue al menos dos documentos en la barra lateral para realizar una comparación.",
         "compliance_selectbox_ref": "1. Elija el Documento de Referencia:",
@@ -283,9 +285,11 @@ TRANSLATIONS = {
         "compliance_button": "Verificar Conformidad",
         "compliance_error_read": "Error al leer el archivo {filename}: {e}",
         "compliance_warning_same_doc": "Por favor, seleccione dos documentos diferentes para la comparación.",
-        # Anomalías
-        "anomalies_header": "Detección de Anomalías",
-        "anomalies_markdown": "Esta pestaña analiza los datos extraídos del dashboard para encontrar valores atípicos.",
+        # Anomalias
+        # CORRIGIDO: Chave alterada de 'anomalies_header' para 'anomalias_header' para consistência com o código Python.
+        "anomalias_header": "Detección de Anomalías", 
+        # CORRIGIDO: Chave alterada de 'anomalies_markdown' para 'anomalias_markdown' para consistência com o código Python.
+        "anomalias_markdown": "Esta pestaña analiza los datos extraídos del dashboard para encontrar valores atípicos.", 
         "anomalias_info_run_dashboard": "Para comenzar, vaya a la pestaña 'Dashboard' y haga clic en 'Generar Dashboard Dinámico con IA'.",
         "anomalias_button": "Detectar Anomalías en los Datos",
         "anomalias_subheader_results": "Resultados del Análisis:",
@@ -295,4 +299,3 @@ TRANSLATIONS = {
         "dynamic_analyzer_field_description": "Una descripción legible por humanos del campo, formulada como una pregunta en {language}, ej: '¿Cuál es el valor total del contrato?'.",
     }
 }
-
