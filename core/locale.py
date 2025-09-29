@@ -62,7 +62,7 @@ TRANSLATIONS = {
         "dashboard_error_extract": "Erro ao extrair dados para o dashboard: {e}",
         "dashboard_success_extract": "Dados extraídos com sucesso para {count} contrato(s).",
         "dashboard_warning_no_numeric_data": "Não foi possível identificar colunas com dados numéricos para visualização.",
-        # Resumo (NOVO)
+        # Resumo
         "summary_header": "Resumo do Documento",
         "summary_markdown": "Use a IA para gerar um resumo executivo conciso do contrato selecionado. O resumo será baseado no conteúdo integral do arquivo.",
         "summary_selectbox_label": "1. Escolha o Contrato para Resumir:",
@@ -72,9 +72,11 @@ TRANSLATIONS = {
         "summary_error_no_pdf_text": "Não foi possível extrair texto do PDF selecionado.",
         "summary_error_generate": "Erro ao gerar resumo: {e}",
         "summary_prompt": "Você é um analista sênior. Sua tarefa é criar um resumo executivo (máximo 4 parágrafos) do seguinte contrato. O resumo deve ser conciso e focar nos pontos chave, escopo, obrigações principais e valores. Responda APENAS o resumo, sem introduções ou formatação markdown, e na língua '{language}'.\n\nCONTRATO:\n{contract_text}",
-        # Riscos
+        # Riscos (NOVOS CAMPOS)
         "risks_header": "Análise de Riscos",
         "risks_markdown": "Identifique cláusulas de risco potencial nos contratos carregados, avaliando a severidade e propondo mitigações.",
+        "risks_selectbox_label": "1. Escolha o Contrato para Análise de Risco:",
+        "risks_selectbox_placeholder": "Selecione um arquivo...",
         "risks_button": "Analisar Riscos",
         "risks_prompt": "Você é um analista jurídico de risco. Analise o seguinte texto de contrato para identificar 3 a 5 cláusulas de risco. Para cada risco, forneça uma breve descrição, uma avaliação de severidade (Baixa, Média, Alta) e uma sugestão de mitigação. Sua resposta DEVE ser um objeto JSON. Responda na língua '{language}'. O campo 'descricao' deve ser uma explicação detalhada. O campo 'severidade' deve ser uma única palavra (Baixa, Média ou Alta). O campo 'mitigacao' deve ser um breve conselho. Responda APENAS o objeto JSON. Contrato: {contract_text}",
         "risks_subheader_results": "Riscos Identificados:",
@@ -173,7 +175,7 @@ TRANSLATIONS = {
         "dashboard_error_extract": "Error extracting data for the dashboard: {e}",
         "dashboard_success_extract": "Data successfully extracted for {count} contract(s).",
         "dashboard_warning_no_numeric_data": "Could not identify columns with numeric data for visualization.",
-        # Summary (NEW)
+        # Summary
         "summary_header": "Document Summary",
         "summary_markdown": "Use AI to generate a concise executive summary of the selected contract. The summary will be based on the full content of the file.",
         "summary_selectbox_label": "1. Choose the Contract to Summarize:",
@@ -183,9 +185,11 @@ TRANSLATIONS = {
         "summary_error_no_pdf_text": "Could not extract text from the selected PDF.",
         "summary_error_generate": "Error generating summary: {e}",
         "summary_prompt": "You are a senior analyst. Your task is to create an executive summary (maximum 4 paragraphs) of the following contract. The summary must be concise and focus on key points, scope, main obligations, and values. Respond ONLY with the summary, without introductions or markdown formatting, and in the '{language}' language.\n\nCONTRACT:\n{contract_text}",
-        # Risks
+        # Risks (NEW FIELDS)
         "risks_header": "Risk Analysis",
         "risks_markdown": "Identify potential risk clauses in the loaded contracts, evaluating severity and proposing mitigations.",
+        "risks_selectbox_label": "1. Choose the Contract for Risk Analysis:",
+        "risks_selectbox_placeholder": "Select a file...",
         "risks_button": "Analyze Risks",
         "risks_prompt": "You are a legal risk analyst. Analyze the following contract text to identify 3 to 5 risk clauses. For each risk, provide a brief description, a severity assessment (Low, Medium, High), and a suggestion for mitigation. Your response MUST be a JSON object. Respond in the '{language}' language. The 'description' field must be a detailed explanation. The 'severity' field must be a single word (Low, Medium, or High). The 'mitigation' field must be brief advice. Respond ONLY with the JSON object. Contract: {contract_text}",
         "risks_subheader_results": "Identified Risks:",
@@ -211,7 +215,7 @@ TRANSLATIONS = {
         "compliance_error_generate": "Error generating compliance check: {e}",
         "compliance_prompt": "You are a compliance auditor. Compare the 'Source Document' with the 'Reference'. Your task is to identify and list 3 to 5 critical points where the Source Document deviates (is non-compliant) or is in strict compliance with the Reference. Respond in the '{language}' language. Use the following structure: \n\n**Compliance Points:**\n- [Example of compliant item]\n\n**Non-Compliance/Deviation Points:**\n- [Example of deviation/non-compliant item]\n\nSource Document: {source_text}\n\nReference: {comp_text}",
         "compliance_subheader_results": "Compliance Analysis Result",
-        # Anomalies
+        # Anomalias
         "anomalies_header": "Anomaly Detection",
         "anomalies_markdown": "This tab analyzes the data extracted from the dashboard to find outliers.",
         "anomalias_info_run_dashboard": "To start, go to the 'Dashboard' tab and click on 'Generate Dynamic Dashboard with AI'.",
@@ -219,8 +223,8 @@ TRANSLATIONS = {
         "anomalias_subheader_results": "Analysis Results:",
         "anomalias_success_no_anomalies": "No significant anomalies found.",
         # Dynamic Analyzer
-        "dynamic_analyzer_prompt": "You are a senior data analyst. Your task is to analyze contract texts and identify 5 to 7 data points that would be interesting to compare in a dashboard. Your response and descriptions must be in {language}. IMPORTANT: Your final response must be ONLY the JSON object, with no additional text, explanations, or markdown formatting.",
-        "dynamic_analyzer_field_description": "A human-readable description of the field, phrased as a question in {language}, e.g., 'What is the total contract value?'.",
+        "dynamic_analyzer_prompt": "Você é um analista de dados sênior. Sua tarefa é analisar textos de contratos e identificar de 5 a 7 pontos de dados que seriam interessantes para comparar em um dashboard. Sua resposta e descrições devem estar em {language}. IMPORTANTE: Sua resposta final deve ser ÚNICAMENTE o objeto JSON, sem texto adicional, explicações ou formato markdown.",
+        "dynamic_analyzer_field_description": "Uma descrição legível por humanos do campo, formulada como uma pergunta em {language}, ex: 'Qual é o valor total do contrato?'.",
     },
     "es": {
         # General
@@ -284,19 +288,21 @@ TRANSLATIONS = {
         "dashboard_error_extract": "Error al extraer datos para el dashboard: {e}",
         "dashboard_success_extract": "Datos extraídos exitosamente para {count} contrato(s).",
         "dashboard_warning_no_numeric_data": "No se pudieron identificar columnas con datos numéricos para la visualización.",
-        # Resumen (NUEVO)
+        # Resumo
         "summary_header": "Resumen del Documento",
         "summary_markdown": "Utilice la IA para generar un resumen ejecutivo conciso del contrato seleccionado. El resumen se basará en el contenido integral del archivo.",
-        "summary_selectbox_label": "1. Elija el Contrato a Resumir:",
-        "summary_selectbox_placeholder": "Seleccione un archivo...",
-        "summary_button": "Generar Resumen Ejecutivo",
-        "summary_error_no_file_selected": "Por favor, seleccione un archivo.",
-        "summary_error_no_pdf_text": "No se pudo extraer texto del PDF seleccionado.",
-        "summary_error_generate": "Error al generar resumen: {e}",
-        "summary_prompt": "Usted es un analista senior. Su tarea es crear un resumen ejecutivo (máximo 4 párrafos) del siguiente contrato. El resumen debe ser conciso y centrarse en los puntos clave, alcance, obligaciones principales y valores. Responda SÓLO con el resumen, sin introducciones ni formato markdown, y en el idioma '{language}'.\n\nCONTRATO:\n{contract_text}",
-        # Riscos
+        "summary_selectbox_label": "1. Choose the Contract to Summarize:",
+        "summary_selectbox_placeholder": "Select a file...",
+        "summary_button": "Generate Executive Summary",
+        "summary_error_no_file_selected": "Please select a file.",
+        "summary_error_no_pdf_text": "Could not extract text from the selected PDF.",
+        "summary_error_generate": "Error generating summary: {e}",
+        "summary_prompt": "You are a senior analyst. Your task is to create an executive summary (maximum 4 paragraphs) of the following contract. The summary must be concise and focus on key points, scope, main obligations, and values. Respond ONLY with the summary, without introductions or markdown formatting, and in the '{language}' language.\n\nCONTRACT:\n{contract_text}",
+        # Riscos (NEW FIELDS)
         "risks_header": "Análisis de Riesgos",
         "risks_markdown": "Identifique cláusulas de riesgo potencial en los contratos cargados, evaluando la severidad y proponiendo mitigaciones.",
+        "risks_selectbox_label": "1. Elija el Contrato para Análisis de Riesgo:",
+        "risks_selectbox_placeholder": "Seleccione un archivo...",
         "risks_button": "Analizar Riesgos",
         "risks_prompt": "Usted es un analista legal de riesgo. Analice el siguiente texto de contrato para identificar de 3 a 5 cláusulas de riesgo. Para cada riesgo, proporcione una breve descripción, una evaluación de severidad (Baja, Media, Alta) y una sugerencia de mitigación. Su respuesta DEBE ser un objeto JSON. Responda en el idioma '{language}'. El campo 'descripcion' debe ser una explicación detallada. El campo 'severidad' debe ser una sola palabra (Baja, Media o Alta). El campo 'mitigacion' debe ser un breve consejo. Responda SÓLO el objeto JSON. Contrato: {contract_text}",
         "risks_subheader_results": "Riesgos Identificados:",
@@ -306,7 +312,7 @@ TRANSLATIONS = {
         "deadlines_header": "Extracción de Plazos y Eventos",
         "deadlines_markdown": "Visualice todos los plazos, fechas de vencimiento y eventos importantes extraídos de sus contratos en un calendario.",
         "deadlines_button": "Extraer Plazos",
-        "deadlines_prompt": "Usted es un asistente de gestión de proyectos. Analice el texto del contrato para extraer todos los plazos, fechas de vencimiento, hitos o eventos importantes que impliquen una fecha específica o un período de tiempo (ej: 30 días después de la firma). Su respuesta DEBE ser un objeto JSON. Para cada elemento, proporcione la fecha exacta si es posible (formato AAAA-MM-DD), el evento y el documento de origen (use el nombre '{source_name}'). Si no hay una fecha exacta, use el campo 'condicion' para describir el plazo (ej: '30 días después de la notificación'). Responda SÓLO el objeto JSON. Contrato: {contract_text}",
+        "deadlines_prompt": "Usted es un asistente de gestión de proyectos. Analice el texto del contrato para extraer todos los plazos, fechas de vencimiento, hitos o eventos importantes que impliquen una fecha específica o un período de tiempo (ej: 30 días después de la firma). Su respuesta DEVE ser un objeto JSON. Para cada elemento, proporcione la fecha exacta si es posible (formato AAAA-MM-DD), el evento y el documento de origen (use el nombre '{source_name}'). Si no hay una fecha exacta, use el campo 'condicion' para describir el plazo (ej: '30 días después de la notificación'). Responda SÓLO el objeto JSON. Contrato: {contract_text}",
         "deadlines_subheader_calendar": "Visualización de Plazos",
         "deadlines_subheader_table": "Plazos Detallados",
         "deadlines_error_generate": "Error al extraer plazos: {e}",
@@ -320,9 +326,9 @@ TRANSLATIONS = {
         "compliance_error_read": "Error al leer el archivo {filename}: {e}",
         "compliance_warning_same_doc": "Por favor, seleccione dos documentos diferentes para la comparación.",
         "compliance_error_generate": "Error al generar la verificación de conformidad: {e}",
-        "compliance_prompt": "Usted es un auditor de conformidad. Compare el 'Documento de Origen' con la 'Referencia'. Su tarea es identificar y listar 3 a 5 puntos críticos donde el Documento de Origen se desvía (no cumple) o está en estricta conformidad con la Referencia. Responda en el idioma '{language}'. Use la siguiente estructura: \n\n**Puntos de Conformidad:**\n- [Ejemplo de elemento conforme]\n\n**Puntos de No Conformidad/Desviaciones:**\n- [Ejemplo de desviación/elemento no conforme]\n\nDocumento de Origen: {source_text}\n\nReferencia: {comp_text}",
+        "compliance_prompt": "Usted es un auditor de conformidad. Compare el 'Documento de Origen' con la 'Referencia'. Su tarea es identificar y listar 3 a 5 puntos críticos donde el Documento de Origen se desvía (no cumple) o está en estricta conformidad con la Referencia. Responda en el idioma '{language}'. Use la siguiente estructura: \n\n**Puntos de Conformidad:**\n- [Ejemplo de elemento conforme]\n\n**Puntos de No Conformidad/Desviaciones:**\n- [Ejemplo de desviación/elemento no conforme]\n\nDocumento de Origen: {source_text}\n\nReferência: {comp_text}",
         "compliance_subheader_results": "Resultado del Análisis de Conformidad",
-        # Anomalías
+        # Anomalias
         "anomalies_header": "Detección de Anomalías",
         "anomalies_markdown": "Esta pestaña analiza los datos extraídos del dashboard para encontrar valores atípicos.",
         "anomalias_info_run_dashboard": "Para comenzar, vaya a la pestaña 'Dashboard' y haga clic en 'Generar Dashboard Dinámico con IA'.",
