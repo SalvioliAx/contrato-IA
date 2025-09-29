@@ -10,7 +10,8 @@ def render_anomalias_tab(embeddings_global, google_api_key, texts):
     st.markdown(texts["anomalies_markdown"])
 
     if "dados_extraidos" not in st.session_state or not st.session_state.dados_extraidos:
-        st.info(texts["anomalies_info_run_dashboard"])
+        # Usando a chave padronizada
+        st.info(texts["anomalies_info_run_dashboard"]) 
         return
 
     df = pd.DataFrame(st.session_state.dados_extraidos)
@@ -22,5 +23,4 @@ def render_anomalias_tab(embeddings_global, google_api_key, texts):
             for a in anomalias:
                 st.markdown(f"- {a}")
         else:
-            st.success(texts["anomalias_success_no_anomalias"])
-
+            st.success(texts["anomalias_success_no_anomalies"])
