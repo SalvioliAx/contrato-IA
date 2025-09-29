@@ -1,5 +1,6 @@
-import streamlit as st
+# Dicionário central para todos os textos da UI e prompts da IA.
 from typing import Dict, Any
+import streamlit as st
 
 # Dicionário central para todos os textos da UI e prompts da IA.
 # A estrutura do dicionário foi corrigida para ser sintaticamente válida em Python.
