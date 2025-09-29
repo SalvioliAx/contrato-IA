@@ -21,7 +21,7 @@ def identificar_pontos_chave_dinamicos(textos_contratos: str, google_api_key: st
     llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0.1)
     
     # Atualiza a descrição do Pydantic dinamicamente com base no idioma
-    PontoChave.model_fields['descricao'].description = TRANSLATIONS[lang_code]['dynamic_analyzer_field_description'].format(language=lang_code)
+    PontoChave.model_fields['descricao'].description = TRANSLATIONS[lang_code]['dynamic_analyzer_field_description'].format(language=TRANSLATIONS[lang_code]["lang_selector_label"])
     
     parser = PydanticOutputParser(pydantic_object=ListaPontosChave)
     
@@ -37,7 +37,7 @@ def identificar_pontos_chave_dinamicos(textos_contratos: str, google_api_key: st
     chain = prompt | llm
 
     try:
-        # A linguagem para o prompt é o nome completo, ex: "Português"
+        # CORREÇÃO: Usar o nome completo do idioma (ex: "Português", "English") conforme a chave 'lang_selector_label'
         language_name = TRANSLATIONS[lang_code]["lang_selector_label"]
         resultado_bruto = chain.invoke({
             "textos_contratos": textos_contratos[:25000], 
@@ -49,7 +49,7 @@ def identificar_pontos_chave_dinamicos(textos_contratos: str, google_api_key: st
             resultado_parseado = parser.parse(resultado_bruto.content)
         except Exception:
             # Se falhar, usa o parser de correção
-            st.warning("A resposta inicial da IA não estava em JSON. Tentando corrigir...")
+            st.warning(TRANSLATIONS[lang_code].get("warning_ai_not_json", "A resposta inicial da IA não estava em JSON. Tentando corrigir...")) # Usando .get para evitar erro se a chave não estiver no locale
             resultado_parseado = output_fixing_parser.parse(resultado_bruto.content)
             
         return resultado_parseado.pontos_chave
@@ -57,5 +57,3 @@ def identificar_pontos_chave_dinamicos(textos_contratos: str, google_api_key: st
     except Exception as e:
         st.error(f"Erro ao identificar pontos chave dinâmicos: {e}")
         return []
-
-
