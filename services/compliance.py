@@ -15,10 +15,12 @@ def verificar_conformidade_documento(ref_texto, ref_nome, doc_texto, doc_nome, g
     llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0.1)
     
     language_name = TRANSLATIONS[lang_code]["lang_selector_label"]
+    
+    # Aumentando o peso da instrução de idioma no início do prompt
     prompt_template = (
+        "Seu relatório final **DEVE SER ESCRITO INTEGRALMENTE EM {language}**. "
         "Você é um especialista em conformidade. Compare o DOCUMENTO A ANALISAR ({doc_nome}) "
-        "com o DOCUMENTO DE REFERÊNCIA ({ref_nome}). "
-        "Seu relatório final deve ser escrito em {language}.\n\n"
+        "com o DOCUMENTO DE REFERÊNCIA ({ref_nome}).\n\n"
         "Documento de referência:\n{ref}\n\nDocumento a analisar:\n{doc}\n\nRelatório de conformidade:"
     )
     
@@ -36,4 +38,3 @@ def verificar_conformidade_documento(ref_texto, ref_nome, doc_texto, doc_nome, g
         return res['text']
     except Exception as e:
         return f"Erro na análise de conformidade: {e}"
-
