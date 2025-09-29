@@ -32,7 +32,7 @@ TRANSLATIONS = {
         "sidebar_load_collection_placeholder": "Selecione uma coleção",
         "sidebar_load_collection_button": "Carregar Coleção",
         "sidebar_error_load": "Erro ao carregar coleção: {e}",
-        # Chat (CHAVES CORRIGIDAS)
+        # Chat
         "chat_header": "Converse com seus Contratos",
         "chat_welcome_message": "Olá! Sou seu assistente de IA. Carregue e processe seus contratos para começar a conversar!",
         "chat_info_load_docs": "Por favor, carregue e processe documentos PDF na barra lateral para ativar o chat.",
@@ -54,8 +54,10 @@ TRANSLATIONS = {
         "dashboard_chart_axis_x": "Documento Fonte",
         "dashboard_chart_title": "Distribuição de {column} por Documento",
         "dashboard_no_numeric": "Não foram encontrados dados numéricos ou comparáveis suficientes para gerar gráficos.",
-        # Resumo
+        # Resumo (CHAVES CORRIGIDAS)
         "summary_header": "Resumo Executivo",
+        "summary_selectbox_label": "Selecione o Contrato para Resumir:",
+        "summary_selectbox_placeholder": "Nenhum contrato selecionado",
         "summary_prompt": "Crie um resumo executivo conciso do seguinte texto de contrato, destacando o propósito principal, as partes envolvidas e o objeto do contrato. A resposta deve ser em {language}.",
         # Riscos
         "risks_header": "Análise de Riscos",
@@ -117,7 +119,7 @@ TRANSLATIONS = {
         "sidebar_load_collection_placeholder": "Select a collection",
         "sidebar_load_collection_button": "Load Collection",
         "sidebar_error_load": "Error loading collection: {e}",
-        # Chat (CHAVES CORRIGIDAS)
+        # Chat
         "chat_header": "Chat with your Contracts",
         "chat_welcome_message": "Hello! I am your AI assistant. Upload and process your contracts to start chatting!",
         "chat_info_load_docs": "Please upload and process PDF documents in the sidebar to enable chat.",
@@ -139,8 +141,10 @@ TRANSLATIONS = {
         "dashboard_chart_axis_x": "Source Document",
         "dashboard_chart_title": "Distribution of {column} by Document",
         "dashboard_no_numeric": "Not enough numeric or comparable data was found to generate charts.",
-        # Summary
+        # Summary (CHAVES CORRIGIDAS)
         "summary_header": "Executive Summary",
+        "summary_selectbox_label": "Select Contract to Summarize:",
+        "summary_selectbox_placeholder": "No contract selected",
         "summary_prompt": "Create a concise executive summary of the following contract text, highlighting the main purpose, the parties involved, and the object of the contract. The response must be in {language}.",
         # Risks
         "risks_header": "Risk Analysis",
@@ -153,7 +157,7 @@ TRANSLATIONS = {
         # Compliance
         "compliance_header": "Compliance Verification",
         "compliance_markdown": "Compare two documents to check compliance with standard clauses or internal policies.",
-        "compliance_prompt": "Compare Contract A with Contract B. Identify the **main differences** in terms of obligations, terms, and risks. Quote text excerpts from both documents to justify the differences found. The response must be in {language}.",
+        "compliance_prompt": "Compare Contract A with Contract B. Identify the **main differences** in terms of obligations, terms, and risks. Quote text excerpts from both documents to justify the differences. The response must be in {language}.",
         "compliance_selectbox_ref": "1. Choose the Reference Document (A):",
         "compliance_selectbox_comp": "2. Choose the Document to Compare (B):",
         "compliance_button": "Verify Compliance",
@@ -178,7 +182,7 @@ TRANSLATIONS = {
         "info_load_docs": "👈 Por favor, cargue y procese documentos PDF o una colección existente en la barra lateral para empezar.",
         # Spinners de Carregamento
         "spinner_generating_summary": "Generando resumen...",
-        "spinner_analyzing_risks": "Analizando riesgos...",
+        "spinner_analyzing_riscos": "Analizando riesgos...",
         "spinner_extracting_deadlines": "Extrayendo plazos y eventos...",
         "spinner_checking_compliance": "Verificando cumplimiento...",
         "sidebar_spinner_processing": "Analizando documentos...",
@@ -202,10 +206,10 @@ TRANSLATIONS = {
         "sidebar_load_collection_placeholder": "Seleccione una colección",
         "sidebar_load_collection_button": "Cargar Colección",
         "sidebar_error_load": "Error al cargar colección: {e}",
-        # Chat (CHAVES CORRIGIDAS)
+        # Chat
         "chat_header": "Chatee con sus Contratos",
         "chat_welcome_message": "¡Hola! Soy su asistente de IA. Cargue y procese sus contratos para empezar a chatear.",
-        "chat_info_load_docs": "Por favor, cargue y procese documentos PDF en la barra lateral para habilitar el chat.",
+        "chat_info_load_docs": "Por favor, cargue e procese documentos PDF en la barra lateral para habilitar el chat.",
         "chat_input_placeholder": "Pregunte algo sobre sus documentos...",
         "chat_expander_sources": "Fuentes Utilizadas",
         "chat_source_label": "Fuente:",
@@ -224,8 +228,10 @@ TRANSLATIONS = {
         "dashboard_chart_axis_x": "Documento Fuente",
         "dashboard_chart_title": "Distribución de {column} por Documento",
         "dashboard_no_numeric": "No se encontraron datos numéricos o comparables suficientes para generar gráficos.",
-        # Resumo
+        # Resumo (CHAVES CORRIGIDAS)
         "summary_header": "Resumen Ejecutivo",
+        "summary_selectbox_label": "Seleccione el Contrato para Resumir:",
+        "summary_selectbox_placeholder": "Ningún contrato seleccionado",
         "summary_prompt": "Cree un resumen ejecutivo conciso del siguiente texto de contrato, destacando el propósito principal, las partes involucradas y el objeto del contrato. La respuesta debe ser en {language}.",
         # Riesgos
         "risks_header": "Análisis de Riesgos",
@@ -247,7 +253,7 @@ TRANSLATIONS = {
         # Anomalías
         "anomalies_header": "Detección de Anomalías",
         "anomalies_markdown": "Esta pestaña analiza los datos extraídos del dashboard para encontrar valores atípicos.",
-        "anomalies_info_run_dashboard": "Para comenzar, vaya a la pestaña 'Dashboard' y haga clic en 'Gerar Dashboard Dinámico com IA'.",
+        "anomalies_info_run_dashboard": "Para comenzar, vaya a la pestaña 'Dashboard' y haga clic en 'Gerar Dashboard Dinâmico com IA'.",
         "anomalias_button": "Detectar Anomalías en los Datos",
         "anomalias_subheader_results": "Resultados del Análisis:",
         "anomalias_success_no_anomalies": "No se encontraron anomalías significativas.",
