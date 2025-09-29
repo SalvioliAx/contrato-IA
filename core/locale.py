@@ -8,7 +8,7 @@ TRANSLATIONS = {
         "info_load_docs": "👈 Por favor, carregue e processe documentos PDF ou uma coleção existente na barra lateral para começar.",
         # Spinners de Carregamento
         "spinner_generating_summary": "Gerando resumo...",
-        "spinner_analyzing_riscos": "Analisando riscos...",
+        "spinner_analyzing_risks": "Analisando riscos...",
         "spinner_extracting_deadlines": "Extraindo prazos e eventos...",
         "spinner_checking_compliance": "Verificando conformidade...",
         "sidebar_spinner_processing": "Analisando documentos...",
@@ -24,100 +24,98 @@ TRANSLATIONS = {
         # Sidebar
         "sidebar_header": "Gerenciador de Documentos",
         "sidebar_uploader_label": "Carregar novos contratos (PDF)",
-        "sidebar_process_button": "Processar Documentos",
-        "sidebar_save_collection_label": "Nome da Nova Coleção",
-        "sidebar_save_collection_placeholder": "ex: contratos_q3",
-        "sidebar_save_collection_button": "Salvar Coleção Atual",
-        "sidebar_save_collection_warning": "Nenhuma coleção carregada para salvar.",
+        "sidebar_process_button": "Processar Documentos 🚀",
+        "sidebar_save_collection_label": "Nome da Coleção a Salvar",
+        "sidebar_save_collection_button": "Salvar Coleção",
         "sidebar_load_collection_label": "Carregar Coleção Existente",
-        "sidebar_load_collection_placeholder": "Selecione uma coleção...",
-        "sidebar_load_collection_button": "Carregar Coleção",
+        "sidebar_load_collection_button": "Carregar Selecionada",
+        "sidebar_load_collection_placeholder": "Selecione uma coleção",
+        "sidebar_save_collection_warning": "Carregue e processe documentos antes de salvar.",
         # Chat
-        "chat_header": "Converse com seus Documentos",
-        "chat_welcome_message": "Olá! Pergunte o que quiser sobre os documentos carregados. Por exemplo: 'Quais são os principais riscos identificados?'",
+        "chat_header": "Chat com o Contrato",
+        "chat_info_load_docs": "Carregue e processe documentos para iniciar o chat.",
+        "chat_welcome_message": "Olá! Pergunte o que quiser sobre os documentos processados.",
         "chat_input_placeholder": "Faça uma pergunta...",
-        "chat_expander_sources": "Referências do Documento:",
-        "chat_source_label": "Arquivo:",
+        "chat_expander_sources": "Fontes Relevantes",
+        "chat_source_label": "Fonte:",
         "chat_page_label": "Pág.",
-        "chat_info_load_docs": "Por favor, carregue e processe documentos na aba lateral para iniciar o chat.",
-        "chat_spinner_thinking": "Pensando na resposta...",
-        "chat_prompt": (
-            "Você é um assistente de IA especialista em análise de contratos. "
-            "Sua tarefa é responder à pergunta do usuário APENAS com base nos documentos de contexto fornecidos. "
-            "Sua resposta deve ser concisa, clara e estruturada (se necessário com listas ou parágrafos) no idioma {language}. "
-            "Se a resposta não puder ser encontrada nos documentos, diga 'Não foi possível encontrar a informação nos documentos fornecidos.'\n\n"
-            "Pergunta: {query}"
-        ),
+        "chat_spinner_thinking": "Gemini está pensando...",
         # Dashboard
-        "dashboard_header": "Análise de Dados Dinâmica",
-        "dashboard_markdown": "Extraia dados-chave de todos os documentos para uma análise comparativa e gere um dashboard dinâmico.",
-        "dashboard_info_load_docs": "Por favor, carregue e processe documentos na aba lateral para gerar o dashboard.",
+        "dashboard_header": "Dashboard Dinâmico",
+        "dashboard_markdown": "Extraia dados-chave de todos os contratos e visualize-os em um dashboard comparativo.",
+        "dashboard_info_load_docs": "Carregue e processe documentos para extrair os dados.",
+        "dashboard_warning_no_files": "Nenhum arquivo PDF original encontrado. Por favor, carregue e processe documentos na barra lateral.",
         "dashboard_button_generate": "Gerar Dashboard Dinâmico com IA",
-        "dashboard_warning_no_files": "Por favor, carregue os arquivos PDF originais na barra lateral para extrair o texto completo.",
-        "dashboard_subheader_data": "Dados Extraídos dos Contratos:",
-        "dashboard_subheader_viz": "Visualização Comparativa:",
-        "dashboard_selectbox_metric": "Métrica para Visualização:",
-        "dashboard_chart_axis_x": "Arquivo Fonte",
+        "dashboard_subheader_data": "Dados Extraídos",
+        "dashboard_subheader_viz": "Visualização Comparativa",
+        "dashboard_selectbox_metric": "Métrica para Visualizar:",
+        "dashboard_chart_axis_x": "Contrato",
         "dashboard_chart_title": "Comparação de {column} por Contrato",
-        # Resumo
+        # **RESUMO (Novas Chaves Adicionadas)**
         "summary_header": "Resumo Executivo",
-        "summary_markdown": "Gere um resumo executivo rápido para um dos documentos carregados.",
-        "summary_selectbox": "Escolha o Documento para Resumir:",
+        "summary_info_load_docs": "Carregue e processe documentos na barra lateral para gerar um resumo.",
+        "summary_selectbox_label": "1. Escolha um Contrato para Resumir:",
+        "summary_selectbox_placeholder": "Selecione um arquivo",
         "summary_button": "Gerar Resumo Executivo",
         "summary_prompt": (
-            "Você é um analista sênior de contratos. "
-            "Gere um resumo executivo conciso, focado nos pontos mais importantes, "
-            "riscos e obrigações do contrato. Seu resumo deve ser no idioma {language}."
+            "Você é um especialista em contratos. Crie um resumo executivo conciso em 5 a 7 tópicos (bullet points) "
+            "para o contrato abaixo. Destaque: partes, objeto, prazo, valores e condições de rescisão. "
+            "O resumo deve ser escrito em {language}."
         ),
         # Riscos
         "risks_header": "Análise de Riscos",
-        "risks_markdown": "Obtenha uma análise detalhada dos riscos, obrigações e potenciais pontos de negociação de um contrato.",
-        "risks_selectbox": "Escolha o Documento para Análise de Riscos:",
+        "risks_markdown": "Identifique cláusulas de risco ou pontos de atenção no contrato selecionado.",
+        "risks_info_load_docs": "Carregue e processe documentos na barra lateral para analisar riscos.",
+        "risks_selectbox_label": "1. Escolha um Contrato para Análise de Riscos:",
+        "risks_selectbox_placeholder": "Selecione um arquivo",
         "risks_button": "Analisar Riscos",
         "risks_prompt": (
-            "Você é um advogado especialista em mitigar riscos contratuais. "
-            "Analise o contrato '{nome}' e crie uma lista estruturada de 'Riscos Principais' (com trechos do contrato), "
-            "'Obrigações Críticas' e 'Pontos de Negociação' que merecem atenção. "
-            "Sua análise deve ser em {language}."
+            "Você é um analista de riscos sênior. Analise o contrato '{nome}' e identifique os 3 principais riscos "
+            "ou cláusulas desfavoráveis, com recomendações de mitigação. Sua análise deve ser escrita em {language}. "
+            "Use um formato claro com títulos em Markdown."
         ),
         # Prazos
-        "deadlines_header": "Prazos e Eventos",
-        "deadlines_markdown": "Extrai e lista todos os prazos, datas e eventos importantes de todos os contratos para uma visão consolidada.",
+        "deadlines_header": "Extração de Prazos e Eventos",
+        "deadlines_markdown": "Visualize todos os prazos e eventos importantes extraídos dos contratos em uma linha do tempo.",
+        "deadlines_info_load_docs": "Carregue e processe documentos para extrair prazos.",
         "deadlines_button": "Extrair Prazos e Eventos",
-        "deadlines_subheader_results": "Prazos e Eventos Encontrados:",
+        "deadlines_subheader_results": "Resultados da Extração",
+        "deadlines_subheader_calendar": "Visualização Calendário",
+        "deadlines_error_no_events": "Nenhum evento ou prazo com data válida foi extraído dos documentos.",
         # Conformidade
         "compliance_header": "Verificação de Conformidade",
-        "compliance_markdown": "Compare dois documentos (ex: um contrato e um aditivo) para verificar o nível de conformidade e detectar discrepâncias.",
+        "compliance_markdown": "Compare um contrato (A) com um contrato de referência (B) para verificar a conformidade de termos.",
+        "compliance_info_load_docs": "Carregue e processe documentos para verificação de conformidade.",
         "compliance_selectbox_ref": "1. Escolha o Documento de Referência:",
         "compliance_selectbox_comp": "2. Escolha o Documento a Comparar:",
         "compliance_button": "Verificar Conformidade",
         "compliance_error_read": "Erro ao ler o arquivo {filename}: {e}",
         "compliance_warning_same_doc": "Por favor, selecione dois documentos diferentes para a comparação.",
-        # Anomalies
+        # Anomalías
         "anomalies_header": "Deteção de Anomalias",
         "anomalies_markdown": "Esta aba analisa os dados extraídos do dashboard para encontrar valores atípicos.",
-        "anomalies_info_run_dashboard": "Para começar, vá até a aba 'Dashboard' e clique em 'Gerar Dashboard Dinâmico com IA'.",
-        "anomalies_button": "Detectar Anomalias nos Dados",
-        "anomalies_subheader_results": "Resultados da Análise:",
-        "anomalies_success_no_anomalies": "Não foram encontradas anomalias significativas.",
+        "anomalias_info_run_dashboard": "Para começar, vá para a aba 'Dashboard' e clique em 'Gerar Dashboard Dinâmico com IA'.",
+        "anomalias_button": "Detetar Anomalias nos Dados",
+        "anomalias_subheader_results": "Resultados do Análise:",
+        "anomalias_success_no_anomalies": "Não foram encontradas anomalias significativas.",
         # Dynamic Analyzer
-        "dynamic_analyzer_prompt": "Você é um analista de dados sênior. Sua tarefa é analisar textos de contratos e identificar de 5 a 7 pontos de dados que seriam interessantes para comparar em um dashboard. Sua resposta e descrições devem estar em {language}. IMPORTANTE: Sua resposta final deve ser ÚNICAMENTE o objeto JSON, sem texto adicional, explicações ou formato markdown.",
+        "dynamic_analyzer_prompt": "Você é um analista de dados sênior. Sua tarefa é analisar textos de contratos e identificar de 5 a 7 pontos de dados que seriam interessantes para comparar em um dashboard. Sua resposta e descrições devem ser em {language}. IMPORTANTE: Sua resposta final deve ser APENAS o objeto JSON, sem texto adicional, explicações ou formatação markdown.",
         "dynamic_analyzer_field_description": "Uma descrição legível por humanos do campo, formulada como uma pergunta em {language}, ex: 'Qual é o valor total do contrato?'.",
     },
     "en": {
-        # Geral
+        # General
         "lang_selector_label": "Language",
         "app_title": "ContratIA",
-        "error_api_key": "Google API key or Embeddings model are not configured. Check the sidebar.",
-        "info_load_docs": "👈 Please upload and process PDF documents or an existing collection in the sidebar to begin.",
-        # Spinners de Carregamento
+        "error_api_key": "Google API key or Embeddings model is not configured. Check the sidebar.",
+        "info_load_docs": "👈 Please load and process PDF documents or an existing collection in the sidebar to start.",
+        # Loading Spinners
         "spinner_generating_summary": "Generating summary...",
-        "spinner_analyzing_riscos": "Analyzing risks...",
+        "spinner_analyzing_risks": "Analyzing risks...",
         "spinner_extracting_deadlines": "Extracting deadlines and events...",
         "spinner_checking_compliance": "Checking compliance...",
         "sidebar_spinner_processing": "Analyzing documents...",
         "dashboard_spinner_generating": "AI is analyzing and generating the dashboard...",
-        # Abas
+        # Tabs
         "tab_chat": "Chat",
         "tab_dashboard": "Dashboard",
         "tab_summary": "Summary",
@@ -128,174 +126,170 @@ TRANSLATIONS = {
         # Sidebar
         "sidebar_header": "Document Manager",
         "sidebar_uploader_label": "Upload new contracts (PDF)",
-        "sidebar_process_button": "Process Documents",
-        "sidebar_save_collection_label": "New Collection Name",
-        "sidebar_save_collection_placeholder": "ex: q3_contracts",
-        "sidebar_save_collection_button": "Save Current Collection",
-        "sidebar_save_collection_warning": "No collection loaded to save.",
+        "sidebar_process_button": "Process Documents 🚀",
+        "sidebar_save_collection_label": "Collection Name to Save",
+        "sidebar_save_collection_button": "Save Collection",
         "sidebar_load_collection_label": "Load Existing Collection",
-        "sidebar_load_collection_placeholder": "Select a collection...",
-        "sidebar_load_collection_button": "Load Collection",
+        "sidebar_load_collection_button": "Load Selected",
+        "sidebar_load_collection_placeholder": "Select a collection",
+        "sidebar_save_collection_warning": "Load and process documents before saving.",
         # Chat
-        "chat_header": "Chat with Your Documents",
-        "chat_welcome_message": "Hello! Ask anything you want about the uploaded documents. For example: 'What are the main risks identified?'",
+        "chat_header": "Chat with Contract",
+        "chat_info_load_docs": "Load and process documents to start the chat.",
+        "chat_welcome_message": "Hello! Ask anything you want about the processed documents.",
         "chat_input_placeholder": "Ask a question...",
-        "chat_expander_sources": "Document References:",
-        "chat_source_label": "File:",
+        "chat_expander_sources": "Relevant Sources",
+        "chat_source_label": "Source:",
         "chat_page_label": "Page",
-        "chat_info_load_docs": "Please upload and process documents in the sidebar to start the chat.",
-        "chat_spinner_thinking": "Thinking about the answer...",
-        "chat_prompt": (
-            "You are an AI assistant specializing in contract analysis. "
-            "Your task is to answer the user's question ONLY based on the context documents provided. "
-            "Your answer must be concise, clear, and structured (if necessary with lists or paragraphs) in the {language} language. "
-            "If the answer cannot be found in the documents, say 'Could not find the information in the provided documents.'\n\n"
-            "Question: {query}"
-        ),
+        "chat_spinner_thinking": "Gemini is thinking...",
         # Dashboard
-        "dashboard_header": "Dynamic Data Analysis",
-        "dashboard_markdown": "Extract key data points from all documents for comparative analysis and generate a dynamic dashboard.",
-        "dashboard_info_load_docs": "Please upload and process documents in the sidebar to generate the dashboard.",
+        "dashboard_header": "Dynamic Dashboard",
+        "dashboard_markdown": "Extract key data points from all contracts and visualize them in a comparative dashboard.",
+        "dashboard_info_load_docs": "Load and process documents to extract data.",
+        "dashboard_warning_no_files": "No original PDF files found. Please upload and process documents in the sidebar.",
         "dashboard_button_generate": "Generate Dynamic Dashboard with AI",
-        "dashboard_warning_no_files": "Please upload the original PDF files in the sidebar to extract the full text.",
-        "dashboard_subheader_data": "Extracted Contract Data:",
-        "dashboard_subheader_viz": "Comparative Visualization:",
-        "dashboard_selectbox_metric": "Metric for Visualization:",
-        "dashboard_chart_axis_x": "Source File",
+        "dashboard_subheader_data": "Extracted Data",
+        "dashboard_subheader_viz": "Comparative Visualization",
+        "dashboard_selectbox_metric": "Metric to Visualize:",
+        "dashboard_chart_axis_x": "Contract",
         "dashboard_chart_title": "Comparison of {column} by Contract",
-        # Summary
+        # **SUMMARY (New Keys Added)**
         "summary_header": "Executive Summary",
-        "summary_markdown": "Generate a quick executive summary for one of the uploaded documents.",
-        "summary_selectbox": "Choose Document to Summarize:",
+        "summary_info_load_docs": "Load and process documents in the sidebar to generate a summary.",
+        "summary_selectbox_label": "1. Select a Contract to Summarize:",
+        "summary_selectbox_placeholder": "Select a file",
         "summary_button": "Generate Executive Summary",
         "summary_prompt": (
-            "You are a senior contract analyst. "
-            "Generate a concise executive summary, focusing on the most important points, "
-            "risks, and obligations of the contract. Your summary must be in the {language} language."
+            "You are a contract expert. Create a concise executive summary in 5 to 7 bullet points "
+            "for the contract below. Highlight: parties, object, term, values, and termination conditions. "
+            "The summary must be written in {language}."
         ),
         # Risks
         "risks_header": "Risk Analysis",
-        "risks_markdown": "Get a detailed analysis of risks, obligations, and potential negotiation points of a contract.",
-        "risks_selectbox": "Choose Document for Risk Analysis:",
+        "risks_markdown": "Identify risk clauses or attention points in the selected contract.",
+        "risks_info_load_docs": "Load and process documents in the sidebar to analyze risks.",
+        "risks_selectbox_label": "1. Select a Contract for Risk Analysis:",
+        "risks_selectbox_placeholder": "Select a file",
         "risks_button": "Analyze Risks",
         "risks_prompt": (
-            "You are a lawyer specializing in mitigating contractual risks. "
-            "Analyze the contract '{nome}' and create a structured list of 'Key Risks' (with contract snippets), "
-            "'Critical Obligations', and 'Negotiation Points' that deserve attention. "
-            "Your analysis must be in the {language} language."
+            "You are a senior risk analyst. Analyze the contract '{nome}' and identify the 3 main risks "
+            "or unfavorable clauses, with mitigation recommendations. Your analysis must be written in {language}. "
+            "Use a clear format with Markdown headings."
         ),
         # Deadlines
-        "deadlines_header": "Deadlines and Events",
-        "deadlines_markdown": "Extract and list all important deadlines, dates, and events from all contracts for a consolidated view.",
+        "deadlines_header": "Deadline and Event Extraction",
+        "deadlines_markdown": "View all important deadlines and events extracted from contracts in a timeline.",
+        "deadlines_info_load_docs": "Load and process documents to extract deadlines.",
         "deadlines_button": "Extract Deadlines and Events",
-        "deadlines_subheader_results": "Deadlines and Events Found:",
+        "deadlines_subheader_results": "Extraction Results",
+        "deadlines_subheader_calendar": "Calendar View",
+        "deadlines_error_no_events": "No events or deadlines with a valid date were extracted from the documents.",
         # Compliance
         "compliance_header": "Compliance Verification",
-        "compliance_markdown": "Compare two documents (e.g., a contract and an amendment) to verify the level of compliance and detect discrepancies.",
-        "compliance_selectbox_ref": "1. Choose the Reference Document:",
-        "compliance_selectbox_comp": "2. Choose the Document to Compare:",
+        "compliance_markdown": "Compare one contract (A) with a reference contract (B) to verify term compliance.",
+        "compliance_info_load_docs": "Load and process documents for compliance verification.",
+        "compliance_selectbox_ref": "1. Select the Reference Document:",
+        "compliance_selectbox_comp": "2. Select the Document to Compare:",
         "compliance_button": "Verify Compliance",
         "compliance_error_read": "Error reading file {filename}: {e}",
         "compliance_warning_same_doc": "Please select two different documents for comparison.",
         # Anomalies
         "anomalies_header": "Anomaly Detection",
-        "anomalies_markdown": "This tab analyzes the extracted dashboard data to find outliers.",
-        "anomalies_info_run_dashboard": "To start, go to the 'Dashboard' tab and click on 'Generate Dynamic Dashboard with AI'.",
-        "anomalies_button": "Detect Data Anomalies",
-        "anomalies_subheader_results": "Analysis Results:",
-        "anomalies_success_no_anomalies": "No significant anomalies were found.",
+        "anomalies_markdown": "This tab analyzes the data extracted from the dashboard to find outliers.",
+        "anomalias_info_run_dashboard": "To start, go to the 'Dashboard' tab and click 'Generate Dynamic Dashboard with AI'.",
+        "anomalias_button": "Detect Anomalies in Data",
+        "anomalias_subheader_results": "Analysis Results:",
+        "anomalias_success_no_anomalies": "No significant anomalies were found.",
         # Dynamic Analyzer
-        "dynamic_analyzer_prompt": "You are a senior data analyst. Your task is to analyze contract texts and identify 5 to 7 data points that would be interesting to compare in a dashboard. Your response and descriptions must be in {language}. IMPORTANT: Your final answer must be ONLY the JSON object, without additional text, explanations, or markdown formatting.",
+        "dynamic_analyzer_prompt": "You are a senior data analyst. Your task is to analyze contract texts and identify 5 to 7 data points that would be interesting to compare in a dashboard. Your response and descriptions must be in {language}. IMPORTANT: Your final response must be ONLY the JSON object, without additional text, explanations, or markdown formatting.",
         "dynamic_analyzer_field_description": "A human-readable description of the field, formulated as a question in {language}, e.g.: 'What is the total contract value?'.",
     },
     "es": {
-        # Geral
+        # General
         "lang_selector_label": "Idioma",
         "app_title": "ContratIA",
         "error_api_key": "La clave API de Google o el modelo de Embeddings no están configurados. Verifique la barra lateral.",
-        "info_load_docs": "👈 Por favor, cargue y procese documentos PDF o una colección existente en la barra lateral para comenzar.",
-        # Spinners de Carregamento
+        "info_load_docs": "👈 Por favor, cargue y procese documentos PDF o una colección existente en la barra lateral para empezar.",
+        # Loading Spinners
         "spinner_generating_summary": "Generando resumen...",
-        "spinner_analyzing_riscos": "Analizando riesgos...",
+        "spinner_analyzing_risks": "Analizando riesgos...",
         "spinner_extracting_deadlines": "Extrayendo plazos y eventos...",
-        "spinner_checking_compliance": "Verificando conformidad...",
+        "spinner_checking_compliance": "Verificando cumplimiento...",
         "sidebar_spinner_processing": "Analizando documentos...",
-        "dashboard_spinner_generating": "La IA está analizando y generando el dashboard...",
-        # Abas
+        "dashboard_spinner_generating": "La IA está analizando y generando el panel...",
+        # Tabs
         "tab_chat": "Chat",
-        "tab_dashboard": "Dashboard",
+        "tab_dashboard": "Panel de Control",
         "tab_summary": "Resumen",
         "tab_risks": "Riesgos",
         "tab_deadlines": "Plazos",
-        "tab_compliance": "Conformidad",
+        "tab_compliance": "Cumplimiento",
         "tab_anomalies": "Anomalías",
         # Sidebar
-        "sidebar_header": "Gestor de Documentos",
+        "sidebar_header": "Administrador de Documentos",
         "sidebar_uploader_label": "Cargar nuevos contratos (PDF)",
-        "sidebar_process_button": "Procesar Documentos",
-        "sidebar_save_collection_label": "Nombre de la Nueva Colección",
-        "sidebar_save_collection_placeholder": "ej: contratos_q3",
-        "sidebar_save_collection_button": "Guardar Colección Actual",
-        "sidebar_save_collection_warning": "No hay colección cargada para guardar.",
+        "sidebar_process_button": "Procesar Documentos 🚀",
+        "sidebar_save_collection_label": "Nombre de la Colección a Guardar",
+        "sidebar_save_collection_button": "Guardar Colección",
         "sidebar_load_collection_label": "Cargar Colección Existente",
-        "sidebar_load_collection_placeholder": "Seleccione una colección...",
-        "sidebar_load_collection_button": "Cargar Colección",
+        "sidebar_load_collection_button": "Cargar Seleccionada",
+        "sidebar_load_collection_placeholder": "Seleccione una colección",
+        "sidebar_save_collection_warning": "Cargue y procese documentos antes de guardar.",
         # Chat
-        "chat_header": "Chatee con sus Documentos",
-        "chat_welcome_message": "¡Hola! Pregunte lo que quiera sobre los documentos cargados. Por ejemplo: '¿Cuáles son los principales riesgos identificados?'",
+        "chat_header": "Chat con el Contrato",
+        "chat_info_load_docs": "Cargue y procese documentos para iniciar el chat.",
+        "chat_welcome_message": "¡Hola! Pregunte lo que quiera sobre los documentos procesados.",
         "chat_input_placeholder": "Haga una pregunta...",
-        "chat_expander_sources": "Referencias del Documento:",
-        "chat_source_label": "Archivo:",
+        "chat_expander_sources": "Fuentes Relevantes",
+        "chat_source_label": "Fuente:",
         "chat_page_label": "Pág.",
-        "chat_info_load_docs": "Por favor, cargue y procese documentos en la barra lateral para iniciar el chat.",
-        "chat_spinner_thinking": "Pensando en la respuesta...",
-        "chat_prompt": (
-            "Usted es un asistente de IA experto en análisis de contratos. "
-            "Su tarea es responder a la pregunta del usuario SOLAMENTE basándose en los documentos de contexto proporcionados. "
-            "Su respuesta debe ser concisa, clara y estructurada (si es necesario con listas o párrafos) en el idioma {language}. "
-            "Si la respuesta no se puede encontrar en los documentos, diga 'No fue posible encontrar la información en los documentos proporcionados.'\n\n"
-            "Pregunta: {query}"
-        ),
+        "chat_spinner_thinking": "Gemini está pensando...",
         # Dashboard
-        "dashboard_header": "Análisis Dinámico de Datos",
-        "dashboard_markdown": "Extraiga puntos de datos clave de todos los documentos para un análisis comparativo y genere un dashboard dinámico.",
-        "dashboard_info_load_docs": "Por favor, cargue y procese documentos en la barra lateral para generar el dashboard.",
-        "dashboard_button_generate": "Generar Dashboard Dinámico con IA",
-        "dashboard_warning_no_files": "Por favor, cargue los archivos PDF originales en la barra lateral para extraer el texto completo.",
-        "dashboard_subheader_data": "Datos Extraídos de los Contratos:",
-        "dashboard_subheader_viz": "Visualización Comparativa:",
-        "dashboard_selectbox_metric": "Métrica para Visualización:",
-        "dashboard_chart_axis_x": "Archivo Fuente",
+        "dashboard_header": "Panel de Control Dinámico",
+        "dashboard_markdown": "Extraiga puntos de datos clave de todos los contratos y visualícelos en un panel de control comparativo.",
+        "dashboard_info_load_docs": "Cargue y procese documentos para extraer los datos.",
+        "dashboard_warning_no_files": "No se encontraron archivos PDF originales. Por favor, cargue y procese documentos en la barra lateral.",
+        "dashboard_button_generate": "Generar Panel de Control Dinámico con IA",
+        "dashboard_subheader_data": "Datos Extraídos",
+        "dashboard_subheader_viz": "Visualización Comparativa",
+        "dashboard_selectbox_metric": "Métrica para Visualizar:",
+        "dashboard_chart_axis_x": "Contrato",
         "dashboard_chart_title": "Comparación de {column} por Contrato",
-        # Resumo
+        # **RESUMEN (Nuevas Claves Adicionadas)**
         "summary_header": "Resumen Ejecutivo",
-        "summary_markdown": "Genere un resumen ejecutivo rápido para uno de los documentos cargados.",
-        "summary_selectbox": "Elija el Documento para Resumir:",
+        "summary_info_load_docs": "Cargue y procese documentos en la barra lateral para generar un resumen.",
+        "summary_selectbox_label": "1. Seleccione un Contrato para Resumir:",
+        "summary_selectbox_placeholder": "Seleccione un archivo",
         "summary_button": "Generar Resumen Ejecutivo",
         "summary_prompt": (
-            "Usted es un analista senior de contratos. "
-            "Genere un resumen ejecutivo conciso, centrado en los puntos más importantes, "
-            "riesgos y obligaciones del contrato. Su resumen debe ser en el idioma {language}."
+            "Usted es un experto en contratos. Cree un resumen ejecutivo conciso en 5 a 7 puntos clave (bullet points) "
+            "para el contrato a continuación. Destaque: partes, objeto, plazo, valores y condiciones de rescisión. "
+            "El resumen debe ser escrito en {language}."
         ),
-        # Riesgos
+        # Risks
         "risks_header": "Análisis de Riesgos",
-        "risks_markdown": "Obtenga un análisis detallado de los riesgos, obligaciones y posibles puntos de negociación de un contrato.",
-        "risks_selectbox": "Elija el Documento para el Análisis de Riesgos:",
+        "risks_markdown": "Identifique cláusulas de riesgo o puntos de atención en el contrato seleccionado.",
+        "risks_info_load_docs": "Cargue y procese documentos en la barra lateral para analizar riesgos.",
+        "risks_selectbox_label": "1. Seleccione un Contrato para Análisis de Riesgos:",
+        "risks_selectbox_placeholder": "Seleccione un archivo",
         "risks_button": "Analizar Riesgos",
         "risks_prompt": (
-            "Usted es un abogado especializado en mitigar riesgos contractuales. "
-            "Analice el contrato '{nome}' y cree una lista estructurada de 'Riesgos Clave' (con extractos del contrato), "
-            "'Obligaciones Críticas' y 'Puntos de Negociación' que merecen atención. "
-            "Su análisis debe ser en {language}."
+            "Usted es un analista de riesgos senior. Analice el contrato '{nome}' e identifique los 3 principales riesgos "
+            "o cláusulas desfavorables, con recomendaciones de mitigación. Su análisis debe ser escrito en {language}. "
+            "Utilice un formato claro con títulos en Markdown."
         ),
-        # Plazos
-        "deadlines_header": "Plazos y Eventos",
-        "deadlines_markdown": "Extrae y lista todos los plazos, fechas y eventos importantes de todos los contratos para una vista consolidada.",
+        # Deadlines
+        "deadlines_header": "Extracción de Plazos y Eventos",
+        "deadlines_markdown": "Vea todos los plazos y eventos importantes extraídos de los contratos en una línea de tiempo.",
+        "deadlines_info_load_docs": "Cargue y procese documentos para extraer plazos.",
         "deadlines_button": "Extraer Plazos y Eventos",
-        "deadlines_subheader_results": "Plazos y Eventos Encontrados:",
-        # Conformidad
-        "compliance_header": "Verificación de Conformidad",
-        "compliance_markdown": "Compare dos documentos (ej: un contrato y un aditivo) para verificar el nivel de conformidad y detectar discrepancias.",
+        "deadlines_subheader_results": "Resultados de la Extracción",
+        "deadlines_subheader_calendar": "Visualización de Calendario",
+        "deadlines_error_no_events": "No se extrajeron eventos o plazos con fecha válida de los documentos.",
+        # Compliance
+        "compliance_header": "Verificación de Cumplimiento",
+        "compliance_markdown": "Compare un contrato (A) con un contrato de referencia (B) para verificar el cumplimiento de términos.",
+        "compliance_info_load_docs": "Cargue y procese documentos para verificación de cumplimiento.",
         "compliance_selectbox_ref": "1. Elija el Documento de Referencia:",
         "compliance_selectbox_comp": "2. Elija el Documento a Comparar:",
         "compliance_button": "Verificar Conformidad",
@@ -303,13 +297,13 @@ TRANSLATIONS = {
         "compliance_warning_same_doc": "Por favor, seleccione dos documentos diferentes para la comparación.",
         # Anomalías
         "anomalies_header": "Detección de Anomalías",
-        "anomalies_markdown": "Esta pestaña analiza los datos extraídos del dashboard para encontrar valores atípicos.",
-        "anomalies_info_run_dashboard": "Para comenzar, vaya a la pestaña 'Dashboard' y haga clic en 'Generar Dashboard Dinámico con IA'.",
-        "anomalies_button": "Detectar Anomalías en los Datos",
-        "anomalies_subheader_results": "Resultados del Análisis:",
-        "anomalies_success_no_anomalies": "No se encontraron anomalías significativas.",
+        "anomalies_markdown": "Esta pestaña analiza los datos extraídos del panel de control para encontrar valores atípicos.",
+        "anomalias_info_run_dashboard": "Para comenzar, vaya a la pestaña 'Panel de Control' y haga clic en 'Generar Panel de Control Dinámico con IA'.",
+        "anomalias_button": "Detectar Anomalías en los Datos",
+        "anomalias_subheader_results": "Resultados del Análisis:",
+        "anomalias_success_no_anomalies": "No se encontraron anomalías significativas.",
         # Dynamic Analyzer
-        "dynamic_analyzer_prompt": "Eres un analista de datos senior. Tu tarea es analizar textos de contratos e identificar de 5 a 7 puntos de datos que serían interesantes para comparar en un dashboard. Tu respuesta y descripciones deben estar en {language}. IMPORTANTE: Tu respuesta final debe ser ÚNICAMENTE el objeto JSON, sin texto adicional, explicaciones o formato markdown.",
+        "dynamic_analyzer_prompt": "Eres un analista de datos senior. Tu tarea es analizar textos de contratos e identificar de 5 a 7 puntos de datos que serían interesantes para comparar en un panel de control. Tu respuesta y descripciones deben estar en {language}. IMPORTANTE: Tu respuesta final debe ser ÚNICAMENTE el objeto JSON, sin texto adicional, explicaciones o formato markdown.",
         "dynamic_analyzer_field_description": "Una descripción legible por humanos del campo, formulada como una pregunta en {language}, ej: '¿Cuál es el valor total del contrato?'.",
     }
 }
