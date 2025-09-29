@@ -1,48 +1,47 @@
 import streamlit as st
+import time
 from datetime import datetime
-from typing import List, Dict, Any
+from typing import List
 from langchain.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.output_parsers import PydanticOutputParser, OutputFixingParser
 from core.schemas import ListaDeEventos
+from core.locale import TRANSLATIONS
 
-# MODIFICADO: Remove st.cache_data devido ao argumento dinâmico 'texts'
-def extrair_eventos_dos_contratos(docs_com_texto: List[dict], google_api_key: str, texts: Dict[str, str]) -> List[Dict[str, Any]]:
+@st.cache_data # Removido show_spinner
+def extrair_eventos_dos_contratos(docs: List[dict], google_api_key: str, lang_code: str):
     """
-    Usa um LLM com Pydantic para extrair datas e eventos de textos de contratos.
-    Aceita o dicionário 'texts' para strings de UI localizadas.
+    Extrai eventos e prazos dos contratos, instruindo a IA a descrevê-los no idioma correto.
     """
-    if not docs_com_texto or not google_api_key:
+    if not docs or not google_api_key:
         return []
 
     llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0)
     parser = PydanticOutputParser(pydantic_object=ListaDeEventos)
-    prompt = PromptTemplate.from_template(
-        "Analise o texto do contrato '{arquivo_fonte}' e extraia todos os eventos, datas e prazos importantes.\n"
-        "Texto do Contrato:\n{texto_contrato}\n\n{format_instructions}"
+    
+    prompt_template = (
+        "Analise o contrato {arquivo_fonte} e extraia eventos e datas. "
+        "A descrição de cada evento ('descricao_evento') deve ser em {language}.\n"
+        "{texto_contrato}\n\n{format_instructions}"
     )
+    
+    prompt = PromptTemplate.from_template(prompt_template)
     fixer = OutputFixingParser.from_llm(parser=parser, llm=llm)
 
     eventos = []
     
-    # MODIFICADO: Usa texto localizado para iniciar a barra de progresso
-    barra = st.progress(0, texts["events_progress_extracting"]) 
-
-    for i, doc in enumerate(docs_com_texto):
-        # MODIFICADO: Usa texto localizado e formata com o nome do arquivo
-        progress_text = texts["events_progress_analyzing"].format(filename=doc['nome'])
-        barra.progress((i + 1) / len(docs_com_texto), text=progress_text)
-        
+    for i, doc in enumerate(docs):
         try:
-            # Invoca o modelo com o prompt formatado
-            # Limita o texto a 25000 caracteres para evitar estouro de token no prompt
-            resposta = llm.invoke(prompt.format(
-                texto_contrato=doc["texto"][:25000],
+            language_name = TRANSLATIONS[lang_code]["lang_selector_label"]
+            formatted_prompt = prompt.format(
                 arquivo_fonte=doc["nome"],
+                language=language_name,
+                texto_contrato=doc["texto"][:25000],
                 format_instructions=parser.get_format_instructions()
-            ))
+            )
             
-            # Tenta fazer o parse da resposta; se falhar, usa o "fixer" para corrigir
+            resposta = llm.invoke(formatted_prompt)
+            
             try:
                 parsed = parser.parse(resposta.content)
             except Exception:
@@ -50,11 +49,9 @@ def extrair_eventos_dos_contratos(docs_com_texto: List[dict], google_api_key: st
 
             for e in parsed.eventos:
                 try:
-                    # Tenta converter a data para um objeto date para facilitar a ordenação e visualização
                     data_obj = datetime.strptime(e.data_evento_str, "%Y-%m-%d").date()
                 except (ValueError, TypeError):
-                    data_obj = None # Se a data não estiver no formato correto, armazena como None
-                
+                    data_obj = None
                 eventos.append({
                     "Arquivo": doc["nome"],
                     "Evento": e.descricao_evento,
@@ -63,17 +60,10 @@ def extrair_eventos_dos_contratos(docs_com_texto: List[dict], google_api_key: st
                     "Trecho": e.trecho_relevante
                 })
         except Exception as e:
-            # MODIFICADO: Usa chave localizada para a mensagem de erro específica e genérica
-            error_message = texts["events_warning_error"].format(filename=doc['nome'], e=e)
-            st.warning(error_message)
-            eventos.append({
-                "Arquivo": doc["nome"], 
-                "Evento": texts["events_error_default"], 
-                "Data": "N/A", 
-                "DataObj": None, 
-                "Trecho": str(e)
-            })
-
-    # Limpa a barra de progresso após o processamento
-    barra.empty()
+            st.warning(f"Erro ao processar eventos em {doc['nome']}: {e}")
+            eventos.append({"Arquivo": doc["nome"], "Evento": f"Erro {e}", "Data": "", "DataObj": None, "Trecho": ""})
+        time.sleep(1.2)
+        
     return eventos
+
+
