@@ -24,7 +24,7 @@ lang_map_inv = {v: k for k, v in lang_map.items()}
 
 # Seletor de idioma na barra lateral
 selected_lang_label = st.sidebar.selectbox(
-    label="Idioma / Language / Idioma",
+    label="Idioma / Language",
     options=lang_map.keys(),
     index=list(lang_map.values()).index(st.session_state['lang']) # Define a seleção atual
 )
@@ -73,4 +73,5 @@ else:
         render_conformidade_tab(embeddings_global, google_api_key, texts, lang_code)
     with tab_anomalias:
         render_anomalias_tab(embeddings_global, google_api_key, texts)
+
 
