@@ -8,7 +8,7 @@ TRANSLATIONS = {
         "info_load_docs": "👈 Por favor, carregue e processe documentos PDF ou uma coleção existente na barra lateral para começar.",
         # Spinners de Carregamento
         "spinner_generating_summary": "Gerando resumo...",
-        "spinner_analyzing_risks": "Analisando riscos...",
+        "spinner_analyzing_riscos": "Analisando riscos...",
         "spinner_extracting_deadlines": "Extraindo prazos e eventos...",
         "spinner_checking_compliance": "Verificando conformidade...",
         "sidebar_spinner_processing": "Analisando documentos...",
@@ -32,9 +32,15 @@ TRANSLATIONS = {
         "sidebar_load_collection_placeholder": "Selecione uma coleção",
         "sidebar_load_collection_button": "Carregar Coleção",
         "sidebar_error_load": "Erro ao carregar coleção: {e}",
-        # Chat
+        # Chat (CHAVES CORRIGIDAS)
         "chat_header": "Converse com seus Contratos",
-        "chat_prompt_placeholder": "Pergunte algo sobre seus documentos...",
+        "chat_welcome_message": "Olá! Sou seu assistente de IA. Carregue e processe seus contratos para começar a conversar!",
+        "chat_info_load_docs": "Por favor, carregue e processe documentos PDF na barra lateral para ativar o chat.",
+        "chat_input_placeholder": "Pergunte algo sobre seus documentos...",
+        "chat_expander_sources": "Fontes Utilizadas",
+        "chat_source_label": "Fonte:",
+        "chat_page_label": "Página:",
+        "chat_spinner_thinking": "A IA está pensando...",
         "chat_error_response": "Desculpe, houve um erro ao processar sua solicitação: {e}",
         # Dashboard
         "dashboard_header": "Análise Dinâmica de Dados",
@@ -68,8 +74,8 @@ TRANSLATIONS = {
         "compliance_button": "Verificar Conformidade",
         "compliance_error_read": "Erro ao ler o arquivo {filename}: {e}",
         "compliance_warning_same_doc": "Por favor, selecione dois documentos diferentes para a comparação.",
-        # Anomalias (CHAVE CORRIGIDA)
-        "anomalies_header": "Detecção de Anomalias", # Chave padronizada para 'anomalies_header'
+        # Anomalias
+        "anomalies_header": "Detecção de Anomalias", 
         "anomalies_markdown": "Esta aba analisa os dados extraídos do dashboard para encontrar valores que fogem do padrão (outliers).",
         "anomalies_info_run_dashboard": "Para começar, vá para a aba 'Dashboard' e clique em 'Gerar Dashboard Dinâmico com IA'.",
         "anomalias_button": "Detectar Anomalias nos Dados",
@@ -111,9 +117,15 @@ TRANSLATIONS = {
         "sidebar_load_collection_placeholder": "Select a collection",
         "sidebar_load_collection_button": "Load Collection",
         "sidebar_error_load": "Error loading collection: {e}",
-        # Chat
+        # Chat (CHAVES CORRIGIDAS)
         "chat_header": "Chat with your Contracts",
-        "chat_prompt_placeholder": "Ask something about your documents...",
+        "chat_welcome_message": "Hello! I am your AI assistant. Upload and process your contracts to start chatting!",
+        "chat_info_load_docs": "Please upload and process PDF documents in the sidebar to enable chat.",
+        "chat_input_placeholder": "Ask something about your documents...",
+        "chat_expander_sources": "Sources Used",
+        "chat_source_label": "Source:",
+        "chat_page_label": "Page:",
+        "chat_spinner_thinking": "AI is thinking...",
         "chat_error_response": "Sorry, an error occurred while processing your request: {e}",
         # Dashboard
         "dashboard_header": "Dynamic Data Analysis",
@@ -190,9 +202,15 @@ TRANSLATIONS = {
         "sidebar_load_collection_placeholder": "Seleccione una colección",
         "sidebar_load_collection_button": "Cargar Colección",
         "sidebar_error_load": "Error al cargar colección: {e}",
-        # Chat
+        # Chat (CHAVES CORRIGIDAS)
         "chat_header": "Chatee con sus Contratos",
-        "chat_prompt_placeholder": "Pregunte algo sobre sus documentos...",
+        "chat_welcome_message": "¡Hola! Soy su asistente de IA. Cargue y procese sus contratos para empezar a chatear.",
+        "chat_info_load_docs": "Por favor, cargue y procese documentos PDF en la barra lateral para habilitar el chat.",
+        "chat_input_placeholder": "Pregunte algo sobre sus documentos...",
+        "chat_expander_sources": "Fuentes Utilizadas",
+        "chat_source_label": "Fuente:",
+        "chat_page_label": "Página:",
+        "chat_spinner_thinking": "La IA está pensando...",
         "chat_error_response": "Lo siento, ocurrió un error al procesar su solicitud: {e}",
         # Dashboard
         "dashboard_header": "Análisis Dinámico de Datos",
@@ -217,7 +235,7 @@ TRANSLATIONS = {
         "deadlines_header": "Plazos y Eventos Clave",
         "deadlines_prompt": "Extraiga la lista de todos los plazos, fechas de vigencia, eventos clave e hitos importantes del siguiente contrato. Para cada uno, proporcione la fecha exacta o el evento desencadenante y una breve descripción. La respuesta debe ser en {language}.",
         "deadlines_placeholder": "La lista de plazos y eventos clave se mostrará aquí...",
-        # Conformidad
+        # Conformidade
         "compliance_header": "Verificación de Conformidad",
         "compliance_markdown": "Compare dos documentos para verificar el cumplimiento de cláusulas estándar o políticas internas.",
         "compliance_prompt": "Compare el Contrato A con el Contrato B. Identifique las **principales diferencias** en términos de obligaciones, términos y riesgos. Cite fragmentos de texto de ambos documentos para justificar las diferencias encontradas. La respuesta debe ser en {language}.",
@@ -229,7 +247,7 @@ TRANSLATIONS = {
         # Anomalías
         "anomalies_header": "Detección de Anomalías",
         "anomalies_markdown": "Esta pestaña analiza los datos extraídos del dashboard para encontrar valores atípicos.",
-        "anomalias_info_run_dashboard": "Para comenzar, vaya a la pestaña 'Dashboard' y haga clic en 'Generar Dashboard Dinámico con IA'.",
+        "anomalies_info_run_dashboard": "Para comenzar, vaya a la pestaña 'Dashboard' y haga clic en 'Gerar Dashboard Dinámico com IA'.",
         "anomalias_button": "Detectar Anomalías en los Datos",
         "anomalias_subheader_results": "Resultados del Análisis:",
         "anomalias_success_no_anomalies": "No se encontraron anomalías significativas.",
