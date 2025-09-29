@@ -1,9 +1,14 @@
+import streamlit as st
+from typing import Dict, Any
+
 # Dicionário central para todos os textos da UI e prompts da IA.
-TRANSLATIONS = {
+# A estrutura do dicionário foi corrigida para ser sintaticamente válida em Python.
+TRANSLATIONS: Dict[str, Dict[str, Any]] = {
     "pt": {
         # Geral
         "lang_selector_label": "Idioma",
         "app_title": "ContratIA",
+        "app_title_icon": "💡 ContratIA",
         "error_api_key": "Chave de API do Google ou o modelo de Embeddings não estão configurados. Verifique a barra lateral.",
         "info_load_docs": "👈 Por favor, carregue e processe documentos PDF ou uma coleção existente na barra lateral para começar.",
         # Spinners de Carregamento
@@ -14,15 +19,15 @@ TRANSLATIONS = {
         "sidebar_spinner_processing": "Analisando documentos...",
         "dashboard_spinner_generating": "IA está analisando e gerando o dashboard...",
         # Abas
-        "tab_chat": "Chat",
-        "tab_dashboard": "Dashboard",
-        "tab_summary": "Resumo",
-        "tab_risks": "Riscos",
-        "tab_deadlines": "Prazos",
-        "tab_compliance": "Conformidade",
-        "tab_anomalies": "Anomalias",
+        "tab_chat": "💬 Chat",
+        "tab_dashboard": "📊 Dashboard",
+        "tab_summary": "📝 Resumo",
+        "tab_risks": "⚠️ Riscos",
+        "tab_deadlines": "⏳ Prazos",
+        "tab_compliance": "✅ Conformidade",
+        "tab_anomalies": "🔎 Anomalias",
         # Sidebar
-        "sidebar_header": "Gerenciador de Documentos",
+        "sidebar_header": "📂 Gerenciador de Documentos",
         "sidebar_uploader_label": "Carregar novos contratos (PDF)",
         "sidebar_process_button": "Processar Documentos",
         "sidebar_save_collection_label": "Salvar Coleção Atual",
@@ -82,7 +87,7 @@ TRANSLATIONS = {
             "Para cada risco, inclua uma **Recomendação de Mitigação** concisa. "
             "O relatório deve ser escrito em {language}."
         ),
-        # Prazos
+        # Prazos (Deadlines)
         "deadlines_header": "Extração de Prazos e Eventos",
         "deadlines_markdown": "Extrai automaticamente todos os prazos, datas e eventos importantes dos contratos e os organiza em uma lista.",
         "deadlines_info_load_docs": "Carregue e processe documentos na barra lateral para extrair prazos.",
@@ -91,6 +96,9 @@ TRANSLATIONS = {
         "deadlines_subheader_chart": "Distribuição Cronológica de Eventos",
         "deadlines_chart_x_axis": "Data do Evento",
         "deadlines_chart_y_axis": "Número de Eventos",
+        "deadlines_warning_no_text": "Não foi possível extrair texto de {filename} para análise de prazos.", # Novo
+        "deadlines_error_read": "Erro ao ler o arquivo {filename}: {e}", # Novo
+        "deadlines_warning_no_events": "Nenhum evento ou prazo foi encontrado nos documentos.", # Novo
         # Conformidade
         "compliance_header": "Verificação de Conformidade",
         "compliance_markdown": "Compare dois contratos para verificar a conformidade em termos de cláusulas principais e termos.",
@@ -110,11 +118,17 @@ TRANSLATIONS = {
         # Dynamic Analyzer
         "dynamic_analyzer_prompt": "Você é um analista de dados sênior. Sua tarefa é analisar textos de contratos e identificar de 5 a 7 pontos de dados que seriam interessantes para comparar em um dashboard. Sua resposta e descrições devem ser em {language}. IMPORTANTE: Sua resposta final deve ser APENAS o objeto JSON, sem texto adicional, explicações ou formatação markdown.",
         "dynamic_analyzer_field_description": "Uma descrição legível por humanos do campo, formulada como uma pergunta em {language}, ex: 'Qual é o valor total do contrato?'.",
+        # Eventos internos (events.py)
+        "events_progress_analyzing": "Analisando prazos em: {filename}...",
+        "events_progress_extracting": "Iniciando extração de prazos...",
+        "events_warning_error": "Erro ao extrair eventos de {filename}: {e}",
+        "events_error_default": "Erro na extração de eventos",
     },
     "en": {
         # General
         "lang_selector_label": "Language",
         "app_title": "ContratIA",
+        "app_title_icon": "💡 ContratIA",
         "error_api_key": "Google API Key or Embeddings model are not configured. Check the sidebar.",
         "info_load_docs": "👈 Please upload and process PDF documents or an existing collection in the sidebar to start.",
         # Loading Spinners
@@ -125,15 +139,15 @@ TRANSLATIONS = {
         "sidebar_spinner_processing": "Analyzing documents...",
         "dashboard_spinner_generating": "AI is analyzing and generating the dashboard...",
         # Tabs
-        "tab_chat": "Chat",
-        "tab_dashboard": "Dashboard",
-        "tab_summary": "Summary",
-        "tab_risks": "Risks",
-        "tab_deadlines": "Deadlines",
-        "tab_compliance": "Compliance",
-        "tab_anomalies": "Anomalies",
+        "tab_chat": "💬 Chat",
+        "tab_dashboard": "📊 Dashboard",
+        "tab_summary": "📝 Summary",
+        "tab_risks": "⚠️ Risks",
+        "tab_deadlines": "⏳ Deadlines",
+        "tab_compliance": "✅ Compliance",
+        "tab_anomalies": "🔎 Anomalies",
         # Sidebar
-        "sidebar_header": "Document Manager",
+        "sidebar_header": "📂 Document Manager",
         "sidebar_uploader_label": "Upload new contracts (PDF)",
         "sidebar_process_button": "Process Documents",
         "sidebar_save_collection_label": "Save Current Collection",
@@ -202,6 +216,9 @@ TRANSLATIONS = {
         "deadlines_subheader_chart": "Chronological Distribution of Events",
         "deadlines_chart_x_axis": "Event Date",
         "deadlines_chart_y_axis": "Number of Events",
+        "deadlines_warning_no_text": "Could not extract text from {filename} for deadline analysis.",
+        "deadlines_error_read": "Error reading file {filename}: {e}",
+        "deadlines_warning_no_events": "No events or deadlines were found in the documents.",
         # Compliance
         "compliance_header": "Compliance Verification",
         "compliance_markdown": "Compare two contracts to check compliance in terms of main clauses and terms.",
@@ -221,11 +238,17 @@ TRANSLATIONS = {
         # Dynamic Analyzer
         "dynamic_analyzer_prompt": "You are a senior data analyst. Your task is to analyze contract texts and identify 5 to 7 data points that would be interesting to compare in a dashboard. Your response and descriptions must be in {language}. IMPORTANT: Your final answer must be ONLY the JSON object, with no additional text, explanations, or markdown formatting.",
         "dynamic_analyzer_field_description": "A human-readable description of the field, formulated as a question in {language}, e.g., 'What is the total value of the contract?'.",
+        # Eventos internos (events.py)
+        "events_progress_analyzing": "Analyzing deadlines in: {filename}...",
+        "events_progress_extracting": "Starting deadline extraction...",
+        "events_warning_error": "Error extracting events from {filename}: {e}",
+        "events_error_default": "Error in event extraction",
     },
     "es": {
         # General
         "lang_selector_label": "Idioma",
         "app_title": "ContratIA",
+        "app_title_icon": "💡 ContratIA",
         "error_api_key": "La clave de API de Google o el modelo de Embeddings no están configurados. Verifique la barra lateral.",
         "info_load_docs": "👈 Por favor, cargue y procese documentos PDF o una colección existente en la barra lateral para comenzar.",
         # Loading Spinners
@@ -236,15 +259,15 @@ TRANSLATIONS = {
         "sidebar_spinner_processing": "Analizando documentos...",
         "dashboard_spinner_generating": "La IA está analizando y generando el panel de control...",
         # Tabs
-        "tab_chat": "Chat",
-        "tab_dashboard": "Dashboard",
-        "tab_summary": "Resumen",
-        "tab_risks": "Riesgos",
-        "tab_deadlines": "Plazos",
-        "tab_compliance": "Conformidad",
-        "tab_anomalies": "Anomalías",
+        "tab_chat": "💬 Chat",
+        "tab_dashboard": "📊 Dashboard",
+        "tab_summary": "📝 Resumen",
+        "tab_risks": "⚠️ Riesgos",
+        "tab_deadlines": "⏳ Plazos",
+        "tab_compliance": "✅ Conformidad",
+        "tab_anomalies": "🔎 Anomalías",
         # Sidebar
-        "sidebar_header": "Gestor de Documentos",
+        "sidebar_header": "📂 Gestor de Documentos",
         "sidebar_uploader_label": "Cargar nuevos contratos (PDF)",
         "sidebar_process_button": "Procesar Documentos",
         "sidebar_save_collection_label": "Guardar Colección Actual",
@@ -281,7 +304,7 @@ TRANSLATIONS = {
         "dashboard_selectbox_metric": "Seleccione la Métrica Numérica para Visualizar:",
         "dashboard_chart_axis_x": "Contrato (Archivo Fuente)",
         "dashboard_chart_title": "Comparación de {column} por Contrato",
-        # Resumo
+        # Summary
         "summary_header": "Resumen Ejecutivo",
         "summary_info_load_docs": "Cargue uno o más documentos en la barra lateral para generar un resumen.",
         "summary_selectbox_label": "Elija un contrato para resumir:",
@@ -313,6 +336,9 @@ TRANSLATIONS = {
         "deadlines_subheader_chart": "Distribución Cronológica de Eventos",
         "deadlines_chart_x_axis": "Fecha del Evento",
         "deadlines_chart_y_axis": "Número de Eventos",
+        "deadlines_warning_no_text": "No se pudo extraer texto de {filename} para el análisis de plazos.",
+        "deadlines_error_read": "Error al leer el archivo {filename}: {e}",
+        "deadlines_warning_no_events": "No se encontraron eventos o plazos en los documentos.",
         # Conformidade
         "compliance_header": "Verificación de Conformidad",
         "compliance_markdown": "Compare dos contratos para verificar el cumplimiento en términos de cláusulas principales y términos.",
@@ -332,5 +358,27 @@ TRANSLATIONS = {
         # Dynamic Analyzer
         "dynamic_analyzer_prompt": "Eres un analista de datos senior. Tu tarea es analizar textos de contratos e identificar de 5 a 7 puntos de datos que serían interesantes para comparar en un dashboard. Tu respuesta y descripciones deben estar en {language}. IMPORTANTE: Tu respuesta final debe ser ÚNICAMENTE el objeto JSON, sin texto adicional, explicaciones o formato markdown.",
         "dynamic_analyzer_field_description": "Una descripción legible por humanos del campo, formulada como una pregunta en {language}, ej: '¿Cuál es el valor total del contrato?'.",
+        # Eventos internos (events.py)
+        "events_progress_analyzing": "Analizando plazos en: {filename}...",
+        "events_progress_extracting": "Iniciando extracción de plazos...",
+        "events_warning_error": "Error al extraer eventos de {filename}: {e}",
+        "events_error_default": "Error en la extracción de eventos",
     }
 }
+
+def get_translation(key: str) -> str:
+    """
+    Retorna a tradução para uma chave, usando o idioma no st.session_state ou 'pt' como fallback.
+    """
+    try:
+        # Tenta obter o idioma do st.session_state
+        lang = st.session_state.get("current_language", "pt")
+    except Exception:
+        # Fallback se st.session_state não estiver acessível (ex: em módulos de serviço)
+        lang = "pt"
+    
+    # Tenta obter o dicionário para o idioma, com fallback para 'pt'
+    lang_dict = TRANSLATIONS.get(lang, TRANSLATIONS.get('pt', {}))
+    
+    # Tenta obter a tradução para a chave, com fallback para a própria chave (key)
+    return lang_dict.get(key, key)
