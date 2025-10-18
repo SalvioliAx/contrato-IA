@@ -1,10 +1,11 @@
 streamlit
 pandas
-langchain
-langchain-community
-langchain-google-genai
+langchain>=0.1.16
+langchain-community>=0.0.32
+langchain-core>=0.1.42
+langchain-google-genai>=1.0.0
 google-generativeai
-pydantic
+pydantic~=2.0
 numpy
 Pillow
 PyMuPDF
