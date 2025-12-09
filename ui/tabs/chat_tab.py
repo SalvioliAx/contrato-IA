@@ -1,9 +1,8 @@
 import streamlit as st
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.prompts.prompt import PromptTemplate
+from langchain.prompts.chat import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
-
 
 def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
     """
@@ -65,19 +64,18 @@ def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
     retriever = st.session_state.vector_store_atual.as_retriever(search_kwargs={"k": 5})
 
     # --------------------------------------------------
-    # Prompt moderno com partial
+    # Prompt moderno (ChatPromptTemplate + partial)
     # --------------------------------------------------
-    prompt_template_str = texts["chat_prompt"]
-    prompt = PromptTemplate.from_template(prompt_template_str)
-    prompt = prompt.partial(language=lang_code)
+    system_prompt = SystemMessagePromptTemplate.from_template(texts["chat_prompt"])
+    human_prompt = HumanMessagePromptTemplate.from_template("{input}")
+
+    chat_prompt = ChatPromptTemplate.from_messages([system_prompt, human_prompt])
+    chat_prompt = chat_prompt.partial(language=lang_code)
 
     # --------------------------------------------------
     # Cadeias modernas (LCEL)
     # --------------------------------------------------
-    # 1) Gera resposta com documentos (stuff chain)
-    combine_chain = create_stuff_documents_chain(llm=llm, prompt=prompt)
-
-    # 2) Cadeia final de recuperação + resposta
+    combine_chain = create_stuff_documents_chain(llm=llm, prompt=chat_prompt)
     chain = create_retrieval_chain(
         retriever=retriever,
         combine_docs_chain=combine_chain
@@ -104,4 +102,3 @@ def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
 
             except Exception as e:
                 st.error(f"{texts['chat_error']} {e}")
-
