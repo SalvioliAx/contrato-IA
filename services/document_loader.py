@@ -3,14 +3,16 @@ import os, time, base64
 from pathlib import Path
 import fitz
 
-# --- CORREÇÕES DE IMPORTAÇÃO (LangChain Novo) ---
-# PyPDFLoader agora mora na community
+# --- IMPORTAÇÕES ROBUSTAS (Funciona em versões novas e antigas) ---
 from langchain_community.document_loaders import PyPDFLoader
-# FAISS agora mora na community
 from langchain_community.vectorstores import FAISS
-# RecursiveCharacterTextSplitter deve vir daqui se o pacote 'langchain-text-splitters' não estiver explícito
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-# ------------------------------------------------
+
+# Tenta importar do local novo (LangChain >0.1), se falhar, tenta o antigo
+try:
+    from langchain_text_splitters import RecursiveCharacterTextSplitter
+except ImportError:
+    from langchain.text_splitter import RecursiveCharacterTextSplitter
+# ------------------------------------------------------------------
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.documents import Document
@@ -25,7 +27,7 @@ def obter_vector_store_de_uploads(lista_arquivos_pdf_upload, _embeddings_obj, go
     nomes_arquivos_processados = []
 
     try:
-        # MANTIDO O MODELO 2.5-PRO CONFORME SUA SOLICITAÇÃO
+        # Mantendo o modelo 2.5-pro conforme solicitado
         llm_vision = ChatGoogleGenerativeAI(
             model="gemini-2.5-pro", 
             temperature=0.1, 
@@ -46,7 +48,7 @@ def obter_vector_store_de_uploads(lista_arquivos_pdf_upload, _embeddings_obj, go
             with open(temp_file_path, "wb") as f:
                 f.write(arquivo_pdf_upload.getbuffer())
 
-            # Tentativa 1: PyPDFLoader
+            # Tentativa 1: PyPDFLoader (Pode falhar se pypdf não estiver instalado, mas o except trata)
             try:
                 loader = PyPDFLoader(str(temp_file_path))
                 pages = loader.load()
@@ -62,7 +64,7 @@ def obter_vector_store_de_uploads(lista_arquivos_pdf_upload, _embeddings_obj, go
             except Exception:
                 pass 
 
-            # Tentativa 2: PyMuPDF
+            # Tentativa 2: PyMuPDF (Usa a lib 'fitz' que você tem instalada)
             if not texto_extraido_com_sucesso:
                 try:
                     documentos_arquivo_atual = []
