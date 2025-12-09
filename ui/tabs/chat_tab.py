@@ -1,10 +1,16 @@
 import streamlit as st
-# Importação correta do modelo
+# Importação do modelo
 from langchain_google_genai import ChatGoogleGenerativeAI
-# CORREÇÃO: PromptTemplate agora vive no 'core' nas versões novas
+# Importação do PromptTemplate (Versão Core)
 from langchain_core.prompts import PromptTemplate
-# RetrievalQA continua em chains
-from langchain.chains import RetrievalQA
+
+# --- CORREÇÃO DA IMPORTAÇÃO DA CHAIN ---
+# Tenta importar do caminho padrão, se falhar, vai no caminho explícito
+try:
+    from langchain.chains import RetrievalQA
+except ImportError:
+    from langchain.chains.retrieval_qa.base import RetrievalQA
+# ---------------------------------------
 
 def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
     st.header(texts["chat_header"])
@@ -54,7 +60,6 @@ def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
     prompt_template = texts.get("chat_prompt", "")
     
     # O RetrievalQA 'antigo' EXIGE a variável {question}. 
-    # Se o seu texto tiver {input}, a gente troca para não dar erro.
     if "{question}" not in prompt_template and "{input}" in prompt_template:
         prompt_template = prompt_template.replace("{input}", "{question}")
     
@@ -62,7 +67,7 @@ def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
     if "{question}" not in prompt_template:
         prompt_template = "Contexto: {context}\n\nPergunta: {question}\n\nResposta em {language}:"
 
-    # Criação do Prompt Template usando a importação corrigida
+    # Criação do Prompt Template
     PROMPT = PromptTemplate(
         template=prompt_template, 
         input_variables=["context", "question"],
@@ -70,6 +75,7 @@ def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
     )
 
     # Configuração da Chain (RetrievalQA)
+    # Nota: chain_type="stuff" usa StuffDocumentsChain internamente
     qa_chain = RetrievalQA.from_chain_type(
         llm=llm,
         chain_type="stuff",
