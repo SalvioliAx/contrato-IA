@@ -3,14 +3,20 @@ import os, time, base64
 from pathlib import Path
 import fitz
 
+# --- CORREÇÕES DE IMPORTAÇÃO (LangChain Novo) ---
+# PyPDFLoader agora mora na community
 from langchain_community.document_loaders import PyPDFLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
+# FAISS agora mora na community
 from langchain_community.vectorstores import FAISS
+# RecursiveCharacterTextSplitter deve vir daqui se o pacote 'langchain-text-splitters' não estiver explícito
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+# ------------------------------------------------
+
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage
 
-@st.cache_resource # Removido show_spinner
+@st.cache_resource
 def obter_vector_store_de_uploads(lista_arquivos_pdf_upload, _embeddings_obj, google_api_key):
     if not lista_arquivos_pdf_upload or not google_api_key or not _embeddings_obj:
         return None, None
@@ -19,8 +25,12 @@ def obter_vector_store_de_uploads(lista_arquivos_pdf_upload, _embeddings_obj, go
     nomes_arquivos_processados = []
 
     try:
+        # MANTIDO O MODELO 2.5-PRO CONFORME SUA SOLICITAÇÃO
         llm_vision = ChatGoogleGenerativeAI(
-            model="gemini-2.5-pro", temperature=0.1, request_timeout=300
+            model="gemini-2.5-pro", 
+            temperature=0.1, 
+            request_timeout=300,
+            google_api_key=google_api_key
         )
     except Exception as e:
         st.warning(f"Não foi possível inicializar o modelo de visão do Gemini: {e}")
@@ -50,7 +60,7 @@ def obter_vector_store_de_uploads(lista_arquivos_pdf_upload, _embeddings_obj, go
                 if documentos_arquivo_atual:
                     texto_extraido_com_sucesso = True
             except Exception:
-                pass # Tenta o próximo método
+                pass 
 
             # Tentativa 2: PyMuPDF
             if not texto_extraido_com_sucesso:
@@ -69,7 +79,7 @@ def obter_vector_store_de_uploads(lista_arquivos_pdf_upload, _embeddings_obj, go
                     if documentos_arquivo_atual:
                         texto_extraido_com_sucesso = True
                 except Exception:
-                    pass # Tenta o próximo método
+                    pass
 
             # Tentativa 3: Gemini Vision OCR
             if not texto_extraido_com_sucesso and llm_vision:
@@ -106,7 +116,7 @@ def obter_vector_store_de_uploads(lista_arquivos_pdf_upload, _embeddings_obj, go
                     if documentos_arquivo_atual:
                         texto_extraido_com_sucesso = True
                 except Exception:
-                     pass # Falha não impede o resto
+                     pass
 
             if texto_extraido_com_sucesso:
                 documentos_totais.extend(documentos_arquivo_atual)
@@ -124,7 +134,6 @@ def obter_vector_store_de_uploads(lista_arquivos_pdf_upload, _embeddings_obj, go
 
     splitter = RecursiveCharacterTextSplitter(chunk_size=1500, chunk_overlap=200)
     docs_fragmentados = splitter.split_documents(documentos_totais)
+    
     vector_store = FAISS.from_documents(docs_fragmentados, _embeddings_obj)
     return vector_store, nomes_arquivos_processados
-
-
