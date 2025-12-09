@@ -1,10 +1,15 @@
 import streamlit as st
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
+from langchain.prompts import ChatPromptTemplate
+from langchain.schema import SystemMessage, HumanMessage
 from langchain.chains import create_retrieval_chain
-from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain.chains.combine_documents.base import StuffDocumentsChain
 
 def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
+    """
+    Renderiza a aba de Chat usando LangChain 2025,
+    com localização e recuperação de documentos.
+    """
     st.header(texts["chat_header"])
 
     # --------------------------------------------------
@@ -22,7 +27,7 @@ def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
             {"role": "assistant", "content": texts["chat_welcome_message"]}
         ]
 
-    # Renderiza mensagens existentes
+    # Renderização das mensagens existentes
     for msg in st.session_state.messages:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
@@ -60,22 +65,19 @@ def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
     retriever = st.session_state.vector_store_atual.as_retriever(search_kwargs={"k": 5})
 
     # --------------------------------------------------
-    # Prompt moderno com partial
+    # Prompt moderno com ChatPromptTemplate
     # --------------------------------------------------
-    system_prompt = SystemMessagePromptTemplate.from_template(
-        texts["chat_system_prompt"]
-    )
-    human_prompt = HumanMessagePromptTemplate.from_template(
-        texts["chat_prompt"]
-    )
-    chat_prompt = ChatPromptTemplate.from_messages([system_prompt, human_prompt])
-    # partial para idioma
-    chat_prompt = chat_prompt.partial(language=lang_code)
+    system_message = SystemMessage(content=texts["chat_system_prompt"])
+    human_message = HumanMessage(content="{input}")
+
+    chat_prompt = ChatPromptTemplate.from_messages([system_message, human_message])
+    chat_prompt_partial = chat_prompt.partial(language=lang_code)
 
     # --------------------------------------------------
-    # Cadeias modernas (LCEL)
+    # Cadeias modernas (StuffDocumentsChain + Retrieval)
     # --------------------------------------------------
-    combine_chain = create_stuff_documents_chain(llm=llm, prompt=chat_prompt)
+    combine_chain = StuffDocumentsChain(llm=llm, prompt=chat_prompt_partial)
+
     chain = create_retrieval_chain(
         retriever=retriever,
         combine_docs_chain=combine_chain
@@ -92,6 +94,7 @@ def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
                 sources = result.get("context", [])
 
                 st.markdown(answer)
+
                 st.session_state.messages.append({
                     "role": "assistant",
                     "content": answer,
