@@ -1,8 +1,8 @@
-import streamlit as st
+ import streamlit as st
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts.chat import ChatPromptTemplate
-from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain.chains import create_retrieval_chain
+from langchain.chains.document.combine import StuffDocumentsChain
+from langchain.chains import RetrievalQA
 
 def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
     st.header(texts["chat_header"])
@@ -14,6 +14,7 @@ def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
     if "messages" not in st.session_state or not st.session_state.messages:
         st.session_state.messages = [{"role": "assistant", "content": texts["chat_welcome_message"]}]
 
+    # Exibe histórico
     for msg in st.session_state.messages:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
@@ -44,25 +45,26 @@ def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
 
     retriever = st.session_state.vector_store_atual.as_retriever(search_kwargs={"k": 5})
 
-    # Cria um ChatPromptTemplate simples: sistema + usuário
+    # Chat prompt moderno
     chat_prompt = ChatPromptTemplate([
         ("system", texts["chat_prompt"]),
         ("human", "{input}")
     ]).partial(language=lang_code)
 
-    combine_chain = create_stuff_documents_chain(llm=llm, prompt=chat_prompt)
-    chain = create_retrieval_chain(
-        retriever=retriever,
-        combine_docs_chain=combine_chain
-    )
+    # StuffDocumentsChain moderno
+    combine_chain = StuffDocumentsChain(llm=llm, prompt=chat_prompt)
 
+    # RetrievalQA é a nova forma de criar a cadeia de Q&A com documentos
+    chain = RetrievalQA(combine_documents_chain=combine_chain, retriever=retriever)
+
+    # Execução da resposta
     with st.chat_message("assistant"):
         with st.spinner(texts["chat_spinner_thinking"]):
             try:
-                result = chain.invoke({"input": user_input})
+                result = chain.invoke({"query": user_input})
 
-                answer = result.get("answer")
-                sources = result.get("context", [])
+                answer = result.get("result")  # agora a chave padrão é "result"
+                sources = result.get("source_documents", [])
 
                 st.markdown(answer)
 
