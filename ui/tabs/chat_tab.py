@@ -1,33 +1,21 @@
 import streamlit as st
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.prompts import ChatPromptTemplate
-from langchain.schema import SystemMessage, HumanMessage
-from langchain.chains import create_retrieval_chain
+from langchain.prompts.prompt import PromptTemplate
 from langchain.chains.combine_documents.base import StuffDocumentsChain
+from langchain.chains import create_retrieval_chain
 
 def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
-    """
-    Renderiza a aba de Chat usando LangChain 2025,
-    com localização e recuperação de documentos.
-    """
     st.header(texts["chat_header"])
 
-    # --------------------------------------------------
-    # Validação da store
-    # --------------------------------------------------
     if "vector_store_atual" not in st.session_state:
         st.info(texts["chat_info_load_docs"])
         return
 
-    # --------------------------------------------------
-    # Histórico de mensagens
-    # --------------------------------------------------
     if "messages" not in st.session_state or not st.session_state.messages:
         st.session_state.messages = [
             {"role": "assistant", "content": texts["chat_welcome_message"]}
         ]
 
-    # Renderização das mensagens existentes
     for msg in st.session_state.messages:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
@@ -42,9 +30,6 @@ def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
                         st.markdown(f"> {doc.page_content.strip()}")
                         st.markdown("---")
 
-    # --------------------------------------------------
-    # Entrada do usuário
-    # --------------------------------------------------
     user_input = st.chat_input(texts["chat_input_placeholder"])
     if not user_input:
         return
@@ -53,9 +38,7 @@ def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
     with st.chat_message("user"):
         st.markdown(user_input)
 
-    # --------------------------------------------------
-    # Configura o LLM
-    # --------------------------------------------------
+    # LLM
     llm = ChatGoogleGenerativeAI(
         model="gemini-2.5-pro",
         temperature=0.1,
@@ -64,28 +47,17 @@ def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
 
     retriever = st.session_state.vector_store_atual.as_retriever(search_kwargs={"k": 5})
 
-    # --------------------------------------------------
-    # Prompt moderno com ChatPromptTemplate
-    # --------------------------------------------------
-    system_message = SystemMessage(content=texts["chat_system_prompt"])
-    human_message = HumanMessage(content="{input}")
+    # Prompt simples compatível
+    prompt_template = texts.get("chat_prompt", "{input}")
+    prompt = PromptTemplate.from_template(prompt_template)
+    prompt = prompt.partial(language=lang_code)
 
-    chat_prompt = ChatPromptTemplate.from_messages([system_message, human_message])
-    chat_prompt_partial = chat_prompt.partial(language=lang_code)
-
-    # --------------------------------------------------
-    # Cadeias modernas (StuffDocumentsChain + Retrieval)
-    # --------------------------------------------------
-    combine_chain = StuffDocumentsChain(llm=llm, prompt=chat_prompt_partial)
-
+    combine_chain = StuffDocumentsChain(llm=llm, prompt=prompt)
     chain = create_retrieval_chain(
         retriever=retriever,
         combine_docs_chain=combine_chain
     )
 
-    # --------------------------------------------------
-    # Execução da resposta
-    # --------------------------------------------------
     with st.chat_message("assistant"):
         with st.spinner(texts["chat_spinner_thinking"]):
             try:
