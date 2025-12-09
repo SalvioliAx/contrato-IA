@@ -2,23 +2,14 @@ import streamlit as st
 import os, time, base64
 from pathlib import Path
 import fitz
-
-# --- IMPORTAÇÕES ROBUSTAS (Funciona em versões novas e antigas) ---
 from langchain_community.document_loaders import PyPDFLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
-
-# Tenta importar do local novo (LangChain >0.1), se falhar, tenta o antigo
-try:
-    from langchain_text_splitters import RecursiveCharacterTextSplitter
-except ImportError:
-    from langchain.text_splitter import RecursiveCharacterTextSplitter
-# ------------------------------------------------------------------
-
-from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.documents import Document
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import AIMessage, HumanMessage
 
-@st.cache_resource
+@st.cache_resource # Removido show_spinner
 def obter_vector_store_de_uploads(lista_arquivos_pdf_upload, _embeddings_obj, google_api_key):
     if not lista_arquivos_pdf_upload or not google_api_key or not _embeddings_obj:
         return None, None
@@ -27,12 +18,8 @@ def obter_vector_store_de_uploads(lista_arquivos_pdf_upload, _embeddings_obj, go
     nomes_arquivos_processados = []
 
     try:
-        # Mantendo o modelo 2.5-pro conforme solicitado
         llm_vision = ChatGoogleGenerativeAI(
-            model="gemini-2.5-pro", 
-            temperature=0.1, 
-            request_timeout=300,
-            google_api_key=google_api_key
+            model="gemini-2.5-pro", temperature=0.1, request_timeout=300
         )
     except Exception as e:
         st.warning(f"Não foi possível inicializar o modelo de visão do Gemini: {e}")
@@ -48,7 +35,7 @@ def obter_vector_store_de_uploads(lista_arquivos_pdf_upload, _embeddings_obj, go
             with open(temp_file_path, "wb") as f:
                 f.write(arquivo_pdf_upload.getbuffer())
 
-            # Tentativa 1: PyPDFLoader (Pode falhar se pypdf não estiver instalado, mas o except trata)
+            # Tentativa 1: PyPDFLoader
             try:
                 loader = PyPDFLoader(str(temp_file_path))
                 pages = loader.load()
@@ -62,9 +49,9 @@ def obter_vector_store_de_uploads(lista_arquivos_pdf_upload, _embeddings_obj, go
                 if documentos_arquivo_atual:
                     texto_extraido_com_sucesso = True
             except Exception:
-                pass 
+                pass # Tenta o próximo método
 
-            # Tentativa 2: PyMuPDF (Usa a lib 'fitz' que você tem instalada)
+            # Tentativa 2: PyMuPDF
             if not texto_extraido_com_sucesso:
                 try:
                     documentos_arquivo_atual = []
@@ -81,7 +68,7 @@ def obter_vector_store_de_uploads(lista_arquivos_pdf_upload, _embeddings_obj, go
                     if documentos_arquivo_atual:
                         texto_extraido_com_sucesso = True
                 except Exception:
-                    pass
+                    pass # Tenta o próximo método
 
             # Tentativa 3: Gemini Vision OCR
             if not texto_extraido_com_sucesso and llm_vision:
@@ -118,7 +105,7 @@ def obter_vector_store_de_uploads(lista_arquivos_pdf_upload, _embeddings_obj, go
                     if documentos_arquivo_atual:
                         texto_extraido_com_sucesso = True
                 except Exception:
-                     pass
+                     pass # Falha não impede o resto
 
             if texto_extraido_com_sucesso:
                 documentos_totais.extend(documentos_arquivo_atual)
@@ -136,6 +123,6 @@ def obter_vector_store_de_uploads(lista_arquivos_pdf_upload, _embeddings_obj, go
 
     splitter = RecursiveCharacterTextSplitter(chunk_size=1500, chunk_overlap=200)
     docs_fragmentados = splitter.split_documents(documentos_totais)
-    
     vector_store = FAISS.from_documents(docs_fragmentados, _embeddings_obj)
     return vector_store, nomes_arquivos_processados
+
