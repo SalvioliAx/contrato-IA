@@ -1,16 +1,9 @@
 import streamlit as st
-# Importação do modelo
 from langchain_google_genai import ChatGoogleGenerativeAI
-# Importação do PromptTemplate (Versão Core)
-from langchain_core.prompts import PromptTemplate
-
-# --- CORREÇÃO DA IMPORTAÇÃO DA CHAIN ---
-# Tenta importar do caminho padrão, se falhar, vai no caminho explícito
-try:
-    from langchain.chains import RetrievalQA
-except ImportError:
-    from langchain.chains.retrieval_qa.base import RetrievalQA
-# ---------------------------------------
+from langchain_core.prompts import ChatPromptTemplate
+# Estas são as substitutas oficiais do RetrievalQA:
+from langchain.chains import create_retrieval_chain
+from langchain.chains.combine_documents import create_stuff_documents_chain
 
 def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
     st.header(texts["chat_header"])
@@ -20,7 +13,7 @@ def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
         st.info(texts["chat_info_load_docs"])
         return
 
-    # 2. Inicializa histórico do chat
+    # 2. Inicializa histórico
     if "messages" not in st.session_state or not st.session_state.messages:
         st.session_state.messages = [
             {"role": "assistant", "content": texts["chat_welcome_message"]}
@@ -47,51 +40,50 @@ def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
     with st.chat_message("user"):
         st.markdown(user_input)
 
-    # --- LÓGICA RAG (Modo Legacy/Restaurado) ---
+    # --- LÓGICA RAG MODERNA (Substituindo RetrievalQA) ---
     
-    # Mantendo gemini-2.5-pro conforme solicitado
+    # 1. Modelo (Mantido 2.5-pro)
     llm = ChatGoogleGenerativeAI(
         model="gemini-2.5-pro",
         temperature=0.1,
         google_api_key=google_api_key
     )
 
-    # Configuração do Prompt (Adaptação para RetrievalQA)
-    prompt_template = texts.get("chat_prompt", "")
-    
-    # O RetrievalQA 'antigo' EXIGE a variável {question}. 
-    if "{question}" not in prompt_template and "{input}" in prompt_template:
-        prompt_template = prompt_template.replace("{input}", "{question}")
-    
-    # Fallback caso o prompt esteja vazio
-    if "{question}" not in prompt_template:
-        prompt_template = "Contexto: {context}\n\nPergunta: {question}\n\nResposta em {language}:"
+    # 2. Retriever
+    retriever = st.session_state.vector_store_atual.as_retriever(search_kwargs={"k": 5})
 
-    # Criação do Prompt Template
-    PROMPT = PromptTemplate(
-        template=prompt_template, 
-        input_variables=["context", "question"],
-        partial_variables={"language": lang_code} if "{language}" in prompt_template else {}
-    )
+    # 3. Prompt (Adaptação Inteligente)
+    # A nova chain exige que a pergunta se chame '{input}' e o contexto '{context}'
+    raw_prompt = texts.get("chat_prompt", "")
+    
+    # Se o seu texto usa '{question}', trocamos por '{input}' para não quebrar
+    raw_prompt = raw_prompt.replace("{question}", "{input}")
+    
+    # Fallback de segurança
+    if "{context}" not in raw_prompt:
+        raw_prompt = "Contexto: {context}\n\nPergunta: {input}\n\nResposta:"
 
-    # Configuração da Chain (RetrievalQA)
-    # Nota: chain_type="stuff" usa StuffDocumentsChain internamente
-    qa_chain = RetrievalQA.from_chain_type(
-        llm=llm,
-        chain_type="stuff",
-        retriever=st.session_state.vector_store_atual.as_retriever(search_kwargs={"k": 5}),
-        return_source_documents=True,
-        chain_type_kwargs={"prompt": PROMPT}
-    )
+    prompt = ChatPromptTemplate.from_template(raw_prompt)
+    
+    # Injeta o idioma se necessário
+    if "{language}" in raw_prompt:
+        prompt = prompt.partial(language=lang_code)
+
+    # 4. Criação da Chain (Isso substitui o RetrievalQA)
+    # Primeiro criamos a chain que combina documentos com o LLM
+    question_answer_chain = create_stuff_documents_chain(llm, prompt)
+    
+    # Depois criamos a chain que busca os documentos e passa para a anterior
+    rag_chain = create_retrieval_chain(retriever, question_answer_chain)
 
     with st.chat_message("assistant"):
         with st.spinner(texts["chat_spinner_thinking"]):
             try:
-                # O RetrievalQA usa a chave "query" ou "question" no invoke
-                result = qa_chain.invoke({"query": user_input})
+                # Na nova sintaxe, passamos "input" em vez de "query"
+                response = rag_chain.invoke({"input": user_input})
                 
-                answer = result["result"]
-                sources = result["source_documents"]
+                answer = response["answer"]
+                sources = response["context"]
 
                 st.markdown(answer)
 
