@@ -1,11 +1,8 @@
 import streamlit as st
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.prompts.chat import (
-    ChatPromptTemplate,
-    SystemMessagePromptTemplate,
-    HumanMessagePromptTemplate,
-)
-from langchain.chains import ChatVectorDBChain
+from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
+from langchain.chains import create_retrieval_chain
+from langchain.chains.combine_documents import create_stuff_documents_chain
 
 def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
     st.header(texts["chat_header"])
@@ -25,7 +22,7 @@ def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
             {"role": "assistant", "content": texts["chat_welcome_message"]}
         ]
 
-    # Renderização das mensagens existentes
+    # Renderiza mensagens existentes
     for msg in st.session_state.messages:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
@@ -63,21 +60,25 @@ def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
     retriever = st.session_state.vector_store_atual.as_retriever(search_kwargs={"k": 5})
 
     # --------------------------------------------------
-    # Prompt moderno (ChatPromptTemplate)
+    # Prompt moderno com partial
     # --------------------------------------------------
-    system_message = SystemMessagePromptTemplate.from_template(texts["chat_prompt_system"])
-    human_message = HumanMessagePromptTemplate.from_template("{input}")
-    prompt = ChatPromptTemplate.from_messages([system_message, human_message])
-    prompt = prompt.partial(language=lang_code)
+    system_prompt = SystemMessagePromptTemplate.from_template(
+        texts["chat_system_prompt"]
+    )
+    human_prompt = HumanMessagePromptTemplate.from_template(
+        texts["chat_prompt"]
+    )
+    chat_prompt = ChatPromptTemplate.from_messages([system_prompt, human_prompt])
+    # partial para idioma
+    chat_prompt = chat_prompt.partial(language=lang_code)
 
     # --------------------------------------------------
-    # Cadeia moderna: ChatVectorDBChain
+    # Cadeias modernas (LCEL)
     # --------------------------------------------------
-    chain = ChatVectorDBChain.from_llm(
-        llm=llm,
+    combine_chain = create_stuff_documents_chain(llm=llm, prompt=chat_prompt)
+    chain = create_retrieval_chain(
         retriever=retriever,
-        combine_docs_chain_kwargs={"prompt": prompt},
-        return_source_documents=True
+        combine_docs_chain=combine_chain
     )
 
     # --------------------------------------------------
@@ -86,17 +87,15 @@ def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
     with st.chat_message("assistant"):
         with st.spinner(texts["chat_spinner_thinking"]):
             try:
-                result = chain({"question": user_input})
+                result = chain.invoke({"input": user_input})
                 answer = result["answer"]
-                sources = result.get("source_documents", [])
+                sources = result.get("context", [])
 
                 st.markdown(answer)
-
                 st.session_state.messages.append({
                     "role": "assistant",
                     "content": answer,
                     "sources": sources
                 })
-
             except Exception as e:
                 st.error(f"{texts['chat_error']} {e}")
