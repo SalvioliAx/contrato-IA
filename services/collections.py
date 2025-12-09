@@ -1,6 +1,6 @@
 import streamlit as st
 import json
-from langchain_community.vectorstores import FAISS
+from langchain.vectorstores import FAISS
 from core.config import COLECOES_DIR
 
 def listar_colecoes_salvas():
@@ -60,4 +60,3 @@ def carregar_colecao(nome_colecao, _embeddings_obj):
     except Exception as e:
         st.error(f"Erro ao carregar coleção '{nome_colecao}': {e}")
         return None, None
-

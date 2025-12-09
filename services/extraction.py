@@ -4,7 +4,7 @@ from typing import Optional
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_community.vectorstores import FAISS
+from langchain.vectorstores import FAISS
 from services.dynamic_analyzer import identificar_pontos_chave_dinamicos
 from core.locale import TRANSLATIONS # Import the TRANSLATIONS dictionary
 
@@ -72,4 +72,3 @@ def extrair_dados_dos_contratos_dinamico(
         resultados.append(dados)
     barra.empty()
     return resultados
-
