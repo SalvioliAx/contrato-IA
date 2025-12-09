@@ -1,11 +1,14 @@
 streamlit
 pandas
-langchain>=0.1.16
-langchain-community>=0.0.32
-langchain-core>=0.1.42
-langchain-google-genai>=1.0.0
+# Deixamos sem versão fixa para ele baixar o conjunto compatível mais recente
+langchain
+langchain-community
+langchain-core
+langchain-google-genai
+langchain-text-splitters
 google-generativeai
-pydantic~=2.0
+# Pydantic v2 é o padrão agora
+pydantic>=2.0
 numpy
 Pillow
 PyMuPDF
