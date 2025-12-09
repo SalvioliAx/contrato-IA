@@ -2,11 +2,12 @@ import streamlit as st
 import os, time, base64
 from pathlib import Path
 import fitz
+
 from langchain_community.document_loaders import PyPDFLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
-from langchain_core.documents import Document
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage
 
 @st.cache_resource # Removido show_spinner
@@ -125,4 +126,5 @@ def obter_vector_store_de_uploads(lista_arquivos_pdf_upload, _embeddings_obj, go
     docs_fragmentados = splitter.split_documents(documentos_totais)
     vector_store = FAISS.from_documents(docs_fragmentados, _embeddings_obj)
     return vector_store, nomes_arquivos_processados
+
 
