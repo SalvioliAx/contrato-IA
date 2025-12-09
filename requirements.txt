@@ -4,9 +4,11 @@ langchain>=0.1.16
 langchain-community>=0.0.32
 langchain-core>=0.1.42
 langchain-google-genai>=1.0.0
+langchain-text-splitters
 google-generativeai
 pydantic~=2.0
 numpy
 Pillow
 PyMuPDF
 faiss-cpu
+
