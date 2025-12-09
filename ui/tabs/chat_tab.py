@@ -1,6 +1,6 @@
 import streamlit as st
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.chains.retrieval_qa.base import RetrievalQA
+from langchain_community.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 
 def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
@@ -54,6 +54,7 @@ def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
                     st.rerun()
                 except Exception as e:
                     st.error(f"{texts['chat_error']} {e}")
+
 
 
 
