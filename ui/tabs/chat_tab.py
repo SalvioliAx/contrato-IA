@@ -1,8 +1,9 @@
 import streamlit as st
-# Correção 1: Importação correta do modelo Gemini para versões novas
+# Importação correta do modelo
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.prompts import PromptTemplate
-# Correção 2: RetrievalQA ainda existe em langchain.chains
+# CORREÇÃO: PromptTemplate agora vive no 'core' nas versões novas
+from langchain_core.prompts import PromptTemplate
+# RetrievalQA continua em chains
 from langchain.chains import RetrievalQA
 
 def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
@@ -42,7 +43,7 @@ def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
 
     # --- LÓGICA RAG (Modo Legacy/Restaurado) ---
     
-    # Modelo Gemini (Mantendo 2.5-pro conforme solicitado)
+    # Mantendo gemini-2.5-pro conforme solicitado
     llm = ChatGoogleGenerativeAI(
         model="gemini-2.5-pro",
         temperature=0.1,
@@ -61,6 +62,7 @@ def render_chat_tab(embeddings_global, google_api_key, texts, lang_code):
     if "{question}" not in prompt_template:
         prompt_template = "Contexto: {context}\n\nPergunta: {question}\n\nResposta em {language}:"
 
+    # Criação do Prompt Template usando a importação corrigida
     PROMPT = PromptTemplate(
         template=prompt_template, 
         input_variables=["context", "question"],
