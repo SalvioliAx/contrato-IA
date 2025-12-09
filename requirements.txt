@@ -1,13 +1,12 @@
 streamlit
 pandas
-# Força versões recentes onde create_retrieval_chain existe
-langchain>=0.1.0
-langchain-community>=0.0.10
-langchain-core>=0.1.0
-langchain-google-genai>=1.0.0
-langchain-text-splitters
+# Travando versões para garantir compatibilidade
+langchain==0.1.16
+langchain-community==0.0.32
+langchain-core==0.1.42
+langchain-google-genai==1.0.1
+langchain-text-splitters==0.0.1
 google-generativeai
-# Pydantic v2 é essencial para as novas chains
 pydantic>=2.0
 numpy
 Pillow
